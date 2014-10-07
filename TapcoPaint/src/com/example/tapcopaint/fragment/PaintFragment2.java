@@ -110,6 +110,7 @@ public class PaintFragment2 extends BaseFragment {
             rootView.redo();
             break;
         case R.id.action_earse:
+            rootView.earse();
             break;
         case R.id.action_clear:
             rootView.clear();
@@ -217,8 +218,12 @@ public class PaintFragment2 extends BaseFragment {
         int i = 0;
 
         public void earse() {
+            log.d("log>>> " + "MODE:" + sModes[i]);
             paint.setXfermode(sModes[i]);
             i++;
+            if (i == sModes.length - 1) {
+                i = 0;
+            }
             invalidate();
         }
 
