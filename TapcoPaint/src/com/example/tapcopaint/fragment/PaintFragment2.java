@@ -138,6 +138,8 @@ public class PaintFragment2 extends BaseFragment {
         private Paint paint;
         private boolean isUndo;
 
+        private boolean isEarse;
+
         public TsView(Context context) {
             super(context);
             log.d("log>>> " + "TsView contructor");
@@ -171,10 +173,15 @@ public class PaintFragment2 extends BaseFragment {
             canvas.drawBitmap(imageBackground, 0, 0, null);
 
             // draw all path before
+
+            paint.setXfermode(null);
             for (Path p : listPaths) {
                 canvas.drawPath(p, paint);
             }
             // draw path
+            if (isEarse) {
+                mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+            }
             canvas.drawPath(path, paint);
 
         }
@@ -212,23 +219,19 @@ public class PaintFragment2 extends BaseFragment {
         int value;
 
         public void clear() {
+            mPaint.setXfermode(null);
+            isEarse = false;
             listPaths.clear();
             listPathsRedo.clear();
             canvas.drawBitmap(imageBackground, 0, 0, null);
             invalidate();
         }
 
-        int i = 0;
-
         public void earse() {
-            Toast.makeText(getActivity(), "MODE:" + sLabels[i], Toast.LENGTH_SHORT).show();
-            log.d("log>>> " + "MODE:" + sLabels[i]);
-            paint.setXfermode(sModes[i]);
-            i++;
-            if (i == sModes.length - 1) {
-                i = 0;
-            }
-            invalidate();
+            isEarse = true;
+            mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+
+//            invalidate();
         }
 
         public void undo() {
