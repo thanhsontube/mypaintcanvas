@@ -13,6 +13,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.graphics.Xfermode;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -37,6 +38,16 @@ public class PaintFragment2 extends BaseFragment {
     private ImageView img;
     private Paint mPaint;
     private TsView rootView;
+
+    private static final Xfermode[] sModes = { new PorterDuffXfermode(PorterDuff.Mode.CLEAR),
+            new PorterDuffXfermode(PorterDuff.Mode.SRC), new PorterDuffXfermode(PorterDuff.Mode.DST),
+            new PorterDuffXfermode(PorterDuff.Mode.SRC_OVER), new PorterDuffXfermode(PorterDuff.Mode.DST_OVER),
+            new PorterDuffXfermode(PorterDuff.Mode.SRC_IN), new PorterDuffXfermode(PorterDuff.Mode.DST_IN),
+            new PorterDuffXfermode(PorterDuff.Mode.SRC_OUT), new PorterDuffXfermode(PorterDuff.Mode.DST_OUT),
+            new PorterDuffXfermode(PorterDuff.Mode.SRC_ATOP), new PorterDuffXfermode(PorterDuff.Mode.DST_ATOP),
+            new PorterDuffXfermode(PorterDuff.Mode.XOR), new PorterDuffXfermode(PorterDuff.Mode.DARKEN),
+            new PorterDuffXfermode(PorterDuff.Mode.LIGHTEN), new PorterDuffXfermode(PorterDuff.Mode.MULTIPLY),
+            new PorterDuffXfermode(PorterDuff.Mode.SCREEN) };
 
     FilterLog log = new FilterLog(TAG);
 
@@ -121,6 +132,7 @@ public class PaintFragment2 extends BaseFragment {
         private float mX, mY;
 
         private Paint paint;
+        private boolean isUndo;
 
         public TsView(Context context) {
             super(context);
@@ -187,6 +199,10 @@ public class PaintFragment2 extends BaseFragment {
             canvas.drawPath(path, paint);
             path = new Path();
             log.d("log>>> " + "touchUp");
+            if (isUndo) {
+                listPathsRedo.clear();
+                isUndo = false;
+            }
         }
 
         int value;
@@ -198,11 +214,21 @@ public class PaintFragment2 extends BaseFragment {
             invalidate();
         }
 
+        int i = 0;
+
+        public void earse() {
+            paint.setXfermode(sModes[i]);
+            i++;
+            invalidate();
+        }
+
         public void undo() {
             if (listPaths.size() == 0) {
                 Toast.makeText(getActivity(), "Stack empty", Toast.LENGTH_SHORT).show();
                 return;
             }
+
+            isUndo = true;
 
             listPathsRedo.add(listPaths.get(listPaths.size() - 1));
             listPaths.remove(listPaths.size() - 1);
@@ -210,6 +236,7 @@ public class PaintFragment2 extends BaseFragment {
         }
 
         public void redo() {
+
             if (listPathsRedo.size() == 0) {
                 Toast.makeText(getActivity(), "At Top, can not redo", Toast.LENGTH_SHORT).show();
                 return;
