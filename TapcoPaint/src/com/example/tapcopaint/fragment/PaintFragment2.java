@@ -49,6 +49,9 @@ public class PaintFragment2 extends BaseFragment {
             new PorterDuffXfermode(PorterDuff.Mode.LIGHTEN), new PorterDuffXfermode(PorterDuff.Mode.MULTIPLY),
             new PorterDuffXfermode(PorterDuff.Mode.SCREEN) };
 
+    private static final String[] sLabels = { "Clear", "Src", "Dst", "SrcOver", "DstOver", "SrcIn", "DstIn", "SrcOut",
+            "DstOut", "SrcATop", "DstATop", "Xor", "Darken", "Lighten", "Multiply", "Screen" };
+
     FilterLog log = new FilterLog(TAG);
 
     @Override
@@ -218,7 +221,8 @@ public class PaintFragment2 extends BaseFragment {
         int i = 0;
 
         public void earse() {
-            log.d("log>>> " + "MODE:" + sModes[i]);
+            Toast.makeText(getActivity(), "MODE:" + sLabels[i], Toast.LENGTH_SHORT).show();
+            log.d("log>>> " + "MODE:" + sLabels[i]);
             paint.setXfermode(sModes[i]);
             i++;
             if (i == sModes.length - 1) {
