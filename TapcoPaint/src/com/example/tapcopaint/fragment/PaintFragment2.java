@@ -2,6 +2,7 @@ package com.example.tapcopaint.fragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -15,20 +16,29 @@ import android.graphics.PorterDuffXfermode;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnTouchListener;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.example.tapcopaint.R;
 import com.example.tapcopaint.base.BaseFragment;
+import com.example.tapcopaint.utils.FilterLog;
 
 public class PaintFragment2 extends BaseFragment {
 
+    private static final String TAG = "PaintFragment2";
     private int id;
     private ImageView img;
     private Paint mPaint;
+    private TsView rootView;
+
+    FilterLog log = new FilterLog(TAG);
 
     @Override
     protected String generateTitle() {
@@ -49,6 +59,8 @@ public class PaintFragment2 extends BaseFragment {
         if (getArguments() != null) {
             id = getArguments().getInt("id");
         }
+
+        setHasOptionsMenu(true);
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setDither(true);
@@ -65,8 +77,173 @@ public class PaintFragment2 extends BaseFragment {
         // View rootView = (ViewGroup) inflater.inflate(R.layout.paint_fragment, container, false);
         // img = (ImageView) rootView.findViewWithTag("icon");
         // img.setImageResource(id);
-        View rootView = new DrawView(getActivity());
+        // View rootView = new DrawView(getActivity());
+
+        rootView = new TsView(getActivity());
         return rootView;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.gesture_main, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case R.id.action_undo:
+            rootView.undo();
+            break;
+        case R.id.action_redo:
+            rootView.redo();
+            break;
+        case R.id.action_earse:
+            break;
+        case R.id.action_clear:
+            rootView.clear();
+            break;
+
+        default:
+            break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public class TsView extends View implements OnTouchListener {
+        private static final float TOUCH_TOLERANCE = 4;
+        private Canvas canvas;
+        private List<Path> listPaths = new ArrayList<Path>();
+        private List<Path> listPathsRedo = new ArrayList<Path>();
+        private Path path;
+        private Bitmap imageBackground;
+        private int w, h;
+        private float mX, mY;
+
+        private Paint paint;
+
+        public TsView(Context context) {
+            super(context);
+            log.d("log>>> " + "TsView contructor");
+            setFocusable(true);
+            setFocusableInTouchMode(true);
+            setOnTouchListener(this);
+            imageBackground = BitmapFactory.decodeResource(getResources(), id);
+
+            path = new Path();
+            paint = mPaint;
+        }
+
+        @Override
+        protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+            log.d("log>>> " + "onSizeChanged w:" + w + ";h:" + h);
+            super.onSizeChanged(w, h, oldw, oldh);
+            this.w = w;
+            this.h = h;
+            canvas = new Canvas(Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888));
+            imageBackground = Bitmap.createScaledBitmap(imageBackground, getWidth(), getHeight(), true);
+        }
+
+        @Override
+        protected void onDraw(Canvas canvas) {
+            // TODO Auto-generated method stub
+            super.onDraw(canvas);
+            log.d("log>>> " + "onDraw");
+
+            // draw a back ground
+
+            canvas.drawBitmap(imageBackground, 0, 0, null);
+
+            // draw all path before
+            for (Path p : listPaths) {
+                canvas.drawPath(p, paint);
+            }
+            // draw path
+            canvas.drawPath(path, paint);
+
+        }
+
+        private void touchStart(float x, float y) {
+            log.d("log>>> " + "touchStart");
+            path.reset();
+            path.moveTo(x, y);
+            mX = x;
+            mY = y;
+        }
+
+        private void touchMove(float x, float y) {
+            float dx = Math.abs(x - mX);
+            float dy = Math.abs(y - mY);
+            if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE) {
+                path.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
+                mX = x;
+                mY = y;
+            }
+        }
+
+        private void touchUp(float x, float y) {
+            // path.lineTo(mX, mY);
+            listPaths.add(path);
+            canvas.drawPath(path, paint);
+            path = new Path();
+            log.d("log>>> " + "touchUp");
+        }
+
+        int value;
+
+        public void clear() {
+            listPaths.clear();
+            listPathsRedo.clear();
+            canvas.drawBitmap(imageBackground, 0, 0, null);
+            invalidate();
+        }
+
+        public void undo() {
+            if (listPaths.size() == 0) {
+                Toast.makeText(getActivity(), "Stack empty", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            listPathsRedo.add(listPaths.get(listPaths.size() - 1));
+            listPaths.remove(listPaths.size() - 1);
+            invalidate();
+        }
+
+        public void redo() {
+            if (listPathsRedo.size() == 0) {
+                Toast.makeText(getActivity(), "At Top, can not redo", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            listPaths.add(listPathsRedo.get(listPathsRedo.size() - 1));
+            listPathsRedo.remove(listPathsRedo.size() - 1);
+            invalidate();
+        }
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+
+            float x = event.getX();
+            float y = event.getY();
+            switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                touchStart(x, y);
+                break;
+
+            case MotionEvent.ACTION_MOVE:
+                touchMove(x, y);
+                break;
+            case MotionEvent.ACTION_UP:
+                touchUp(x, y);
+                break;
+
+            default:
+                break;
+            }
+            invalidate();
+            return true;
+        }
+
     }
 
     public class DrawView extends View implements OnTouchListener {
