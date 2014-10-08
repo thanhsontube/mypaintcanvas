@@ -88,7 +88,10 @@ public class TsCustomView extends View implements OnTouchListener {
         // draw a bitmap paint with Paint.DITHER_FLAG
         canvas.drawBitmap(bitmapPaint, 0, 0, new Paint(Paint.DITHER_FLAG));
 
+        tsPath = listTsPaths.get(listTsPaths.size() - 1);
+
         paint.setXfermode(null);
+        canvas.drawPath(path, paint);
         canvas.drawPath(tsPath, paint);
 
         if (isEarse) {
@@ -182,6 +185,7 @@ public class TsCustomView extends View implements OnTouchListener {
         listPaths.clear();
         listPathsRedo.clear();
         listTsPaths.clear();
+        tsPath.reset();
         canvas.drawBitmap(imageBackground, 0, 0, null);
         invalidate();
     }
