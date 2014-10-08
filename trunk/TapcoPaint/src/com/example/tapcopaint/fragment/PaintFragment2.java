@@ -1,12 +1,12 @@
 package com.example.tapcopaint.fragment;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.BitmapFactory.Options;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -15,7 +15,6 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Xfermode;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,6 +29,7 @@ import android.widget.Toast;
 import com.example.tapcopaint.R;
 import com.example.tapcopaint.base.BaseFragment;
 import com.example.tapcopaint.utils.FilterLog;
+import com.example.tapcopaint.view.TsCustomView;
 
 public class PaintFragment2 extends BaseFragment {
 
@@ -38,6 +38,10 @@ public class PaintFragment2 extends BaseFragment {
     private ImageView img;
     private Paint mPaint;
     private TsView rootView;
+
+    private MyView myView;
+
+    private TsCustomView tsCustomView;
 
     private static final Xfermode[] sModes = { new PorterDuffXfermode(PorterDuff.Mode.CLEAR),
             new PorterDuffXfermode(PorterDuff.Mode.SRC), new PorterDuffXfermode(PorterDuff.Mode.DST),
@@ -93,8 +97,14 @@ public class PaintFragment2 extends BaseFragment {
         // img.setImageResource(id);
         // View rootView = new DrawView(getActivity());
 
-        rootView = new TsView(getActivity());
-        return rootView;
+        // rootView = new TsView(getActivity());
+        // return rootView;
+
+        // myView = new MyView(getActivity());
+        // return myView;
+
+        tsCustomView = new TsCustomView(getActivity(), mPaint, id);
+        return tsCustomView;
     }
 
     @Override
@@ -103,20 +113,32 @@ public class PaintFragment2 extends BaseFragment {
         inflater.inflate(R.menu.gesture_main, menu);
     }
 
+    int i = 0;
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case R.id.action_undo:
-            rootView.undo();
+            // rootView.undo();
+            tsCustomView.undo();
             break;
         case R.id.action_redo:
             rootView.redo();
             break;
         case R.id.action_earse:
-            rootView.earse();
+//            rootView.earse();
+            tsCustomView.earse();
+            // myView.earse();
+            // mPaint.setXfermode(sModes[i]);
+            // i++;
+            // if (i == sModes.length - 1) {
+            // i = 0;
+            // }
             break;
         case R.id.action_clear:
-            rootView.clear();
+            // mPaint.setXfermode(null);
+//            rootView.clear();
+            tsCustomView.clear();
             break;
 
         default:
@@ -130,8 +152,13 @@ public class PaintFragment2 extends BaseFragment {
         private Canvas canvas;
         private List<Path> listPaths = new ArrayList<Path>();
         private List<Path> listPathsRedo = new ArrayList<Path>();
+
+        private List<Bitmap> listBitmap = new ArrayList<Bitmap>();
+        private List<Bitmap> listBitmapRedo = new ArrayList<Bitmap>();
         private Path path;
         private Bitmap imageBackground;
+
+        private Bitmap mBitmap;
         private int w, h;
         private float mX, mY;
 
@@ -150,6 +177,7 @@ public class PaintFragment2 extends BaseFragment {
 
             path = new Path();
             paint = mPaint;
+
         }
 
         @Override
@@ -158,8 +186,12 @@ public class PaintFragment2 extends BaseFragment {
             super.onSizeChanged(w, h, oldw, oldh);
             this.w = w;
             this.h = h;
-            canvas = new Canvas(Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888));
+            mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+            canvas = new Canvas();
             imageBackground = Bitmap.createScaledBitmap(imageBackground, getWidth(), getHeight(), true);
+
+            // Bitmap bitmap = Bitmap.createBitmap(mBitmap);
+            // listBitmap.add(bitmap);
         }
 
         @Override
@@ -168,20 +200,28 @@ public class PaintFragment2 extends BaseFragment {
             super.onDraw(canvas);
             log.d("log>>> " + "onDraw");
 
-            // draw a back ground
-
+            // draw a background
             canvas.drawBitmap(imageBackground, 0, 0, null);
 
             // draw all path before
 
             paint.setXfermode(null);
+            // log.d("log>>> " + "listBitmap:" + listBitmap.size());
             for (Path p : listPaths) {
                 canvas.drawPath(p, paint);
             }
+
+            canvas.drawColor(Color.TRANSPARENT);
+            canvas.drawBitmap(mBitmap, 0, 0, null);
+
+            // canvas.drawBitmap(listBitmap.get(listBitmap.size() - 1), 0, 0, null);
+            // mBitmap = Bitmap.createBitmap(listBitmap.get(listBitmap.size() - 1));
+
             // draw path
-            if (isEarse) {
-                mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-            }
+            // if (isEarse) {
+            // mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+            // }
+
             canvas.drawPath(path, paint);
 
         }
@@ -205,9 +245,17 @@ public class PaintFragment2 extends BaseFragment {
         }
 
         private void touchUp(float x, float y) {
-            // path.lineTo(mX, mY);
-            listPaths.add(path);
+            path.lineTo(mX, mY);
             canvas.drawPath(path, paint);
+
+            if (isEarse) {
+
+            } else {
+
+            }
+            listPaths.add(path);
+            Bitmap bitmap = Bitmap.createBitmap(mBitmap);
+            // listBitmap.add(bitmap);
             path = new Path();
             log.d("log>>> " + "touchUp");
             if (isUndo) {
@@ -231,7 +279,7 @@ public class PaintFragment2 extends BaseFragment {
             isEarse = true;
             mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
 
-//            invalidate();
+            // invalidate();
         }
 
         public void undo() {
@@ -244,6 +292,9 @@ public class PaintFragment2 extends BaseFragment {
 
             listPathsRedo.add(listPaths.get(listPaths.size() - 1));
             listPaths.remove(listPaths.size() - 1);
+
+            // listBitmap.remove(listBitmap.size() - 1);
+            // mBitmap = Bitmap.createBitmap(listBitmap.get(listBitmap.size() - 2));
             invalidate();
         }
 
@@ -285,101 +336,78 @@ public class PaintFragment2 extends BaseFragment {
 
     }
 
-    public class DrawView extends View implements OnTouchListener {
-        private Canvas canvas;
-        private Path mPath;
-        // private Paint mPaint;
-        public ArrayList<Path> paths = new ArrayList<Path>();
-        public ArrayList<Boolean> listBooleans = new ArrayList<Boolean>();
-        public ArrayList<Path> undonePaths = new ArrayList<Path>();
-        public ArrayList<Boolean> listBooleansUndo = new ArrayList<Boolean>();
+    public class MyView extends View {
 
-        HashMap<Path, Boolean> map = new HashMap<Path, Boolean>();
-
-        public boolean isEarseMode = false;
+        private static final float MINP = 0.25f;
+        private static final float MAXP = 0.75f;
 
         private Bitmap mBitmap;
+        private Bitmap imageBackground;
+        private Canvas mCanvas;
+        private Path mPath;
+        private Paint mBitmapPaint;
 
-        public DrawView(Context context) {
-            super(context);
-            setFocusable(true);
-            setFocusableInTouchMode(true);
-            this.setOnTouchListener(this);
+        private Path storepath;
+
+        public MyView(Context c) {
+            super(c);
+
+            storepath = new Path();
+
             mPath = new Path();
-            canvas = new Canvas();
+            mBitmapPaint = new Paint(Paint.DITHER_FLAG);
             mBitmap = BitmapFactory.decodeResource(getResources(), id);
-            canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+            imageBackground = BitmapFactory.decodeResource(getResources(), id);
         }
 
         @Override
         protected void onSizeChanged(int w, int h, int oldw, int oldh) {
             super.onSizeChanged(w, h, oldw, oldh);
+            // mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+
+            // mCanvas = new Canvas(Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888));
+            imageBackground = Bitmap.createScaledBitmap(imageBackground, getWidth(), getHeight(), true);
+
+            mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+            mCanvas = new Canvas(mBitmap);
         }
 
         @Override
         protected void onDraw(Canvas canvas) {
-            // canvas.drawColor(Color.WHITE);
-            // canvas.setBitmap(mBitmap);
-            // canvas.drawBitmap(mBitmap, 0, 0, null);
+            // canvas.drawColor(0xFFAAAAAA);
+            canvas.drawBitmap(imageBackground, 0, 0, null);
+            canvas.drawColor(Color.TRANSPARENT);
+
             canvas.drawBitmap(mBitmap, 0, 0, null);
 
-            int i = 0;
-            // for (Path p : paths) {
-            // Log.v("", ">>>DRAWER:" + paths.size());
-            // boolean isEarse = listBooleans.get(i);
-            // if (isEarse) {
-            // canvas.drawPath(p, paintEarse);
-            // } else {
-            //
-            // canvas.drawPath(p, mPaint);
+            // mPaint.setXfermode(null);
+            // if (storepath != null) {
+            // canvas.drawPath(storepath, mPaint);
             // }
-            // i++;
-            // }
-            //
-            // if (isEarse) {
-            // canvas.drawPath(mPath, paintEarse);
-            // } else {
-            //
-            // canvas.drawPath(mPath, mPaint);
-            // }
-
-            for (Path p : paths) {
-                Log.v("", ">>>DRAWER:" + paths.size());
-                boolean isEarse = listBooleans.get(i);
-                if (isEarse) {
-                    mPaint.setColor(Color.TRANSPARENT);
-                    mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-                } else {
-                    mPaint.setColor(Color.RED);
-                    mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SCREEN));
-                }
-                canvas.drawPath(p, mPaint);
-                i++;
-            }
 
             // if (isEarse) {
             // mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-            // } else {
-            // mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SCREEN));
             // }
 
             canvas.drawPath(mPath, mPaint);
+        }
 
+        boolean isEarse;
+
+        public void earse() {
+            isEarse = true;
         }
 
         private float mX, mY;
         private static final float TOUCH_TOLERANCE = 4;
 
-        public void setEarse(boolean isEarse) {
-            invalidate();
-        }
-
         private void touch_start(float x, float y) {
-            undonePaths.clear();
             mPath.reset();
             mPath.moveTo(x, y);
             mX = x;
             mY = y;
+
+            storepath.moveTo(x, y);
         }
 
         private void touch_move(float x, float y) {
@@ -387,6 +415,7 @@ public class PaintFragment2 extends BaseFragment {
             float dy = Math.abs(y - mY);
             if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE) {
                 mPath.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
+                storepath.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
                 mX = x;
                 mY = y;
             }
@@ -394,60 +423,20 @@ public class PaintFragment2 extends BaseFragment {
 
         private void touch_up() {
             mPath.lineTo(mX, mY);
-            if (isEarseMode) {
-                mPaint.setColor(Color.TRANSPARENT);
-                mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-            } else {
-                mPaint.setColor(Color.RED);
-                mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SCREEN));
-            }
-            canvas.drawPath(mPath, mPaint);
-            paths.add(mPath);
-            listBooleans.add(isEarseMode);
-            map.put(mPath, isEarseMode);
-            mPath = new Path();
-
-        }
-
-        public void onClickUndo() {
-            if (paths.size() >= 0) {
-                undonePaths.add(paths.remove(paths.size() - 1));
-                listBooleansUndo.add(listBooleans.remove(listBooleans.size() - 1));
-                invalidate();
-            } else {
-
-            }
-        }
-
-        public void onClickRedo() {
-            if (undonePaths.size() >= 0) {
-                paths.add(undonePaths.remove(undonePaths.size() - 1));
-                listBooleans.add(listBooleansUndo.remove(listBooleansUndo.size() - 1));
-                invalidate();
-            } else {
-
-            }
-        }
-
-        public boolean isEraseMode() {
-            return isEarseMode;
-        }
-
-        public void setEarse() {
-            mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-
+            storepath.lineTo(mX, mY);
+            // commit the path to our offscreen
+            mCanvas.drawPath(mPath, mPaint);
+            // kill this so we don't double draw
+            mPath.reset();
         }
 
         @Override
-        public boolean onTouch(View arg0, MotionEvent event) {
+        public boolean onTouchEvent(MotionEvent event) {
             float x = event.getX();
             float y = event.getY();
 
             switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                if (isEraseMode()) {
-                    mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-                }
                 touch_start(x, y);
                 invalidate();
                 break;
