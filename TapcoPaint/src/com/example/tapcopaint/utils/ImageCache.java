@@ -11,7 +11,7 @@ public class ImageCache {
 
     public ImageCache(Context context) {
         final int maxMem = (int) Runtime.getRuntime().maxMemory() / 1024;
-        final int cacheSize = maxMem/4 ;
+        final int cacheSize = maxMem / 4;
 
         mCache = new LruCache<String, Bitmap>(cacheSize) {
             @Override
@@ -29,11 +29,12 @@ public class ImageCache {
     }
 
     public Bitmap get(String key) {
+        Log.v("cache", ">>>GET:" + key);
         return mCache.get(key);
     }
 
     public void clear() {
         mCache.evictAll();
     }
-   
+
 }
