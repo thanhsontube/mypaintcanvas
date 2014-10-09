@@ -23,13 +23,13 @@ public class ImageCache {
 
     public void put(String key, Bitmap bitmap) {
         if (get(key) == null) {
-            Log.v("cache", ">>>PUT:" + key);
+//            Log.v("cache", ">>>PUT:" + key);
             mCache.put(key, bitmap);
         }
     }
 
     public Bitmap get(String key) {
-        Log.v("cache", ">>>GET:" + key);
+//        Log.v("cache", ">>>GET:" + key);
         return mCache.get(key);
     }
 
