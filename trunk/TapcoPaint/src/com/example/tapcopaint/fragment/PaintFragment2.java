@@ -456,5 +456,15 @@ public class PaintFragment2 extends BaseFragment {
             return true;
         }
     }
+    
+    @Override
+    public void onDestroy() {
+        // TODO Auto-generated method stub
+        if(tsCustomView2 != null) {
+            tsCustomView2.getmImageCache().clear();
+        }
+        super.onDestroy();
+        
+    }
 
 }

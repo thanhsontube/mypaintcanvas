@@ -85,7 +85,7 @@ public class TsCustomView2 extends View implements OnTouchListener {
         imageBackground = Bitmap.createScaledBitmap(imageBackground, getWidth(), getHeight(), true);
 
         listTsPaths.add(new TsPath(tsPath));
-        mImageCache = new ImageCache(getContext());
+        setmImageCache(new ImageCache(getContext()));
     }
 
     @Override
@@ -93,18 +93,31 @@ public class TsCustomView2 extends View implements OnTouchListener {
         super.onDraw(canvas);
 
         // draw a background
-        canvas.drawBitmap(imageBackground, 0, 0, null);
+        // canvas.drawBitmap(imageBackground, 0, 0, null);
         // draw a bitmap paint with Paint.DITHER_FLAG
 
-        if (listPaths.size() > 0 && isUndo) {
-            bitmapPaint = mImageCache.get(String.valueOf(listPaths.size()));
-            int i = 1;
-            for (Path p : listPaths) {
-                Bitmap bitmap = mImageCache.get(String.valueOf(i));
-                i++;
-                log.d("log>>> " + "bitmapPaintLOG:" + bitmap);
+        if (listPaths.size() > 0 ) {
+            if(isUndo) {
+                
+                bitmapPaint = getmImageCache().get(String.valueOf(listPaths.size() - 1));
+                int i = 0;
+                for (Path p : listPaths) {
+                    Bitmap bitmap = getmImageCache().get(String.valueOf(i));
+                    i++;
+                    log.d("log>>> " + "bitmapPaintLOG:" + bitmap);
+                }
+            }
+        } else {
+            if(isUndo) {
+                
+                bitmapPaint = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
             }
         }
+        
+        if(listPaths.size() > 0  && !isUndo) {
+            bitmapPaint = getmImageCache().get(String.valueOf(listPaths.size() - 1));
+        }
+
         log.d("log>>> " + "bitmapPaint:" + bitmapPaint);
         if (bitmapPaint != null) {
 
@@ -139,11 +152,11 @@ public class TsCustomView2 extends View implements OnTouchListener {
     private void touchUp(float x, float y) {
         path.lineTo(mX, mY);
         listPaths.add(path);
+        new LazyImageSetTask(bitmapPaint, listPaths.size() - 1).execute();
         // commit the path to our offscreen
         canvas.drawPath(path, paint);
         path.reset();
 
-        new LazyImageSetTask(bitmapPaint, listPaths.size()).execute();
 
     }
 
@@ -154,6 +167,9 @@ public class TsCustomView2 extends View implements OnTouchListener {
             Toast.makeText(getContext(), "Stack empty", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        Bitmap bitmap = getmImageCache().get(String.valueOf(listPaths.size() - 1));
+        bitmap.recycle();
 
         isUndo = true;
         listPathsRedo.add(listPaths.get(listPaths.size() - 1));
@@ -205,6 +221,14 @@ public class TsCustomView2 extends View implements OnTouchListener {
 
     }
 
+    public ImageCache getmImageCache() {
+        return mImageCache;
+    }
+
+    public void setmImageCache(ImageCache mImageCache) {
+        this.mImageCache = mImageCache;
+    }
+
     private ImageCache mImageCache;
 
     class LazyImageSetTask extends AsyncTask<Void, Void, Bitmap> {
@@ -218,12 +242,12 @@ public class TsCustomView2 extends View implements OnTouchListener {
 
         @Override
         protected Bitmap doInBackground(Void... params) {
-            log.d("log>>> " + "doInBackground position:" + position);
+            log.d("log>>> " + "doInBackground position:" + position + ";src:" + src);
 
-            synchronized (mImageCache) {
-                mImageCache.put(String.valueOf(position), src);
+            synchronized (getmImageCache()) {
+                getmImageCache().put(String.valueOf(position), src);
             }
-//            src.recycle();
+            // src.recycle();
             return src;
         }
 
