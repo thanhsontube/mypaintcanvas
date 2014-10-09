@@ -6,7 +6,6 @@ import java.util.List;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.BitmapFactory.Options;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -30,6 +29,7 @@ import com.example.tapcopaint.R;
 import com.example.tapcopaint.base.BaseFragment;
 import com.example.tapcopaint.utils.FilterLog;
 import com.example.tapcopaint.view.TsCustomView;
+import com.example.tapcopaint.view.TsCustomView2;
 
 public class PaintFragment2 extends BaseFragment {
 
@@ -42,6 +42,7 @@ public class PaintFragment2 extends BaseFragment {
     private MyView myView;
 
     private TsCustomView tsCustomView;
+    private TsCustomView2 tsCustomView2;
 
     private static final Xfermode[] sModes = { new PorterDuffXfermode(PorterDuff.Mode.CLEAR),
             new PorterDuffXfermode(PorterDuff.Mode.SRC), new PorterDuffXfermode(PorterDuff.Mode.DST),
@@ -103,8 +104,11 @@ public class PaintFragment2 extends BaseFragment {
         // myView = new MyView(getActivity());
         // return myView;
 
-        tsCustomView = new TsCustomView(getActivity(), mPaint, id);
-        return tsCustomView;
+//        tsCustomView = new TsCustomView(getActivity(), mPaint, id);
+//        return tsCustomView;
+        
+        tsCustomView2 = new TsCustomView2(getActivity(), mPaint, id);
+        return tsCustomView2;
     }
 
     @Override
@@ -120,7 +124,7 @@ public class PaintFragment2 extends BaseFragment {
         switch (item.getItemId()) {
         case R.id.action_undo:
             // rootView.undo();
-            tsCustomView.undo();
+            tsCustomView2.undo();
             break;
         case R.id.action_redo:
             rootView.redo();
