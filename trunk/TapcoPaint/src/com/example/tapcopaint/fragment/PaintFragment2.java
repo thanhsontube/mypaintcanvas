@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.tapcopaint.R;
@@ -30,6 +31,7 @@ import com.example.tapcopaint.base.BaseFragment;
 import com.example.tapcopaint.utils.FilterLog;
 import com.example.tapcopaint.view.TsCustomView;
 import com.example.tapcopaint.view.TsCustomView2;
+import com.example.tapcopaint.view.TsCustomView2.ITsCustomListener;
 
 public class PaintFragment2 extends BaseFragment {
 
@@ -91,24 +93,43 @@ public class PaintFragment2 extends BaseFragment {
 
     }
 
+    ImageView img1, img2;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // View rootView = (ViewGroup) inflater.inflate(R.layout.paint_fragment, container, false);
+        View rootView = (ViewGroup) inflater.inflate(R.layout.paint_fragment, container, false);
         // img = (ImageView) rootView.findViewWithTag("icon");
         // img.setImageResource(id);
         // View rootView = new DrawView(getActivity());
 
         // rootView = new TsView(getActivity());
-        // return rootView;
+
+        tsCustomView2 = new TsCustomView2(getActivity(), mPaint, id);
+
+        tsCustomView2.setOnTsListener(new ITsCustomListener() {
+
+            @Override
+            public void setOnUpdate(Bitmap bitmap) {
+                img1.setImageBitmap(bitmap);
+                img2.setImageBitmap(bitmap);
+            }
+        });
+
+        LinearLayout layout = (LinearLayout) rootView.findViewWithTag("ll");
+        layout.addView(tsCustomView2);
+
+        img1 = (ImageView) rootView.findViewWithTag("icon1");
+        img2 = (ImageView) rootView.findViewWithTag("icon2");
+        return rootView;
 
         // myView = new MyView(getActivity());
         // return myView;
 
-//        tsCustomView = new TsCustomView(getActivity(), mPaint, id);
-//        return tsCustomView;
-        
-        tsCustomView2 = new TsCustomView2(getActivity(), mPaint, id);
-        return tsCustomView2;
+        // tsCustomView = new TsCustomView(getActivity(), mPaint, id);
+        // return tsCustomView;
+
+        // tsCustomView2 = new TsCustomView2(getActivity(), mPaint, id);
+        // return tsCustomView2;
     }
 
     @Override
@@ -130,7 +151,7 @@ public class PaintFragment2 extends BaseFragment {
             rootView.redo();
             break;
         case R.id.action_earse:
-//            rootView.earse();
+            // rootView.earse();
             tsCustomView2.earse();
             // myView.earse();
             // mPaint.setXfermode(sModes[i]);
@@ -141,7 +162,7 @@ public class PaintFragment2 extends BaseFragment {
             break;
         case R.id.action_clear:
             // mPaint.setXfermode(null);
-//            rootView.clear();
+            // rootView.clear();
             tsCustomView.clear();
             break;
 
@@ -456,15 +477,15 @@ public class PaintFragment2 extends BaseFragment {
             return true;
         }
     }
-    
+
     @Override
     public void onDestroy() {
         // TODO Auto-generated method stub
-        if(tsCustomView2 != null) {
+        if (tsCustomView2 != null) {
             tsCustomView2.getmImageCache().clear();
         }
         super.onDestroy();
-        
+
     }
 
 }
