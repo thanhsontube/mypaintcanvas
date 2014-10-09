@@ -171,9 +171,12 @@ public class TsCustomView2 extends View implements OnTouchListener {
 
         if (stackBitmaps.size() > 0) {
             log.d("log>>> " + "restore bitmap " + stackBitmaps.peek());
-            imageBackground = mImageCache.get(stackBitmaps.peek());
-            if (listener != null) {
-                listener.setOnUpdate(imageBackground);
+            if (isUndo) {
+                imageBackground = mImageCache.get(stackBitmaps.peek());
+
+                if (listener != null) {
+                    listener.setOnUpdate(imageBackground);
+                }
             }
 
         } else {
