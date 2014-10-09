@@ -131,7 +131,7 @@ public class PaintFragment2 extends BaseFragment {
             break;
         case R.id.action_earse:
 //            rootView.earse();
-            tsCustomView.earse();
+            tsCustomView2.earse();
             // myView.earse();
             // mPaint.setXfermode(sModes[i]);
             // i++;
