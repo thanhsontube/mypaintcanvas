@@ -4,10 +4,21 @@
     android:layout_height="wrap_content"
     android:orientation="vertical" >
 
-    <com.example.tapcopaint.usingsurface.DrawingSurface
-        android:id="@+id/drawingSurface"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="400dp" />
+        android:layout_height="400dp" >
+
+        <ImageView
+            android:id="@+id/backgroundImage"
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
+            android:scaleType="fitXY" />
+
+        <com.example.tapcopaint.usingsurface.DrawingSurface
+            android:id="@+id/drawingSurface"
+            android:layout_width="match_parent"
+            android:layout_height="400dp" />
+    </FrameLayout>
 
     <LinearLayout
         android:layout_width="match_parent"

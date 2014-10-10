@@ -13,6 +13,7 @@ import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import com.example.tapcopaint.R;
 import com.example.tapcopaint.base.BaseFragment;
@@ -27,6 +28,7 @@ public class SurfacePaintFragment extends BaseFragment implements
 	private DrawingSurface drawingSurface;
 	private DrawingPath currentDrawingPath;
 	private Paint currentPaint;
+	private ImageView imageViewBackground;
 
 	FilterLog log = new FilterLog(TAG);
 
@@ -65,6 +67,8 @@ public class SurfacePaintFragment extends BaseFragment implements
 		View rootView = (ViewGroup) inflater.inflate(
 				R.layout.paint_surface_fragment, container, false);
 
+		imageViewBackground = (ImageView) rootView
+				.findViewById(R.id.backgroundImage);
 		drawingSurface = (DrawingSurface) rootView
 				.findViewById(R.id.drawingSurface);
 		colorRedBtn = (Button) rootView.findViewById(R.id.colorRedBtn);
@@ -75,7 +79,9 @@ public class SurfacePaintFragment extends BaseFragment implements
 		eraseBtn = (Button) rootView.findViewById(R.id.eraseBtn);
 		clearBtn = (Button) rootView.findViewById(R.id.clearBtn);
 
-		drawingSurface.setBackgroundResource(id);
+		imageViewBackground.setImageResource(id);
+		
+//		drawingSurface.setBackgroundResource(id);
 		drawingSurface.setOnTouchListener(this);
 
 		colorRedBtn.setOnClickListener(this);
@@ -176,7 +182,8 @@ public class SurfacePaintFragment extends BaseFragment implements
 		if (v.getId() == eraseBtn.getId()) {
 			currentPaint = new Paint();
 			currentPaint.setDither(true);
-			currentPaint.setColor(0xFF0000FF);
+			currentPaint.setColor(0xFF00FF00);
+			currentPaint.setAlpha(0xFF);
 			currentPaint.setStyle(Paint.Style.STROKE);
 			currentPaint.setStrokeJoin(Paint.Join.ROUND);
 			currentPaint.setStrokeCap(Paint.Cap.ROUND);
