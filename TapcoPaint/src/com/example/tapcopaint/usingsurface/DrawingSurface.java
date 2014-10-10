@@ -5,8 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
+import android.graphics.PorterDuff.Mode;
 import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -53,15 +52,18 @@ public class DrawingSurface extends SurfaceView implements
 			while (_run) {
 				try {
 					canvas = mSurfaceHolder.lockCanvas(null);
-					if (backgroundBitmap != null) {
-						canvas.drawBitmap(backgroundBitmap, 0, 0, new Paint(
-								Paint.DITHER_FLAG));
-					}
+//					if (backgroundBitmap != null) {
+//						canvas.drawBitmap(backgroundBitmap, 0, 0, new Paint(
+//								Paint.DITHER_FLAG));
+//					}
 					
 //					Paint transPainter = new Paint();
 //					transPainter.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
 //					transPainter.setAlpha(0x00);
 //					canvas.drawRect(0, 0, getWidth(), getHeight(), transPainter);
+					
+					canvas.drawColor(0, Mode.CLEAR);
+//					canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
 					
 					commandManager.executeAll(canvas);
 				} finally {

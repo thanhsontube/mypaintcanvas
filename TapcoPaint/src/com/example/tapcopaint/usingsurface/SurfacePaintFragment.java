@@ -3,11 +3,13 @@ package com.example.tapcopaint.usingsurface;
 import android.annotation.SuppressLint;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PixelFormat;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
@@ -83,6 +85,9 @@ public class SurfacePaintFragment extends BaseFragment implements
 		
 //		drawingSurface.setBackgroundResource(id);
 		drawingSurface.setOnTouchListener(this);
+//		drawingSurface.setZOrderOnTop(true);
+//		SurfaceHolder sfhTrackHolder = drawingSurface.getHolder();
+//		sfhTrackHolder.setFormat(PixelFormat.TRANSPARENT);
 
 		colorRedBtn.setOnClickListener(this);
 		colorGreenBtn.setOnClickListener(this);
