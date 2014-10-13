@@ -39,6 +39,7 @@ public class PaintFragment3 extends BaseFragment implements OnTouchListener {
 
     FilterLog log = new FilterLog(TAG);
     public Xfermode MODE_EARSE = new PorterDuffXfermode(PorterDuff.Mode.CLEAR);
+    TsSurfaceView tsSurfaceView;
 
     @Override
     protected String generateTitle() {
@@ -85,7 +86,7 @@ public class PaintFragment3 extends BaseFragment implements OnTouchListener {
     }
 
     ImageView img1, img2;
-    TsSurfaceView tsSurfaceView;
+    
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

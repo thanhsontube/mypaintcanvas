@@ -10,7 +10,6 @@ import android.graphics.PorterDuff;
 import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.widget.SlidingDrawer;
 
 import com.example.tapcopaint.utils.FilterLog;
 
@@ -66,13 +65,13 @@ public class TsSurfaceView extends SurfaceView implements SurfaceHolder.Callback
                 try {
                     canvas = mSurfaceHolder.lockCanvas(null);
 
-                    canvas.drawColor(0, PorterDuff.Mode.CLEAR);
                     if (bitmapBackGround != null) {
                         // canvas.drawBitmap(bitmapBackGround, 0, 0, new Paint(Paint.DITHER_FLAG));
                         //
                         // canvas.drawColor(Color.GREEN);
-                        // canvas.drawBitmap(bitmapPaint, 0, 0, new Paint(Paint.DITHER_FLAG));
+                        canvas.drawBitmap(bitmapPaint, 0, 0, new Paint(Paint.DITHER_FLAG));
                     }
+                    canvas.drawColor(0, PorterDuff.Mode.CLEAR);
                     commandManager.executeAll(canvas);
                 } finally {
                     mSurfaceHolder.unlockCanvasAndPost(canvas);
