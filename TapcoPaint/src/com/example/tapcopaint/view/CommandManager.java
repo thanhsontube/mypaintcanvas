@@ -1,11 +1,13 @@
 package com.example.tapcopaint.view;
 
-import android.graphics.Canvas;
-
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Collections;
-import java.util.ArrayList;
+
+import android.graphics.Canvas;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 
 /**
  * Created by IntelliJ IDEA. User: almondmendoza Date: 15/11/2010 Time: 12:23 AM To change this template use File |
@@ -38,6 +40,14 @@ public class CommandManager {
     public void clear() {
         currentStack.clear();
         redoStack.clear();
+    }
+    
+    public void earse() {
+        final int length = currentStackLength();
+        if (length > 0) {
+            final DrawingPath undoCommand = currentStack.get(length - 1);
+            undoCommand.paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+        }
     }
 
     public int currentStackLength() {
