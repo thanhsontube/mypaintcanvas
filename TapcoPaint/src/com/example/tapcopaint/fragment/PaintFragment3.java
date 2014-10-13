@@ -162,7 +162,17 @@ public class PaintFragment3 extends BaseFragment implements OnTouchListener {
         currentDrawingPath.path = new Path();
         currentDrawingPath.path.moveTo(x, y);
         currentDrawingPath.path.lineTo(x, y);
-         tsSurfaceView.addDrawingPath(currentDrawingPath, false);
+        tsSurfaceView.addDrawingPath(currentDrawingPath, false);
+    }
+
+    @Override
+    public void onDestroy() {
+        if (tsSurfaceView != null) {
+            tsSurfaceView.stopThread();
+            tsSurfaceView.destroyDrawingCache();
+
+        }
+        super.onDestroy();
     }
 
     private void touchMove(float x, float y) {

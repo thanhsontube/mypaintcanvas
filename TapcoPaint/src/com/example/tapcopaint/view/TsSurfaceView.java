@@ -23,7 +23,7 @@ public class TsSurfaceView extends SurfaceView implements SurfaceHolder.Callback
     Bitmap bitmapPaint;
 
     public void setId(int id) {
-    	log.v(">>> setid:" + id);
+        log.v(">>> setid:" + id);
         this.id = id;
     }
 
@@ -68,10 +68,10 @@ public class TsSurfaceView extends SurfaceView implements SurfaceHolder.Callback
 
                     canvas.drawColor(0, PorterDuff.Mode.CLEAR);
                     if (bitmapBackGround != null) {
-//                         canvas.drawBitmap(bitmapBackGround, 0, 0, new Paint(Paint.DITHER_FLAG));
+                        // canvas.drawBitmap(bitmapBackGround, 0, 0, new Paint(Paint.DITHER_FLAG));
                         //
                         // canvas.drawColor(Color.GREEN);
-//                        canvas.drawBitmap(bitmapPaint, 0, 0, new Paint(Paint.DITHER_FLAG));
+                        // canvas.drawBitmap(bitmapPaint, 0, 0, new Paint(Paint.DITHER_FLAG));
                     }
                     commandManager.executeAll(canvas);
                 } finally {
@@ -90,9 +90,9 @@ public class TsSurfaceView extends SurfaceView implements SurfaceHolder.Callback
     }
 
     public void clearTmpStack() {
-    	commandManager.clearTempStack();
+        commandManager.clearTempStack();
     }
-    
+
     public boolean hasMoreRedo() {
         return commandManager.hasMoreRedo();
     }
@@ -119,7 +119,7 @@ public class TsSurfaceView extends SurfaceView implements SurfaceHolder.Callback
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-    	log.v("log>>> surfaceCreated:" + id );
+        log.v("log>>> surfaceCreated:" + id);
         if (id != -1) {
 
             bitmapBackGround = BitmapFactory.decodeResource(getResources(), id);
@@ -133,6 +133,19 @@ public class TsSurfaceView extends SurfaceView implements SurfaceHolder.Callback
 
     public void setRunning(boolean isRun) {
         this._run = isRun;
+    }
+
+    public void stopThread() {
+        boolean retry = true;
+        thread.setRunning(false);
+        while (retry) {
+            try {
+                thread.join();
+                retry = false;
+            } catch (InterruptedException e) {
+                // we will try it again and again...
+            }
+        }
     }
 
     @Override
