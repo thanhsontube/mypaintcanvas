@@ -8,8 +8,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="PAINT" />
-
-    <FrameLayout
+ 
+    <FrameLayout 
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:tag="ll" >
@@ -18,7 +18,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            android:src="@drawable/pic5" />
+            android:src="@drawable/pic5"
+            android:visibility="visible" />
 
         <com.example.tapcopaint.view.TsSurfaceView
             android:id="@+id/tsSurfaceView1"

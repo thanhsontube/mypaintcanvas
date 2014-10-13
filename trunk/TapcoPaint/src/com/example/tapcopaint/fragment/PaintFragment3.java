@@ -162,7 +162,7 @@ public class PaintFragment3 extends BaseFragment implements OnTouchListener {
         currentDrawingPath.path = new Path();
         currentDrawingPath.path.moveTo(x, y);
         currentDrawingPath.path.lineTo(x, y);
-        // tsSurfaceView.addDrawingPath(currentDrawingPath);
+         tsSurfaceView.addDrawingPath(currentDrawingPath, false);
     }
 
     private void touchMove(float x, float y) {
@@ -173,11 +173,13 @@ public class PaintFragment3 extends BaseFragment implements OnTouchListener {
             mX = x;
             mY = y;
         }
+        tsSurfaceView.addDrawingPath(currentDrawingPath, false);
     }
 
     private void touchUp(float x, float y) {
         currentDrawingPath.path.lineTo(mX, mY);
-        tsSurfaceView.addDrawingPath(currentDrawingPath);
+        tsSurfaceView.addDrawingPath(currentDrawingPath, true);
+        tsSurfaceView.clearTmpStack();
     }
 
     @Override
