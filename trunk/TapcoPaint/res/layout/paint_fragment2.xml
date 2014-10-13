@@ -9,16 +9,22 @@
         android:layout_height="wrap_content"
         android:text="PAINT" />
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:tag="ll" >
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/pic5" />
 
         <com.example.tapcopaint.view.TsSurfaceView
             android:id="@+id/tsSurfaceView1"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-    </LinearLayout>
+    </FrameLayout>
 
     <TextView
         android:layout_width="match_parent"

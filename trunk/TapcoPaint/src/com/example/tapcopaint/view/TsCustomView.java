@@ -52,7 +52,7 @@ public class TsCustomView extends View implements OnTouchListener {
         setFocusable(true);
         setFocusableInTouchMode(true);
         setOnTouchListener(this);
-        // imageBackground = BitmapFactory.decodeResource(context.getResources(), id);
+        // bitmapBackGround = BitmapFactory.decodeResource(context.getResources(), id);
         path = new Path();
         tsPath = new TsPath();
     }

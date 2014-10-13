@@ -12,6 +12,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.graphics.Xfermode;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -37,6 +38,7 @@ public class PaintFragment3 extends BaseFragment implements OnTouchListener {
     private Paint mPaint;
 
     FilterLog log = new FilterLog(TAG);
+    public Xfermode MODE_EARSE = new PorterDuffXfermode(PorterDuff.Mode.CLEAR);
 
     @Override
     protected String generateTitle() {
@@ -103,7 +105,9 @@ public class PaintFragment3 extends BaseFragment implements OnTouchListener {
     }
 
     int i = 0;
-    boolean isClear;
+    boolean isEarse;
+
+    // TODO item menu
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -115,7 +119,18 @@ public class PaintFragment3 extends BaseFragment implements OnTouchListener {
             tsSurfaceView.redo();
             break;
         case R.id.action_earse:
-            isClear = !isClear;
+            isEarse = !isEarse;
+            // Paint mPaint = new Paint();
+            // mPaint.setAntiAlias(true);
+            // mPaint.setDither(true);
+            // mPaint.setColor(Color.RED);
+            // mPaint.setStyle(Paint.Style.STROKE);
+            // mPaint.setStrokeJoin(Paint.Join.ROUND);
+            // mPaint.setStrokeCap(Paint.Cap.ROUND);
+            // mPaint.setStrokeWidth(12);
+            // mPaint.setXfermode(MODE_EARSE);
+            //
+            // currentDrawingPath.paint = mPaint;
             break;
         case R.id.action_clear:
             tsSurfaceView.clear();
@@ -129,173 +144,6 @@ public class PaintFragment3 extends BaseFragment implements OnTouchListener {
 
     private static final float TOUCH_TOLERANCE = 4;
 
-    public class TsView extends View implements OnTouchListener {
-        private static final float TOUCH_TOLERANCE = 4;
-        private Canvas canvas;
-        private List<Path> listPaths = new ArrayList<Path>();
-        private List<Path> listPathsRedo = new ArrayList<Path>();
-
-        private List<Bitmap> listBitmap = new ArrayList<Bitmap>();
-        private List<Bitmap> listBitmapRedo = new ArrayList<Bitmap>();
-        private Path path;
-        private Bitmap imageBackground;
-
-        private Bitmap mBitmap;
-        private int w, h;
-        private float mX, mY;
-
-        private Paint paint;
-        private boolean isUndo;
-
-        private boolean isEarse;
-
-        public TsView(Context context) {
-            super(context);
-            log.d("log>>> " + "TsView contructor");
-            setFocusable(true);
-            setFocusableInTouchMode(true);
-            setOnTouchListener(this);
-            imageBackground = BitmapFactory.decodeResource(getResources(), id);
-
-            path = new Path();
-            paint = mPaint;
-
-        }
-
-        @Override
-        protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-            log.d("log>>> " + "onSizeChanged w:" + w + ";h:" + h);
-            super.onSizeChanged(w, h, oldw, oldh);
-            this.w = w;
-            this.h = h;
-            mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-            canvas = new Canvas();
-            imageBackground = Bitmap.createScaledBitmap(imageBackground, getWidth(), getHeight(), true);
-
-            // Bitmap bitmap = Bitmap.createBitmap(mBitmap);
-            // listBitmap.add(bitmap);
-        }
-
-        @Override
-        protected void onDraw(Canvas canvas) {
-        }
-
-        private void touchStart(float x, float y) {
-            log.d("log>>> " + "touchStart");
-            path.reset();
-            path.moveTo(x, y);
-            mX = x;
-            mY = y;
-        }
-
-        private void touchMove(float x, float y) {
-            float dx = Math.abs(x - mX);
-            float dy = Math.abs(y - mY);
-            if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE) {
-                path.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
-                mX = x;
-                mY = y;
-            }
-        }
-
-        private void touchUp(float x, float y) {
-            path.lineTo(mX, mY);
-            canvas.drawPath(path, paint);
-
-            if (isEarse) {
-
-            } else {
-
-            }
-            listPaths.add(path);
-            Bitmap bitmap = Bitmap.createBitmap(mBitmap);
-            // listBitmap.add(bitmap);
-            path = new Path();
-            log.d("log>>> " + "touchUp");
-            if (isUndo) {
-                listPathsRedo.clear();
-                isUndo = false;
-            }
-        }
-
-        int value;
-
-        public void clear() {
-            mPaint.setXfermode(null);
-            isEarse = false;
-            listPaths.clear();
-            listPathsRedo.clear();
-            canvas.drawBitmap(imageBackground, 0, 0, null);
-            invalidate();
-        }
-
-        public void earse() {
-            isEarse = true;
-            mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-
-            // invalidate();
-        }
-
-        public void undo() {
-            if (listPaths.size() == 0) {
-                Toast.makeText(getActivity(), "Stack empty", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            isUndo = true;
-
-            listPathsRedo.add(listPaths.get(listPaths.size() - 1));
-            listPaths.remove(listPaths.size() - 1);
-
-            // listBitmap.remove(listBitmap.size() - 1);
-            // mBitmap = Bitmap.createBitmap(listBitmap.get(listBitmap.size() - 2));
-            invalidate();
-        }
-
-        public void redo() {
-
-            if (listPathsRedo.size() == 0) {
-                Toast.makeText(getActivity(), "At Top, can not redo", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            listPaths.add(listPathsRedo.get(listPathsRedo.size() - 1));
-            listPathsRedo.remove(listPathsRedo.size() - 1);
-            invalidate();
-        }
-
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-
-            float x = event.getX();
-            float y = event.getY();
-            switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                touchStart(x, y);
-                break;
-
-            case MotionEvent.ACTION_MOVE:
-                touchMove(x, y);
-                break;
-            case MotionEvent.ACTION_UP:
-                touchUp(x, y);
-                break;
-
-            default:
-                break;
-            }
-            invalidate();
-            return true;
-        }
-
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-    }
-
     DrawingPath currentDrawingPath;
     float mX, mY;
 
@@ -304,6 +152,12 @@ public class PaintFragment3 extends BaseFragment implements OnTouchListener {
         mY = y;
         log.d("log>>> " + "touchStart");
         currentDrawingPath = new DrawingPath();
+        mPaint = resetpaint();
+        if (isEarse) {
+            mPaint.setXfermode(MODE_EARSE);
+        } else {
+            mPaint.setXfermode(null);
+        }
         currentDrawingPath.paint = mPaint;
         currentDrawingPath.path = new Path();
         currentDrawingPath.path.moveTo(x, y);
@@ -324,7 +178,6 @@ public class PaintFragment3 extends BaseFragment implements OnTouchListener {
     private void touchUp(float x, float y) {
         currentDrawingPath.path.lineTo(mX, mY);
         tsSurfaceView.addDrawingPath(currentDrawingPath);
-        tsSurfaceView.setRunning(true);
     }
 
     @Override

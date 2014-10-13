@@ -5,15 +5,21 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.PixelFormat;
+import android.graphics.PorterDuff;
 import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import com.example.tapcopaint.R;
+import com.example.tapcopaint.utils.FilterLog;
 
 public class TsSurfaceView extends SurfaceView implements SurfaceHolder.Callback {
 
+    private static final String TAG = "TsSurfaceView";
+    FilterLog log = new FilterLog(TAG);
     int id = -1;
+    Bitmap bitmapBackGround;
+    Bitmap bitmapPaint;
 
     public void setId(int id) {
         this.id = id;
@@ -31,6 +37,8 @@ public class TsSurfaceView extends SurfaceView implements SurfaceHolder.Callback
         super(context, attrs);
 
         getHolder().addCallback(this);
+        setZOrderOnTop(true);
+        getHolder().setFormat(PixelFormat.TRANSPARENT);
         setWillNotDraw(false);
 
         commandManager = new CommandManager();
@@ -56,11 +64,13 @@ public class TsSurfaceView extends SurfaceView implements SurfaceHolder.Callback
                 try {
                     canvas = mSurfaceHolder.lockCanvas(null);
 
-                    if (imageBackground != null) {
-
-                        canvas.drawBitmap(imageBackground, 0, 0, new Paint(Paint.DITHER_FLAG));
+                    if (bitmapBackGround != null) {
+                        // canvas.drawBitmap(bitmapBackGround, 0, 0, new Paint(Paint.DITHER_FLAG));
+                        //
+                        // canvas.drawColor(Color.GREEN);
+                        canvas.drawBitmap(bitmapPaint, 0, 0, new Paint(Paint.DITHER_FLAG));
                     }
-                    // canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+                    canvas.drawColor(0, PorterDuff.Mode.CLEAR);
 
                     commandManager.executeAll(canvas);
                 } finally {
@@ -74,6 +84,7 @@ public class TsSurfaceView extends SurfaceView implements SurfaceHolder.Callback
     }
 
     public void addDrawingPath(DrawingPath drawingPath) {
+        log.d("log>>> " + "addDrawingPath currentStack size:" + commandManager.currentStackLength());
         commandManager.addCommand(drawingPath);
     }
 
@@ -93,19 +104,23 @@ public class TsSurfaceView extends SurfaceView implements SurfaceHolder.Callback
         commandManager.clear();
     }
 
+    public void earse() {
+        commandManager.earse();
+    }
+
     public boolean hasMoreUndo() {
         return commandManager.hasMoreRedo();
     }
-
-    Bitmap imageBackground;
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         if (id != -1) {
 
-            imageBackground = BitmapFactory.decodeResource(getResources(), id);
-            imageBackground = Bitmap.createScaledBitmap(imageBackground, getWidth(), getHeight(), true);
+            bitmapBackGround = BitmapFactory.decodeResource(getResources(), id);
+            bitmapBackGround = Bitmap.createScaledBitmap(bitmapBackGround, getWidth(), getHeight(), true);
         }
+
+        bitmapPaint = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
         thread.setRunning(true);
         thread.start();
     }
@@ -118,16 +133,16 @@ public class TsSurfaceView extends SurfaceView implements SurfaceHolder.Callback
     public void surfaceDestroyed(SurfaceHolder holder) {
 
         // TODO Auto-generated method stub
-        // boolean retry = true;
-        // thread.setRunning(false);
-        // while (retry) {
-        // try {
-        // thread.join();
-        // retry = false;
-        // } catch (InterruptedException e) {
-        // // we will try it again and again...
-        // }
-        // }
+        boolean retry = true;
+        thread.setRunning(false);
+        while (retry) {
+            try {
+                thread.join();
+                retry = false;
+            } catch (InterruptedException e) {
+                // we will try it again and again...
+            }
+        }
 
     }
 

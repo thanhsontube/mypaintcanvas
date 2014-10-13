@@ -63,7 +63,7 @@ public class TsCustomView2 extends View implements OnTouchListener {
         setFocusable(true);
         setFocusableInTouchMode(true);
         setOnTouchListener(this);
-        // imageBackground =
+        // bitmapBackGround =
         // BitmapFactory.decodeResource(context.getResources(), id);
         path = new Path();
         tsPath = new TsPath();
@@ -97,7 +97,7 @@ public class TsCustomView2 extends View implements OnTouchListener {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        // canvas = new Canvas(imageBackground);
+        // canvas = new Canvas(bitmapBackGround);
         canvas.drawBitmap(imageBackground, 0, 0, new Paint(Paint.DITHER_FLAG));
         log.d("log>>> " + bitmapPaint);
         canvas.drawPath(path, paint);
