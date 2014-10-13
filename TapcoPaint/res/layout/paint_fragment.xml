@@ -74,6 +74,14 @@
 
     <!-- Bottom -->
 
+    <include
+        android:id="@+id/color_picker_container"
+        layout="@layout/color_picker" />
+
+    <include
+        android:id="@+id/color_option_container"
+        layout="@layout/color_option" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
