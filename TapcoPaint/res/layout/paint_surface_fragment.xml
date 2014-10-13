@@ -17,7 +17,8 @@
         <com.example.tapcopaint.usingsurface.DrawingSurface
             android:id="@+id/drawingSurface"
             android:layout_width="match_parent"
-            android:layout_height="400dp" />
+            android:layout_height="400dp"
+            android:background="@android:color/transparent" />
     </FrameLayout>
 
     <LinearLayout

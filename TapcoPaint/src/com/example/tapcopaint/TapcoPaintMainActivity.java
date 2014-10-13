@@ -7,7 +7,7 @@ import android.view.Menu;
 import com.example.tapcopaint.base.BaseFragmentActivity;
 import com.example.tapcopaint.fragment.MainFragment;
 import com.example.tapcopaint.fragment.MainFragment.IMainFragmentListener;
-import com.example.tapcopaint.usingsurface.SurfacePaintFragment;
+import com.example.tapcopaint.fragment.PaintFragment3;
 
 public class TapcoPaintMainActivity extends BaseFragmentActivity implements IMainFragmentListener {
 
@@ -36,8 +36,8 @@ public class TapcoPaintMainActivity extends BaseFragmentActivity implements IMai
 
     @Override
     public void onIMainFragmentitemClick(int dto) {
-        SurfacePaintFragment f = SurfacePaintFragment.newInstance(dto);
-//        PaintFragment3 f = PaintFragment3.newInstance(dto);
+//        SurfacePaintFragment f = SurfacePaintFragment.newInstance(dto);
+        PaintFragment3 f = PaintFragment3.newInstance(dto);
         showFragment(f, true);
 
     }

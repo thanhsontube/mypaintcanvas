@@ -10,6 +10,7 @@ import android.graphics.PorterDuff;
 import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.SlidingDrawer;
 
 import com.example.tapcopaint.utils.FilterLog;
 
@@ -22,6 +23,7 @@ public class TsSurfaceView extends SurfaceView implements SurfaceHolder.Callback
     Bitmap bitmapPaint;
 
     public void setId(int id) {
+    	log.v(">>> setid:" + id);
         this.id = id;
     }
 
@@ -64,14 +66,13 @@ public class TsSurfaceView extends SurfaceView implements SurfaceHolder.Callback
                 try {
                     canvas = mSurfaceHolder.lockCanvas(null);
 
+                    canvas.drawColor(0, PorterDuff.Mode.CLEAR);
                     if (bitmapBackGround != null) {
-                        // canvas.drawBitmap(bitmapBackGround, 0, 0, new Paint(Paint.DITHER_FLAG));
+//                         canvas.drawBitmap(bitmapBackGround, 0, 0, new Paint(Paint.DITHER_FLAG));
                         //
                         // canvas.drawColor(Color.GREEN);
-                        canvas.drawBitmap(bitmapPaint, 0, 0, new Paint(Paint.DITHER_FLAG));
+//                        canvas.drawBitmap(bitmapPaint, 0, 0, new Paint(Paint.DITHER_FLAG));
                     }
-                    canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-
                     commandManager.executeAll(canvas);
                 } finally {
                     mSurfaceHolder.unlockCanvasAndPost(canvas);
@@ -83,11 +84,15 @@ public class TsSurfaceView extends SurfaceView implements SurfaceHolder.Callback
 
     }
 
-    public void addDrawingPath(DrawingPath drawingPath) {
+    public void addDrawingPath(DrawingPath drawingPath, boolean save) {
         log.d("log>>> " + "addDrawingPath currentStack size:" + commandManager.currentStackLength());
-        commandManager.addCommand(drawingPath);
+        commandManager.addCommand(drawingPath, save);
     }
 
+    public void clearTmpStack() {
+    	commandManager.clearTempStack();
+    }
+    
     public boolean hasMoreRedo() {
         return commandManager.hasMoreRedo();
     }
@@ -114,6 +119,7 @@ public class TsSurfaceView extends SurfaceView implements SurfaceHolder.Callback
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
+    	log.v("log>>> surfaceCreated:" + id );
         if (id != -1) {
 
             bitmapBackGround = BitmapFactory.decodeResource(getResources(), id);
