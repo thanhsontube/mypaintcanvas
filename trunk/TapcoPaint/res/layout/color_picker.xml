@@ -102,6 +102,7 @@
             android:weightSum="8" >
 
             <com.example.tapcopaint.view.SquareView
+                android:id="@+id/defined_color_1x1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -109,6 +110,7 @@
                 android:background="@drawable/defined_color_1x1" />
 
             <com.example.tapcopaint.view.SquareView
+                android:id="@+id/defined_color_1x2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -116,6 +118,7 @@
                 android:background="@drawable/defined_color_1x2" />
 
             <com.example.tapcopaint.view.SquareView
+                android:id="@+id/defined_color_1x3"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -123,6 +126,7 @@
                 android:background="@drawable/defined_color_1x3" />
 
             <com.example.tapcopaint.view.SquareView
+                android:id="@+id/defined_color_1x4"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -130,6 +134,7 @@
                 android:background="@drawable/defined_color_1x4" />
 
             <com.example.tapcopaint.view.SquareView
+                android:id="@+id/defined_color_1x5"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -137,6 +142,7 @@
                 android:background="@drawable/defined_color_1x5" />
 
             <com.example.tapcopaint.view.SquareView
+                android:id="@+id/defined_color_1x6"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -144,6 +150,7 @@
                 android:background="@drawable/defined_color_1x6" />
 
             <com.example.tapcopaint.view.SquareView
+                android:id="@+id/defined_color_1x7"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -151,6 +158,7 @@
                 android:background="@drawable/defined_color_1x7" />
 
             <com.example.tapcopaint.view.SquareView
+                android:id="@+id/defined_color_1x8"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -165,6 +173,7 @@
             android:weightSum="8" >
 
             <com.example.tapcopaint.view.SquareView
+                android:id="@+id/defined_color_2x1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -172,6 +181,7 @@
                 android:background="@drawable/defined_color_2x1" />
 
             <com.example.tapcopaint.view.SquareView
+                android:id="@+id/defined_color_2x2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -179,6 +189,7 @@
                 android:background="@drawable/defined_color_2x2" />
 
             <com.example.tapcopaint.view.SquareView
+                android:id="@+id/defined_color_2x3"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -186,6 +197,7 @@
                 android:background="@drawable/defined_color_2x3" />
 
             <com.example.tapcopaint.view.SquareView
+                android:id="@+id/defined_color_2x4"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -193,6 +205,7 @@
                 android:background="@drawable/defined_color_2x4" />
 
             <com.example.tapcopaint.view.SquareView
+                android:id="@+id/defined_color_2x5"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -200,6 +213,7 @@
                 android:background="@drawable/defined_color_2x5" />
 
             <com.example.tapcopaint.view.SquareView
+                android:id="@+id/defined_color_2x6"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -207,6 +221,7 @@
                 android:background="@drawable/defined_color_2x6" />
 
             <com.example.tapcopaint.view.SquareView
+                android:id="@+id/defined_color_2x7"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -214,6 +229,7 @@
                 android:background="@drawable/defined_color_2x7" />
 
             <com.example.tapcopaint.view.SquareView
+                android:id="@+id/defined_color_2x8"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -228,6 +244,7 @@
             android:weightSum="8" >
 
             <com.example.tapcopaint.view.SquareView
+                android:id="@+id/defined_color_3x1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -235,6 +252,7 @@
                 android:background="@drawable/defined_color_3x1" />
 
             <com.example.tapcopaint.view.SquareView
+                android:id="@+id/defined_color_3x2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -242,6 +260,7 @@
                 android:background="@drawable/defined_color_3x2" />
 
             <com.example.tapcopaint.view.SquareView
+                android:id="@+id/defined_color_3x3"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -249,6 +268,7 @@
                 android:background="@drawable/defined_color_3x3" />
 
             <com.example.tapcopaint.view.SquareView
+                android:id="@+id/defined_color_3x4"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -256,6 +276,7 @@
                 android:background="@drawable/defined_color_3x4" />
 
             <com.example.tapcopaint.view.SquareView
+                android:id="@+id/defined_color_3x5"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -263,6 +284,7 @@
                 android:background="@drawable/defined_color_3x5" />
 
             <com.example.tapcopaint.view.SquareView
+                android:id="@+id/defined_color_3x6"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -270,6 +292,7 @@
                 android:background="@drawable/defined_color_3x6" />
 
             <com.example.tapcopaint.view.SquareView
+                android:id="@+id/defined_color_3x7"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -277,6 +300,7 @@
                 android:background="@drawable/defined_color_3x7" />
 
             <com.example.tapcopaint.view.SquareView
+                android:id="@+id/defined_color_3x8"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -291,6 +315,7 @@
             android:weightSum="8" >
 
             <com.example.tapcopaint.view.SquareView
+                android:id="@+id/defined_color_4x1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -298,6 +323,7 @@
                 android:background="@drawable/defined_color_4x1" />
 
             <com.example.tapcopaint.view.SquareView
+                android:id="@+id/defined_color_4x2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -305,6 +331,7 @@
                 android:background="@drawable/defined_color_4x2" />
 
             <com.example.tapcopaint.view.SquareView
+                android:id="@+id/defined_color_4x3"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -312,6 +339,7 @@
                 android:background="@drawable/defined_color_4x3" />
 
             <com.example.tapcopaint.view.SquareView
+                android:id="@+id/defined_color_4x4"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -319,6 +347,7 @@
                 android:background="@drawable/defined_color_4x4" />
 
             <com.example.tapcopaint.view.SquareView
+                android:id="@+id/defined_color_4x5"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -326,6 +355,7 @@
                 android:background="@drawable/defined_color_4x5" />
 
             <com.example.tapcopaint.view.SquareView
+                android:id="@+id/defined_color_4x6"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -333,6 +363,7 @@
                 android:background="@drawable/defined_color_4x6" />
 
             <com.example.tapcopaint.view.SquareView
+                android:id="@+id/defined_color_4x7"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -340,6 +371,7 @@
                 android:background="@drawable/defined_color_4x7" />
 
             <com.example.tapcopaint.view.SquareView
+                android:id="@+id/defined_color_4x8"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
