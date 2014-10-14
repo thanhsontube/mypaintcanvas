@@ -81,14 +81,14 @@ public class PaintUtil {
 		return c;
 	}
 
-	public static String getColor(int intColor) {
-		String hexColor = Integer.toHexString(intColor).substring(2);
-		return hexColor;
-	}
+    public static String getColor(int intColor) {
+        String hexColor = Integer.toHexString(intColor).substring(2);
+        return "#" + hexColor;
+    }
 
 	public static String getColor(int r, int g, int b) {
 		String hexColor = Integer.toHexString(Color.rgb(r, g, b)).substring(2);
-		return hexColor;
+		return "#" + hexColor;
 	}
 
 }
