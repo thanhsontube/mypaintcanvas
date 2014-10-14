@@ -175,11 +175,6 @@ public class PaintFragment extends BaseFragment implements OnClickListener,
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress,
 					boolean fromUser) {
-				if (progress < 1) {
-					progress = 1;
-					seekBar.setProgress(progress);
-				}
-				seekBar.setProgress(progress);
 				mPaint = PaintUtil.setStrokeWidth(mPaint, progress);
 				weightPointView
 						.setLayoutParams(new RelativeLayout.LayoutParams(
@@ -189,6 +184,10 @@ public class PaintFragment extends BaseFragment implements OnClickListener,
 		});
 		weightPointView = (View) rootView
 				.findViewById(R.id.weight_review_point);
+		weightPointView.setLayoutParams(new RelativeLayout.LayoutParams(
+				PaintUtil.getStrokeWidth(weightSeekbar.getProgress()),
+				PaintUtil.getStrokeWidth(weightSeekbar.getProgress())));
+
 	}
 
 
@@ -301,6 +300,13 @@ public class PaintFragment extends BaseFragment implements OnClickListener,
 		path.moveTo(x, y);
 		mX = x;
 		mY = y;
+
+		if (isErase) {
+			mPaint.setXfermode(MODE_EARSE);
+		} else {
+			mPaint.setXfermode(null);
+		}
+
 		currentDrawingPath = new DrawingPath();
 		currentDrawingPath.paint = mPaint;
 		currentDrawingPath.path = new Path();
@@ -339,11 +345,6 @@ public class PaintFragment extends BaseFragment implements OnClickListener,
 		tsSurfaceView.clearTmpStack();
 
 		mPaint = resetPaint();
-		if (isErase) {
-			mPaint.setXfermode(MODE_EARSE);
-		} else {
-			mPaint.setXfermode(null);
-		}
 	}
 
 	@Override
