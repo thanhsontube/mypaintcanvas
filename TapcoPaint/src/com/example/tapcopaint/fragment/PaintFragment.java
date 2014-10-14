@@ -25,6 +25,7 @@ import com.example.tapcopaint.R;
 import com.example.tapcopaint.base.BaseFragment;
 import com.example.tapcopaint.base.BaseFragmentActivity.OnBackPressListener;
 import com.example.tapcopaint.dialog.ColorPickerDialog;
+import com.example.tapcopaint.dialog.ColorPickerDialog.IColorPickerListener;
 import com.example.tapcopaint.popup.ActionItem;
 import com.example.tapcopaint.popup.QuickAction;
 import com.example.tapcopaint.utils.FilterLog;
@@ -44,6 +45,7 @@ public class PaintFragment extends BaseFragment implements OnClickListener, OnBa
     private TsSurfaceView tsSurfaceView;
     private boolean isErase;
     private View rootView;
+    View colorView;
 
     private static final float TOUCH_TOLERANCE = 4;
 
@@ -123,7 +125,7 @@ public class PaintFragment extends BaseFragment implements OnClickListener, OnBa
         viewMove.setOnClickListener(this);
 
         // colorview
-        View colorView = rootView.findViewById(R.id.color_review);
+        colorView = rootView.findViewById(R.id.color_review);
         colorView.setOnClickListener(this);
     }
 
@@ -248,10 +250,15 @@ public class PaintFragment extends BaseFragment implements OnClickListener, OnBa
             quickAction.show();
             break;
         case R.id.color_review:
+            //
+            // String color = PaintUtil.getColor(colorView.getDrawingCacheBackgroundColor());
+            // log.d("log>>> " + "color:" + color);
+
             FragmentManager fm = getChildFragmentManager();
             FragmentTransaction ft = fm.beginTransaction();
 
             ColorPickerDialog f = ColorPickerDialog.newInstance("#ff45ff");
+            f.setOnListener(colorPickerListener);
             ft.add(f, null);
             ft.commitAllowingStateLoss();
             break;
@@ -261,6 +268,14 @@ public class PaintFragment extends BaseFragment implements OnClickListener, OnBa
         }
 
     }
+
+    IColorPickerListener colorPickerListener = new IColorPickerListener() {
+
+        @Override
+        public void onIColorPickerDone(String color) {
+            colorView.setBackgroundColor(Color.parseColor(color));
+        }
+    };
 
     @Override
     public boolean onBackPress() {
