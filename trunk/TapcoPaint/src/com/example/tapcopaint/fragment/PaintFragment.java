@@ -62,14 +62,7 @@ public class PaintFragment extends BaseFragment implements OnClickListener, OnBa
         if (getArguments() != null) {
             id = getArguments().getInt("id");
         }
-        mPaint = new Paint();
-        mPaint.setAntiAlias(true);
-        mPaint.setDither(true);
-        mPaint.setColor(Color.RED);
-        mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setStrokeJoin(Paint.Join.ROUND);
-        mPaint.setStrokeCap(Paint.Cap.ROUND);
-        mPaint.setStrokeWidth(12);
+        mPaint = resetpaint();
     }
 
     @Override
