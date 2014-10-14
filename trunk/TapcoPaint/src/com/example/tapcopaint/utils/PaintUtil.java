@@ -71,4 +71,13 @@ public class PaintUtil {
 		return p;
 	}
 
+	public static int[] getRGB(String color) {
+		int intColor = (int) Long.parseLong(color, 16);
+		int r = (intColor >> 16) & 0xFF;
+		int g = (intColor >> 8) & 0xFF;
+		int b = (intColor >> 0) & 0xFF;
+		int[] c = { r, g, b };
+		return c;
+	}
+
 }
