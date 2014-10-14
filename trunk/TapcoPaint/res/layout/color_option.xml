@@ -72,7 +72,7 @@
                 android:layout_centerVertical="true"
                 android:layout_toLeftOf="@id/weight_review"
                 android:layout_toRightOf="@id/weight_lbl"
-                android:max="5"
+                android:max="4"
                 android:progress="3" />
         </RelativeLayout>
     </LinearLayout>

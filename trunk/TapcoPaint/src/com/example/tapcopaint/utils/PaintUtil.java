@@ -18,23 +18,23 @@ public class PaintUtil {
 
 	public static Paint setStrokeWidth(Paint p, int level) {
 		switch (level) {
-		case 1:
+		case 0:
 			p.setAntiAlias(false);
 			p.setStrokeWidth(WIDTH_LV_1);
 			break;
-		case 2:
+		case 1:
 			p.setAntiAlias(true);
 			p.setStrokeWidth(WIDTH_LV_2);
 			break;
-		case 3:
+		case 2:
 			p.setAntiAlias(true);
 			p.setStrokeWidth(WIDTH_LV_3);
 			break;
-		case 4:
+		case 3:
 			p.setAntiAlias(true);
 			p.setStrokeWidth(WIDTH_LV_4);
 			break;
-		case 5:
+		case 4:
 			p.setAntiAlias(true);
 			p.setStrokeWidth(WIDTH_LV_5);
 			break;
@@ -46,15 +46,15 @@ public class PaintUtil {
 
 	public static int getStrokeWidth(int level) {
 		switch (level) {
-		case 1:
+		case 0:
 			return WIDTH_LV_1;
-		case 2:
+		case 1:
 			return WIDTH_LV_2;
-		case 3:
+		case 2:
 			return WIDTH_LV_3;
-		case 4:
+		case 3:
 			return WIDTH_LV_4;
-		case 5:
+		case 4:
 			return WIDTH_LV_5;
 		default:
 			return WIDTH_LV_1;
