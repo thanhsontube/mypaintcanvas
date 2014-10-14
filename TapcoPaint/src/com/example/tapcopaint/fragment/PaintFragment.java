@@ -6,6 +6,8 @@ import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Xfermode;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -251,13 +253,22 @@ public class PaintFragment extends BaseFragment implements OnClickListener, OnBa
             break;
         case R.id.color_review:
             //
-            // String color = PaintUtil.getColor(colorView.getDrawingCacheBackgroundColor());
-            // log.d("log>>> " + "color:" + color);
+            int i = 0;
+            Drawable background = colorView.getBackground();
+            if (background instanceof ColorDrawable) {
+
+                i = ((ColorDrawable) background).getColor();
+            }
+            String color = null;
+            if (i != 0) {
+                color = PaintUtil.getColor(i);
+                log.d("log>>> " + "color:" + color);
+            }
 
             FragmentManager fm = getChildFragmentManager();
             FragmentTransaction ft = fm.beginTransaction();
 
-            ColorPickerDialog f = ColorPickerDialog.newInstance("#ff45ff");
+            ColorPickerDialog f = ColorPickerDialog.newInstance(color);
             f.setOnListener(colorPickerListener);
             ft.add(f, null);
             ft.commitAllowingStateLoss();
