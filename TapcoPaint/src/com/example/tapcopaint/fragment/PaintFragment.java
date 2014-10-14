@@ -32,376 +32,347 @@ import com.example.tapcopaint.utils.PaintUtil;
 import com.example.tapcopaint.view.DrawingPath;
 import com.example.tapcopaint.view.TsSurfaceView;
 
-public class PaintFragment extends BaseFragment implements OnClickListener,
-		OnBackPressListener, OnTouchListener {
+public class PaintFragment extends BaseFragment implements OnClickListener, OnBackPressListener, OnTouchListener {
 
-	private int id;
-	private ImageView img, imgErase;
-	private static final String TAG = "PaintFragment";
-	private Paint mPaint;
+    private int id;
+    private ImageView img, imgErase;
+    private static final String TAG = "PaintFragment";
+    private Paint mPaint;
 
-	FilterLog log = new FilterLog(TAG);
-	public Xfermode MODE_EARSE = new PorterDuffXfermode(PorterDuff.Mode.CLEAR);
-	private TsSurfaceView tsSurfaceView;
-	private boolean isErase;
-	private View rootView;
+    FilterLog log = new FilterLog(TAG);
+    public Xfermode MODE_EARSE = new PorterDuffXfermode(PorterDuff.Mode.CLEAR);
+    private TsSurfaceView tsSurfaceView;
+    private boolean isErase;
+    private View rootView;
 
-	private static final float TOUCH_TOLERANCE = 4;
+    private static final float TOUCH_TOLERANCE = 4;
 
-	private DrawingPath currentDrawingPath;
-	private float mX, mY;
-	private Path path;
+    private DrawingPath currentDrawingPath;
+    private float mX, mY;
+    private Path path;
 
-	private SeekBar opacitySeekbar;
-	private TextView opacityTxt;
+    private SeekBar opacitySeekbar;
+    private TextView opacityTxt;
 
-	private SeekBar weightSeekbar;
-	private View weightPointView;
+    private SeekBar weightSeekbar;
+    private View weightPointView;
 
-	@Override
-	protected String generateTitle() {
-		return "Paint";
-	}
+    @Override
+    protected String generateTitle() {
+        return "Paint";
+    }
 
-	public static PaintFragment newInstance(int id) {
-		PaintFragment f = new PaintFragment();
-		Bundle bundle = new Bundle();
-		bundle.putInt("id", id);
-		f.setArguments(bundle);
-		return f;
-	}
+    public static PaintFragment newInstance(int id) {
+        PaintFragment f = new PaintFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt("id", id);
+        f.setArguments(bundle);
+        return f;
+    }
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		if (getArguments() != null) {
-			id = getArguments().getInt("id");
-		}
-	}
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            id = getArguments().getInt("id");
+        }
+    }
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		rootView = (ViewGroup) inflater.inflate(R.layout.paint_fragment,
-				container, false);
-		initBtn(rootView);
-		initColorView(rootView);
-		path = new Path();
-		mPaint = resetPaint();
-		return rootView;
-	}
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        rootView = (ViewGroup) inflater.inflate(R.layout.paint_fragment, container, false);
+        initBtn(rootView);
+        initColorView(rootView);
+        path = new Path();
+        mPaint = resetPaint();
+        return rootView;
+    }
 
-	private void initBtn(View rootView) {
+    private void initBtn(View rootView) {
 
-		imgErase = (ImageView) rootView.findViewWithTag("erase");
+        imgErase = (ImageView) rootView.findViewWithTag("erase");
 
-		tsSurfaceView = (TsSurfaceView) rootView
-				.findViewById(R.id.paint_tssurface);
-		tsSurfaceView.setOnTouchListener(this);
+        tsSurfaceView = (TsSurfaceView) rootView.findViewById(R.id.paint_tssurface);
+        tsSurfaceView.setOnTouchListener(this);
 
-		img = (ImageView) rootView.findViewWithTag("image");
-		img.setImageResource(id);
+        img = (ImageView) rootView.findViewWithTag("image");
+        img.setImageResource(id);
 
-		View viewCancel = rootView.findViewById(R.id.paint_btn_cancel);
-		viewCancel.setOnClickListener(this);
+        View viewCancel = rootView.findViewById(R.id.paint_btn_cancel);
+        viewCancel.setOnClickListener(this);
 
-		View viewDone = rootView.findViewById(R.id.paint_btn_done);
-		viewDone.setOnClickListener(this);
+        View viewDone = rootView.findViewById(R.id.paint_btn_done);
+        viewDone.setOnClickListener(this);
 
-		View viewBack = rootView.findViewById(R.id.paint_back);
-		viewBack.setOnClickListener(this);
+        View viewBack = rootView.findViewById(R.id.paint_back);
+        viewBack.setOnClickListener(this);
 
-		View viewForward = rootView.findViewById(R.id.paint_forward);
-		viewForward.setOnClickListener(this);
+        View viewForward = rootView.findViewById(R.id.paint_forward);
+        viewForward.setOnClickListener(this);
 
-		View viewDelete = rootView.findViewById(R.id.paint_delete);
-		viewDelete.setOnClickListener(this);
+        View viewDelete = rootView.findViewById(R.id.paint_delete);
+        viewDelete.setOnClickListener(this);
 
-		View viewEdit = rootView.findViewById(R.id.paint_edit);
-		viewEdit.setOnClickListener(this);
+        View viewEdit = rootView.findViewById(R.id.paint_edit);
+        viewEdit.setOnClickListener(this);
 
-		View viewErase = rootView.findViewById(R.id.paint_erase);
-		viewErase.setOnClickListener(this);
+        View viewErase = rootView.findViewById(R.id.paint_erase);
+        viewErase.setOnClickListener(this);
 
-		View viewMove = rootView.findViewById(R.id.paint_move);
-		viewMove.setOnClickListener(this);
-		
-		// colorview
+        View viewMove = rootView.findViewById(R.id.paint_move);
+        viewMove.setOnClickListener(this);
+
+        // colorview
         View colorView = rootView.findViewById(R.id.color_review);
         colorView.setOnClickListener(this);
-	}
+    }
 
-	private void initColorView(View rootView) {
-		opacityTxt = (TextView) rootView.findViewById(R.id.opacity_value);
-		opacitySeekbar = (SeekBar) rootView.findViewById(R.id.opacity_sb);
-		opacitySeekbar
-				.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+    private void initColorView(View rootView) {
+        opacityTxt = (TextView) rootView.findViewById(R.id.opacity_value);
+        opacitySeekbar = (SeekBar) rootView.findViewById(R.id.opacity_sb);
+        opacitySeekbar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 
-					@Override
-					public void onStopTrackingTouch(SeekBar arg0) {
+            @Override
+            public void onStopTrackingTouch(SeekBar arg0) {
 
-					}
+            }
 
-					@Override
-					public void onStartTrackingTouch(SeekBar arg0) {
+            @Override
+            public void onStartTrackingTouch(SeekBar arg0) {
 
-					}
+            }
 
-					@Override
-					public void onProgressChanged(SeekBar seekBar,
-							int progress, boolean fromUser) {
-						opacityTxt.setText(progress + "%");
-						mPaint = PaintUtil.setAlpha(mPaint, progress);
-					}
-				});
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                opacityTxt.setText(progress + "%");
+                mPaint = PaintUtil.setAlpha(mPaint, progress);
+            }
+        });
 
-		weightSeekbar = (SeekBar) rootView.findViewById(R.id.weight_sb);
-		weightSeekbar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+        weightSeekbar = (SeekBar) rootView.findViewById(R.id.weight_sb);
+        weightSeekbar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 
+            @Override
+            public void onStopTrackingTouch(SeekBar arg0) {
 
-    
+            }
 
-			@Override
-			public void onStopTrackingTouch(SeekBar arg0) {
+            @Override
+            public void onStartTrackingTouch(SeekBar arg0) {
 
+            }
 
-			}
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                mPaint = PaintUtil.setStrokeWidth(mPaint, progress);
+                weightPointView.setLayoutParams(new RelativeLayout.LayoutParams(PaintUtil.getStrokeWidth(progress),
+                        PaintUtil.getStrokeWidth(progress)));
+            }
+        });
+        weightPointView = (View) rootView.findViewById(R.id.weight_review_point);
+        weightPointView.setLayoutParams(new RelativeLayout.LayoutParams(PaintUtil.getStrokeWidth(weightSeekbar
+                .getProgress()), PaintUtil.getStrokeWidth(weightSeekbar.getProgress())));
 
-			@Override
-			public void onStartTrackingTouch(SeekBar arg0) {
+    }
 
-			}
+    public Paint resetPaint() {
+        Paint mPaint = new Paint();
+        // default
+        mPaint.setDither(true);
+        mPaint.setColor(Color.RED);
+        mPaint.setStyle(Paint.Style.STROKE);
+        mPaint.setStrokeJoin(Paint.Join.ROUND);
+        mPaint.setStrokeCap(Paint.Cap.ROUND);
+        // option
+        mPaint = PaintUtil.setStrokeWidth(mPaint, weightSeekbar.getProgress());
+        mPaint = PaintUtil.setAlpha(mPaint, opacitySeekbar.getProgress());
+        return mPaint;
+    }
 
-			@Override
-			public void onProgressChanged(SeekBar seekBar, int progress,
-					boolean fromUser) {
-				mPaint = PaintUtil.setStrokeWidth(mPaint, progress);
-				weightPointView
-						.setLayoutParams(new RelativeLayout.LayoutParams(
-								PaintUtil.getStrokeWidth(progress), PaintUtil
-										.getStrokeWidth(progress)));
-			}
-		});
-		weightPointView = (View) rootView
-				.findViewById(R.id.weight_review_point);
-		weightPointView.setLayoutParams(new RelativeLayout.LayoutParams(
-				PaintUtil.getStrokeWidth(weightSeekbar.getProgress()),
-				PaintUtil.getStrokeWidth(weightSeekbar.getProgress())));
+    @Override
+    public void onClick(View v) {
+        QuickAction quickAction = new QuickAction(v);
+        switch (v.getId()) {
+        case R.id.paint_btn_cancel:
+            onBackPress();
+            break;
+        case R.id.paint_btn_done:
+            break;
+        case R.id.paint_back:
+            tsSurfaceView.undo();
+            break;
+        case R.id.paint_forward:
+            tsSurfaceView.redo();
+            break;
+        case R.id.paint_delete:
+            tsSurfaceView.clear();
+            isErase = false;
+            if (isErase) {
+                imgErase.setImageResource(R.drawable.ic_erase_red);
+            } else {
+                imgErase.setImageResource(R.drawable.ic_erase_blue);
+            }
+            break;
+        case R.id.paint_edit:
+            ActionItem item4 = new ActionItem(getResources().getDrawable(R.drawable.ic_navigation_back));
+            ActionItem item5 = new ActionItem(getResources().getDrawable(R.drawable.ic_navigation_forward));
+            ActionItem item6 = new ActionItem(getResources().getDrawable(R.drawable.ic_edit));
+            item4.setTitle("A");
+            item5.setTitle("B");
+            item6.setTitle("C");
 
-	}
+            quickAction.addActionItem(item4);
+            quickAction.addActionItem(item5);
+            quickAction.addActionItem(item6);
+            quickAction.show();
+            break;
+        case R.id.paint_erase:
+            isErase = !isErase;
+            if (isErase) {
+                imgErase.setImageResource(R.drawable.ic_erase_red);
+            } else {
+                imgErase.setImageResource(R.drawable.ic_erase_blue);
+            }
+            break;
+        case R.id.paint_move:
+            ActionItem item1 = new ActionItem(getResources().getDrawable(R.drawable.ic_navigation_back));
+            ActionItem item2 = new ActionItem(getResources().getDrawable(R.drawable.ic_navigation_forward));
+            ActionItem item3 = new ActionItem(getResources().getDrawable(R.drawable.ic_edit));
+            item1.setTitle("A");
+            item2.setTitle("B");
+            item3.setTitle("C");
 
+            quickAction.addActionItem(item1);
+            quickAction.addActionItem(item2);
+            quickAction.addActionItem(item3);
+            quickAction.show();
+            break;
+        case R.id.color_review:
+            FragmentManager fm = getChildFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
 
-  
+            ColorPickerDialog f = ColorPickerDialog.newInstance("#ff45ff");
+            ft.add(f, null);
+            ft.commitAllowingStateLoss();
+            break;
 
-      
+        default:
+            break;
+        }
 
-	public Paint resetPaint() {
-		Paint mPaint = new Paint();
-		// default
-		mPaint.setDither(true);
-		mPaint.setColor(Color.RED);
-		mPaint.setStyle(Paint.Style.STROKE);
-		mPaint.setStrokeJoin(Paint.Join.ROUND);
-		mPaint.setStrokeCap(Paint.Cap.ROUND);
-		// option
-		mPaint = PaintUtil.setStrokeWidth(mPaint, weightSeekbar.getProgress());
-		mPaint = PaintUtil.setAlpha(mPaint, opacitySeekbar.getProgress());
-		return mPaint;
-	}
+    }
 
+    @Override
+    public boolean onBackPress() {
+        return false;
+    }
 
-	@Override
-	public void onClick(View v) {
-		QuickAction quickAction = new QuickAction(v);
-		switch (v.getId()) {
-		case R.id.paint_btn_cancel:
-			onBackPress();
-			break;
-		case R.id.paint_btn_done:
-			break;
-		case R.id.paint_back:
-			tsSurfaceView.undo();
-			break;
-		case R.id.paint_forward:
-			tsSurfaceView.redo();
-			break;
-		case R.id.paint_delete:
-			tsSurfaceView.clear();
-			isErase = false;
-			if (isErase) {
-				imgErase.setImageResource(R.drawable.ic_erase_red);
-			} else {
-				imgErase.setImageResource(R.drawable.ic_erase_blue);
-			}
-			break;
-		case R.id.paint_edit:
-			ActionItem item4 = new ActionItem(getResources().getDrawable(
-					R.drawable.ic_navigation_back));
-			ActionItem item5 = new ActionItem(getResources().getDrawable(
-					R.drawable.ic_navigation_forward));
-			ActionItem item6 = new ActionItem(getResources().getDrawable(
-					R.drawable.ic_edit));
-			item4.setTitle("A");
-			item5.setTitle("B");
-			item6.setTitle("C");
+    private void touchStart(float x, float y) {
+        path.reset();
+        path.moveTo(x, y);
+        mX = x;
+        mY = y;
 
-			quickAction.addActionItem(item4);
-			quickAction.addActionItem(item5);
-			quickAction.addActionItem(item6);
-			quickAction.show();
-			break;
-		case R.id.paint_erase:
-			isErase = !isErase;
-			if (isErase) {
-				imgErase.setImageResource(R.drawable.ic_erase_red);
-			} else {
-				imgErase.setImageResource(R.drawable.ic_erase_blue);
-			}
-			break;
-		case R.id.paint_move:
-			ActionItem item1 = new ActionItem(getResources().getDrawable(
-					R.drawable.ic_navigation_back));
-			ActionItem item2 = new ActionItem(getResources().getDrawable(
-					R.drawable.ic_navigation_forward));
-			ActionItem item3 = new ActionItem(getResources().getDrawable(
-					R.drawable.ic_edit));
-			item1.setTitle("A");
-			item2.setTitle("B");
-			item3.setTitle("C");
+        if (isErase) {
+            mPaint.setXfermode(MODE_EARSE);
+        } else {
+            mPaint.setXfermode(null);
+        }
 
-			quickAction.addActionItem(item1);
-			quickAction.addActionItem(item2);
-			quickAction.addActionItem(item3);
-			quickAction.show();
-			break;
-		  case R.id.color_review:
-	            FragmentManager fm = getChildFragmentManager();
-	            FragmentTransaction ft = fm.beginTransaction();
+        currentDrawingPath = new DrawingPath();
+        currentDrawingPath.paint = mPaint;
+        currentDrawingPath.path = new Path();
+        currentDrawingPath.path.moveTo(x, y);
+        currentDrawingPath.path.lineTo(x, y);
+        tsSurfaceView.addDrawingPath(currentDrawingPath, false);
+    }
 
-	            ColorPickerDialog f = ColorPickerDialog.newInstance("#ff00ff");
-	            ft.add(f, null);
-	            ft.commitAllowingStateLoss();
-	            break;
+    @Override
+    public void onDestroy() {
+        if (tsSurfaceView != null) {
+            tsSurfaceView.stopThread();
+            tsSurfaceView.destroyDrawingCache();
 
-	       
-		default:
-			break;
-		}
+        }
+        super.onDestroy();
+    }
 
-	}
+    private void touchMove(float x, float y) {
+        float dx = Math.abs(x - mX);
+        float dy = Math.abs(y - mY);
+        if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE) {
+            path.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
+            currentDrawingPath.path.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
+            mX = x;
+            mY = y;
+        }
+        tsSurfaceView.addDrawingPath(currentDrawingPath, false);
+    }
 
-	@Override
-	public boolean onBackPress() {
-		return false;
-	}
+    private void touchUp(float x, float y) {
+        path.lineTo(mX, mY);
+        tsSurfaceView.onMyDraw(path, mPaint);
+        currentDrawingPath.path.lineTo(mX, mY);
+        tsSurfaceView.addDrawingPath(currentDrawingPath, true);
+        tsSurfaceView.clearTmpStack();
 
-	private void touchStart(float x, float y) {
-		path.reset();
-		path.moveTo(x, y);
-		mX = x;
-		mY = y;
+        mPaint = resetPaint();
+    }
 
-		if (isErase) {
-			mPaint.setXfermode(MODE_EARSE);
-		} else {
-			mPaint.setXfermode(null);
-		}
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
 
-		currentDrawingPath = new DrawingPath();
-		currentDrawingPath.paint = mPaint;
-		currentDrawingPath.path = new Path();
-		currentDrawingPath.path.moveTo(x, y);
-		currentDrawingPath.path.lineTo(x, y);
-		tsSurfaceView.addDrawingPath(currentDrawingPath, false);
-	}
+        float x = event.getX();
+        float y = event.getY();
+        switch (event.getAction()) {
+        case MotionEvent.ACTION_DOWN:
+            touchStart(x, y);
+            break;
 
-	@Override
-	public void onDestroy() {
-		if (tsSurfaceView != null) {
-			tsSurfaceView.stopThread();
-			tsSurfaceView.destroyDrawingCache();
+        case MotionEvent.ACTION_MOVE:
+            touchMove(x, y);
+            break;
+        case MotionEvent.ACTION_UP:
+            touchUp(x, y);
+            break;
 
-		}
-		super.onDestroy();
-	}
+        default:
+            break;
+        }
+        return true;
 
-	private void touchMove(float x, float y) {
-		float dx = Math.abs(x - mX);
-		float dy = Math.abs(y - mY);
-		if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE) {
-			path.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
-			currentDrawingPath.path.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
-			mX = x;
-			mY = y;
-		}
-		tsSurfaceView.addDrawingPath(currentDrawingPath, false);
-	}
+    }
 
-	private void touchUp(float x, float y) {
-		path.lineTo(mX, mY);
-		tsSurfaceView.onMyDraw(path, mPaint);
-		currentDrawingPath.path.lineTo(mX, mY);
-		tsSurfaceView.addDrawingPath(currentDrawingPath, true);
-		tsSurfaceView.clearTmpStack();
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        log.d("log>>> " + "onHiddenChanged");
+        if (isHidden()) {
+            if (tsSurfaceView != null) {
+                tsSurfaceView.stopThread();
+            }
+        }
+    }
 
-		mPaint = resetPaint();
-	}
+    /**
+     * fix bug home button
+     */
+    @Override
+    public void onPause() {
+        super.onPause();
+        log.d("log>>> " + "onPause");
+        if (tsSurfaceView != null) {
+            tsSurfaceView.stopThread();
+        }
+    }
 
-	@Override
-	public boolean onTouch(View v, MotionEvent event) {
-
-		float x = event.getX();
-		float y = event.getY();
-		switch (event.getAction()) {
-		case MotionEvent.ACTION_DOWN:
-			touchStart(x, y);
-			break;
-
-		case MotionEvent.ACTION_MOVE:
-			touchMove(x, y);
-			break;
-		case MotionEvent.ACTION_UP:
-			touchUp(x, y);
-			break;
-
-		default:
-			break;
-		}
-		return true;
-
-	}
-
-	@Override
-	public void onHiddenChanged(boolean hidden) {
-		super.onHiddenChanged(hidden);
-		log.d("log>>> " + "onHiddenChanged");
-		if (isHidden()) {
-			if (tsSurfaceView != null) {
-				tsSurfaceView.stopThread();
-			}
-		}
-	}
-
-	/**
-	 * fix bug home button
-	 */
-	@Override
-	public void onPause() {
-		super.onPause();
-		log.d("log>>> " + "onPause");
-		if (tsSurfaceView != null) {
-			tsSurfaceView.stopThread();
-		}
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-		log.d("log>>> " + "onResume");
-		if (tsSurfaceView == null) {
-			tsSurfaceView = (TsSurfaceView) rootView
-					.findViewById(R.id.paint_tssurface);
-		}
-	}
+    @Override
+    public void onResume() {
+        super.onResume();
+        log.d("log>>> " + "onResume");
+        if (tsSurfaceView == null) {
+            tsSurfaceView = (TsSurfaceView) rootView.findViewById(R.id.paint_tssurface);
+        }
+    }
 
 }

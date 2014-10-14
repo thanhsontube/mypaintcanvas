@@ -17,7 +17,7 @@ public interface IPaint {
 
     // String format : #ff00ff
 
-    String setColor(int r, int g, int b);
+    String getColor(int r, int g, int b);
 
     // color #ff00ff
     int[] getRGB(String color);
