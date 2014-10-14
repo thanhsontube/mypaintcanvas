@@ -65,5 +65,7 @@ public class MainFragment extends BaseFragment implements OnItemClickListener {
             mListener = (IMainFragmentListener) activity;
         }
     }
+    
+   
 
 }

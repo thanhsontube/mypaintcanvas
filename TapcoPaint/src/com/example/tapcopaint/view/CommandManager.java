@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 
@@ -25,17 +27,17 @@ public class CommandManager {
     }
 
     public void addCommand(DrawingPath command, boolean save) {
-		if (save) {
-			redoStack.clear();
-			currentStack.add(command);
-		} else {
-			tmpStack.add(command);
-		}
-	}
-    
+        if (save) {
+            redoStack.clear();
+            currentStack.add(command);
+        } else {
+            tmpStack.add(command);
+        }
+    }
+
     public void clearTempStack() {
-		tmpStack.clear();
-	}
+        tmpStack.clear();
+    }
 
     public void undo() {
         final int length = currentStackLength();
@@ -48,11 +50,11 @@ public class CommandManager {
     }
 
     public void clear() {
-    	tmpStack.clear();
+        tmpStack.clear();
         currentStack.clear();
         redoStack.clear();
     }
-    
+
     public void earse() {
         final int length = currentStackLength();
         if (length > 0) {
@@ -77,14 +79,14 @@ public class CommandManager {
             }
         }
         if (tmpStack != null) {
-			synchronized (tmpStack) {
-				final Iterator<DrawingPath> i = tmpStack.iterator();
-				while (i.hasNext()) {
-					final DrawingPath drawingPath = (DrawingPath) i.next();
-					drawingPath.draw(canvas);
-				}
-			}
-		}
+            synchronized (tmpStack) {
+                final Iterator<DrawingPath> i = tmpStack.iterator();
+                while (i.hasNext()) {
+                    final DrawingPath drawingPath = (DrawingPath) i.next();
+                    drawingPath.draw(canvas);
+                }
+            }
+        }
     }
 
     public boolean hasMoreRedo() {
