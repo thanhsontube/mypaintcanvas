@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="array_color_picker">
+        <item>#ff00ff</item>
+        <item>#ff00ff</item>
+        <item>#ff00ff</item>
+        <item>#ff00ff</item>
+        <item>#ff00ff</item>
+        <item>#ff00ff</item>
+        <item>#ff00ff</item>
+        <item>#ff00ff</item>
+        <item>#dd9900</item>
+        <item>#ff00ff</item>
+        <item>#ff00ff</item>
+        <item>#440088</item>
+        <item>#ff00ff</item>
+        <item>#ff00ff</item>
+        <item>#ff00ff</item>
+        <item>#ff00ff</item>
+    </string-array>
+
+</resources>
