@@ -18,6 +18,8 @@ import android.widget.ImageView;
 import com.example.tapcopaint.R;
 import com.example.tapcopaint.base.BaseFragment;
 import com.example.tapcopaint.base.BaseFragmentActivity.OnBackPressListener;
+import com.example.tapcopaint.popup.ActionItem;
+import com.example.tapcopaint.popup.QuickAction;
 import com.example.tapcopaint.utils.FilterLog;
 import com.example.tapcopaint.view.DrawingPath;
 import com.example.tapcopaint.view.TsSurfaceView;
@@ -33,6 +35,13 @@ public class PaintFragment extends BaseFragment implements OnClickListener, OnBa
     public Xfermode MODE_EARSE = new PorterDuffXfermode(PorterDuff.Mode.CLEAR);
     private TsSurfaceView tsSurfaceView;
     private boolean isErase;
+    private View rootView;
+
+    private static final float TOUCH_TOLERANCE = 4;
+
+    DrawingPath currentDrawingPath;
+    float mX, mY;
+    Path path;
 
     @Override
     protected String generateTitle() {
@@ -65,9 +74,9 @@ public class PaintFragment extends BaseFragment implements OnClickListener, OnBa
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = (ViewGroup) inflater.inflate(R.layout.paint_fragment, container, false);
+        rootView = (ViewGroup) inflater.inflate(R.layout.paint_fragment, container, false);
         initBtn(rootView);
-
+        path = new Path();
         return rootView;
     }
 
@@ -120,6 +129,7 @@ public class PaintFragment extends BaseFragment implements OnClickListener, OnBa
 
     @Override
     public void onClick(View v) {
+        QuickAction quickAction = new QuickAction(v);
         switch (v.getId()) {
         case R.id.paint_btn_cancel:
             onBackPress();
@@ -143,6 +153,17 @@ public class PaintFragment extends BaseFragment implements OnClickListener, OnBa
             }
             break;
         case R.id.paint_edit:
+            ActionItem item4 = new ActionItem(getResources().getDrawable(R.drawable.ic_navigation_back));
+            ActionItem item5 = new ActionItem(getResources().getDrawable(R.drawable.ic_navigation_forward));
+            ActionItem item6 = new ActionItem(getResources().getDrawable(R.drawable.ic_edit));
+            item4.setTitle("A");
+            item5.setTitle("B");
+            item6.setTitle("C");
+
+            quickAction.addActionItem(item4);
+            quickAction.addActionItem(item5);
+            quickAction.addActionItem(item6);
+            quickAction.show();
             break;
         case R.id.paint_erase:
             isErase = !isErase;
@@ -153,6 +174,17 @@ public class PaintFragment extends BaseFragment implements OnClickListener, OnBa
             }
             break;
         case R.id.paint_move:
+            ActionItem item1 = new ActionItem(getResources().getDrawable(R.drawable.ic_navigation_back));
+            ActionItem item2 = new ActionItem(getResources().getDrawable(R.drawable.ic_navigation_forward));
+            ActionItem item3 = new ActionItem(getResources().getDrawable(R.drawable.ic_edit));
+            item1.setTitle("A");
+            item2.setTitle("B");
+            item3.setTitle("C");
+
+            quickAction.addActionItem(item1);
+            quickAction.addActionItem(item2);
+            quickAction.addActionItem(item3);
+            quickAction.show();
             break;
         default:
             break;
@@ -165,12 +197,9 @@ public class PaintFragment extends BaseFragment implements OnClickListener, OnBa
         return false;
     }
 
-    private static final float TOUCH_TOLERANCE = 4;
-
-    DrawingPath currentDrawingPath;
-    float mX, mY;
-
     private void touchStart(float x, float y) {
+        path.reset();
+        path.moveTo(x, y);
         mX = x;
         mY = y;
         log.d("log>>> " + "touchStart");
@@ -202,6 +231,7 @@ public class PaintFragment extends BaseFragment implements OnClickListener, OnBa
         float dx = Math.abs(x - mX);
         float dy = Math.abs(y - mY);
         if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE) {
+            path.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
             currentDrawingPath.path.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
             mX = x;
             mY = y;
@@ -210,6 +240,8 @@ public class PaintFragment extends BaseFragment implements OnClickListener, OnBa
     }
 
     private void touchUp(float x, float y) {
+        path.lineTo(mX, mY);
+        tsSurfaceView.onMyDraw(path, mPaint);
         currentDrawingPath.path.lineTo(mX, mY);
         tsSurfaceView.addDrawingPath(currentDrawingPath, true);
         tsSurfaceView.clearTmpStack();
@@ -237,6 +269,38 @@ public class PaintFragment extends BaseFragment implements OnClickListener, OnBa
         }
         return true;
 
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        log.d("log>>> " + "onHiddenChanged");
+        if (isHidden()) {
+            if (tsSurfaceView != null) {
+                tsSurfaceView.stopThread();
+            }
+        }
+    }
+
+    /**
+     * fix bug home button
+     */
+    @Override
+    public void onPause() {
+        super.onPause();
+        log.d("log>>> " + "onPause");
+        if (tsSurfaceView != null) {
+            tsSurfaceView.stopThread();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        log.d("log>>> " + "onResume");
+        if (tsSurfaceView == null) {
+            tsSurfaceView = (TsSurfaceView) rootView.findViewById(R.id.paint_tssurface);
+        }
     }
 
 }

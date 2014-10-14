@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.graphics.PorterDuff;
 import android.util.AttributeSet;
@@ -69,9 +70,13 @@ public class TsSurfaceView extends SurfaceView implements SurfaceHolder.Callback
                         // canvas.drawBitmap(bitmapBackGround, 0, 0, new Paint(Paint.DITHER_FLAG));
                         //
                         // canvas.drawColor(Color.GREEN);
-                        canvas.drawBitmap(bitmapPaint, 0, 0, new Paint(Paint.DITHER_FLAG));
+//                        canvas.drawBitmap(bitmapPaint, 0, 0, new Paint(Paint.DITHER_FLAG));
                     }
                     canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+//                    if (path != null && paint != null) {
+//
+//                        canvas.drawPath(path, paint);
+//                    }
                     commandManager.executeAll(canvas);
                 } finally {
                     mSurfaceHolder.unlockCanvasAndPost(canvas);
@@ -81,6 +86,14 @@ public class TsSurfaceView extends SurfaceView implements SurfaceHolder.Callback
 
         }
 
+    }
+
+    Path path;
+    Paint paint;
+
+    public void onMyDraw(Path path, Paint paint) {
+        this.paint = paint;
+        this.path = path;
     }
 
     public void addDrawingPath(DrawingPath drawingPath, boolean save) {
@@ -105,6 +118,7 @@ public class TsSurfaceView extends SurfaceView implements SurfaceHolder.Callback
     }
 
     public void clear() {
+        path = null;
         commandManager.clear();
     }
 
@@ -127,7 +141,10 @@ public class TsSurfaceView extends SurfaceView implements SurfaceHolder.Callback
 
         bitmapPaint = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
         thread.setRunning(true);
-        thread.start();
+        if (!thread.isInterrupted()) {
+            thread.start();
+
+        }
     }
 
     public void setRunning(boolean isRun) {
@@ -140,6 +157,7 @@ public class TsSurfaceView extends SurfaceView implements SurfaceHolder.Callback
         while (retry) {
             try {
                 thread.join();
+                thread.interrupt();
                 retry = false;
             } catch (InterruptedException e) {
                 // we will try it again and again...
