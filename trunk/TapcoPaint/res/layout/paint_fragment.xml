@@ -75,11 +75,6 @@
     <!-- Bottom -->
 
     <include
-        android:id="@+id/color_picker_container"
-        layout="@layout/color_picker"
-        android:visibility="gone" />
-
-    <include
         android:id="@+id/color_option_container"
         layout="@layout/color_option"
         android:visibility="visible" />

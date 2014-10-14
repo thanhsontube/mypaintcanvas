@@ -25,13 +25,20 @@
                 android:padding="4dp"
                 android:text="色" />
 
-            <View
-                android:id="@+id/color_review"
-                android:layout_width="48dp"
-                android:layout_height="24dp"
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:background="#ff0000"
-                android:padding="8dp" />
+                android:layout_margin="8dp"
+                android:background="@drawable/bg_color_weight"
+                android:padding="1dp" >
+
+                <View
+                    android:id="@+id/color_review"
+                    android:layout_width="48dp"
+                    android:layout_height="24dp"
+                    android:background="#ff0000" />
+            </FrameLayout>
         </LinearLayout>
 
         <RelativeLayout
@@ -73,7 +80,7 @@
                 android:layout_toLeftOf="@id/weight_review"
                 android:layout_toRightOf="@id/weight_lbl"
                 android:max="4"
-                android:progress="3" />
+                android:progress="1" />
         </RelativeLayout>
     </LinearLayout>
 
