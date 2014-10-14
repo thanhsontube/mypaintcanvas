@@ -47,23 +47,23 @@
                 android:padding="4dp"
                 android:text="線" />
 
-            <FrameLayout
+            <RelativeLayout
                 android:id="@+id/weight_review"
                 android:layout_width="48dp"
                 android:layout_height="24dp"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_margin="8dp"
-                android:background="@drawable/bg_color_weight" >
+                android:background="@drawable/bg_color_weight"
+                android:gravity="center" >
 
                 <View
                     android:id="@+id/weight_review_point"
                     android:layout_width="5dp"
                     android:layout_height="5dp"
-                    android:layout_gravity="center"
                     android:layout_margin="8dp"
                     android:background="@drawable/circle_color_weight" />
-            </FrameLayout>
+            </RelativeLayout>
 
             <SeekBar
                 android:id="@+id/weight_sb"
