@@ -7,6 +7,8 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Xfermode;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -22,6 +24,7 @@ import android.widget.TextView;
 import com.example.tapcopaint.R;
 import com.example.tapcopaint.base.BaseFragment;
 import com.example.tapcopaint.base.BaseFragmentActivity.OnBackPressListener;
+import com.example.tapcopaint.dialog.ColorPickerDialog;
 import com.example.tapcopaint.popup.ActionItem;
 import com.example.tapcopaint.popup.QuickAction;
 import com.example.tapcopaint.utils.FilterLog;
@@ -122,6 +125,10 @@ public class PaintFragment extends BaseFragment implements OnClickListener,
 
 		View viewMove = rootView.findViewById(R.id.paint_move);
 		viewMove.setOnClickListener(this);
+		
+		// colorview
+        View colorView = rootView.findViewById(R.id.color_review);
+        colorView.setOnClickListener(this);
 	}
 
 	private void initColorView(View rootView) {
@@ -151,8 +158,12 @@ public class PaintFragment extends BaseFragment implements OnClickListener,
 		weightSeekbar = (SeekBar) rootView.findViewById(R.id.weight_sb);
 		weightSeekbar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 
+
+    
+
 			@Override
 			public void onStopTrackingTouch(SeekBar arg0) {
+
 
 			}
 
@@ -180,6 +191,11 @@ public class PaintFragment extends BaseFragment implements OnClickListener,
 				.findViewById(R.id.weight_review_point);
 	}
 
+
+  
+
+      
+
 	public Paint resetPaint() {
 		Paint mPaint = new Paint();
 		// default
@@ -193,6 +209,7 @@ public class PaintFragment extends BaseFragment implements OnClickListener,
 		mPaint = PaintUtil.setAlpha(mPaint, opacitySeekbar.getProgress());
 		return mPaint;
 	}
+
 
 	@Override
 	public void onClick(View v) {
@@ -258,6 +275,16 @@ public class PaintFragment extends BaseFragment implements OnClickListener,
 			quickAction.addActionItem(item3);
 			quickAction.show();
 			break;
+		  case R.id.color_review:
+	            FragmentManager fm = getChildFragmentManager();
+	            FragmentTransaction ft = fm.beginTransaction();
+
+	            ColorPickerDialog f = ColorPickerDialog.newInstance("#ff00ff");
+	            ft.add(f, null);
+	            ft.commitAllowingStateLoss();
+	            break;
+
+	       
 		default:
 			break;
 		}

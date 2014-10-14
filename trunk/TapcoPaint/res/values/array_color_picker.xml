@@ -2,22 +2,40 @@
 <resources>
 
     <string-array name="array_color_picker">
+        <item>#ffffff</item>
+        <item>#000000</item>
+        <item>#ff0000</item>
+        <item>#0000ff</item>
+        <item>#ffff00</item>
+        <item>#008000</item>
+        <item>#cc00cc</item>
+        <item>#006699</item>
+        <item>#f2f2f2</item>
+        <item>#262626</item>
+        <item>#ff6600</item>
+        <item>#0066ff</item>
+        <item>#ffff66</item>
+        <item>#33cc33</item>
         <item>#ff00ff</item>
-        <item>#ff00ff</item>
-        <item>#ff00ff</item>
-        <item>#ff00ff</item>
-        <item>#ff00ff</item>
-        <item>#ff00ff</item>
-        <item>#ff00ff</item>
-        <item>#ff00ff</item>
-        <item>#dd9900</item>
-        <item>#ff00ff</item>
-        <item>#ff00ff</item>
-        <item>#440088</item>
-        <item>#ff00ff</item>
-        <item>#ff00ff</item>
-        <item>#ff00ff</item>
-        <item>#ff00ff</item>
+        <!-- item 15 -->
+        <item>#33cccc</item>
+        <item>#bfbfbf</item>
+        <item>#404040</item>
+        <item>#ff9966</item>
+        <item>#3399ff</item>
+        <item>#ffff99</item>
+        <item>#66ff66</item>
+        <item>#ff66ff</item>
+        <item>#00ffff</item>
+        <!-- 4.1 -->
+        <item>#a6a6a6</item>
+        <item>#606060</item>
+        <item>#ffcc99</item>
+        <item>#66ccff</item>
+        <item>#ffffcc</item>
+        <item>#99ff99</item>
+        <item>#ff99ff</item>
+        <item>#66ffff</item>
     </string-array>
 
 </resources>
