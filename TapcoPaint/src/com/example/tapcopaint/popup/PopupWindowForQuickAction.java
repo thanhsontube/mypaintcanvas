@@ -16,132 +16,133 @@ import android.widget.PopupWindow;
 import com.example.tapcopaint.R;
 
 public class PopupWindowForQuickAction {
-	protected final View anchor;
-	protected final PopupWindow window;
-	private View rootView;
-	private Drawable background = null;
-	protected final WindowManager windowManager;
+    protected final View anchor;
+    protected final PopupWindow window;
+    private View rootView;
+    private Drawable background = null;
+    protected final WindowManager windowManager;
 
-	public PopupWindowForQuickAction(View anchor) {
-		this.anchor = anchor;
-		this.window = new PopupWindow(anchor.getContext());
+    public PopupWindowForQuickAction(View anchor) {
+        this.anchor = anchor;
+        this.window = new PopupWindow(anchor.getContext());
 
-		window.setTouchInterceptor(new OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
-					PopupWindowForQuickAction.this.window.dismiss();
-					
-					return true;
-				}
-				
-				return false;
-			}
-		});
+        window.setTouchInterceptor(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
+                    PopupWindowForQuickAction.this.window.dismiss();
 
-		windowManager = (WindowManager) anchor.getContext().getSystemService(Context.WINDOW_SERVICE);
-		onCreate();
-	}
+                    return true;
+                }
 
-	protected void onCreate() {}
+                return false;
+            }
+        });
 
-	protected void onShow() {}
+        windowManager = (WindowManager) anchor.getContext().getSystemService(Context.WINDOW_SERVICE);
+        onCreate();
+    }
 
-	@SuppressWarnings("deprecation")
+    protected void onCreate() {
+    }
+
+    protected void onShow() {
+    }
+
+    @SuppressWarnings("deprecation")
     protected void preShow() {
-		if (rootView == null) {
-			throw new IllegalStateException("setContentView was not called with a view to display.");
-		}
-		
-		onShow();
+        if (rootView == null) {
+            throw new IllegalStateException("setContentView was not called with a view to display.");
+        }
 
-		if (background == null) {
-			window.setBackgroundDrawable(new BitmapDrawable());
-		} else {
-			window.setBackgroundDrawable(background);
-		}
+        onShow();
 
-		window.setWidth(WindowManager.LayoutParams.MATCH_PARENT);
-		window.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
-		window.setTouchable(true);
-		window.setFocusable(true);
-		window.setOutsideTouchable(true);
+        if (background == null) {
+            window.setBackgroundDrawable(new BitmapDrawable());
+        } else {
+            window.setBackgroundDrawable(background);
+        }
 
-		window.setContentView(rootView);
-	}
+        window.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setTouchable(true);
+        window.setFocusable(true);
+        window.setOutsideTouchable(true);
 
-	public void setBackgroundDrawable(Drawable background) {
-		this.background = background;
-	}
+        window.setContentView(rootView);
+    }
 
-	public void setContentView(View root) {
-		this.rootView = root;
-		
-		window.setContentView(root);
-	}
+    public void setBackgroundDrawable(Drawable background) {
+        this.background = background;
+    }
 
-	public void setContentView(int layoutResID) {
-		LayoutInflater inflator =
-				(LayoutInflater) anchor.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		
-		setContentView(inflator.inflate(layoutResID, null));
-	}
+    public void setContentView(View root) {
+        this.rootView = root;
 
-	public void setOnDismissListener(PopupWindow.OnDismissListener listener) {
-		window.setOnDismissListener(listener);
-	}
+        window.setContentView(root);
+    }
 
-	public void showDropDown() {
-		showDropDown(0, 0);
-	}
+    public void setContentView(int layoutResID) {
+        LayoutInflater inflator = (LayoutInflater) anchor.getContext()
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-	public void showDropDown(int xOffset, int yOffset) {
-		preShow();
+        setContentView(inflator.inflate(layoutResID, null));
+    }
 
-		window.setAnimationStyle(R.style.Animations_PopDownMenu);
-		//window.setAnimationStyle(R.style.Animations_PopDownMenu_Left);
+    public void setOnDismissListener(PopupWindow.OnDismissListener listener) {
+        window.setOnDismissListener(listener);
+    }
 
-		window.showAsDropDown(anchor, xOffset, yOffset);
-	}
+    public void showDropDown() {
+        showDropDown(0, 0);
+    }
 
-	public void showLikeQuickAction() {
-		showLikeQuickAction(0, 0);
-	}
+    public void showDropDown(int xOffset, int yOffset) {
+        preShow();
 
-	public void showLikeQuickAction(int xOffset, int yOffset) {
-		preShow();
+        window.setAnimationStyle(R.style.Animations_PopDownMenu);
+        // window.setAnimationStyle(R.style.Animations_PopDownMenu_Left);
 
-		window.setAnimationStyle(R.style.Animations_PopUpMenu_Center);
+        window.showAsDropDown(anchor, xOffset, yOffset);
+    }
 
-		int[] location = new int[2];
-		anchor.getLocationOnScreen(location);
+    public void showLikeQuickAction() {
+        showLikeQuickAction(0, 0);
+    }
 
-		Rect anchorRect =
-				new Rect(location[0], location[1], location[0] + anchor.getWidth(), location[1]
-					+ anchor.getHeight());
+    public void showLikeQuickAction(int xOffset, int yOffset) {
+        preShow();
 
-		rootView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-		rootView.measure(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		
-		int rootWidth 		= rootView.getMeasuredWidth();
-		int rootHeight 		= rootView.getMeasuredHeight();
+        window.setAnimationStyle(R.style.Animations_PopUpMenu_Center);
 
-		int screenWidth 	= windowManager.getDefaultDisplay().getWidth();
-		//int screenHeight 	= windowManager.getDefaultDisplay().getHeight();
+        int[] location = new int[2];
+        anchor.getLocationOnScreen(location);
 
-		int xPos 			= ((screenWidth - rootWidth) / 2) + xOffset;
-		int yPos	 		= anchorRect.top - rootHeight + yOffset;
+        Rect anchorRect = new Rect(location[0], location[1], location[0] + anchor.getWidth(), location[1]
+                + anchor.getHeight());
 
-		if (rootHeight > anchorRect.top) {
-			yPos = anchorRect.bottom + yOffset;
-			
-			window.setAnimationStyle(R.style.Animations_PopDownMenu_Center);
-		}
+        rootView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+        rootView.measure(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 
-		window.showAtLocation(anchor, Gravity.NO_GRAVITY, xPos, yPos);
-	}
-	
-	public void dismiss() {
-		window.dismiss();
-	}
+        int rootWidth = rootView.getMeasuredWidth();
+        int rootHeight = rootView.getMeasuredHeight();
+
+        int screenWidth = windowManager.getDefaultDisplay().getWidth();
+        // int screenHeight = windowManager.getDefaultDisplay().getHeight();
+
+        int xPos = ((screenWidth - rootWidth) / 2) + xOffset;
+        int yPos = anchorRect.top - rootHeight + yOffset;
+
+        if (rootHeight > anchorRect.top) {
+            yPos = anchorRect.bottom + yOffset;
+
+            window.setAnimationStyle(R.style.Animations_PopDownMenu_Center);
+        }
+
+        window.showAtLocation(anchor, Gravity.NO_GRAVITY, xPos, yPos);
+    }
+
+    public void dismiss() {
+        window.dismiss();
+    }
 }
