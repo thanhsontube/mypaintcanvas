@@ -78,15 +78,15 @@ public class CommandManager {
                 }
             }
         }
-        if (tmpStack != null) {
-            synchronized (tmpStack) {
-                final Iterator<DrawingPath> i = tmpStack.iterator();
-                while (i.hasNext()) {
-                    final DrawingPath drawingPath = (DrawingPath) i.next();
-                    drawingPath.draw(canvas);
-                }
-            }
-        }
+//        if (tmpStack != null) {
+//            synchronized (tmpStack) {
+//                final Iterator<DrawingPath> i = tmpStack.iterator();
+//                while (i.hasNext()) {
+//                    final DrawingPath drawingPath = (DrawingPath) i.next();
+//                    drawingPath.draw(canvas);
+//                }
+//            }
+//        }
     }
 
     public boolean hasMoreRedo() {

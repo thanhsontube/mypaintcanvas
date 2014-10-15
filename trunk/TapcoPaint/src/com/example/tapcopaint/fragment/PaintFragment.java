@@ -9,8 +9,6 @@ import android.graphics.Xfermode;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -26,11 +24,9 @@ import android.widget.TextView;
 import com.example.tapcopaint.R;
 import com.example.tapcopaint.base.BaseFragment;
 import com.example.tapcopaint.base.BaseFragmentActivity.OnBackPressListener;
-import com.example.tapcopaint.dialog.ColorPickerDialog;
 import com.example.tapcopaint.dialog.ColorPickerDialog.IColorPickerListener;
 import com.example.tapcopaint.popup.ActionItem;
-import com.example.tapcopaint.popup.MyQuickAction;
-import com.example.tapcopaint.popup.QuickAction;
+import com.example.tapcopaint.popup.QuickAction2;
 import com.example.tapcopaint.popup.TsPopupWindow;
 import com.example.tapcopaint.utils.FilterLog;
 import com.example.tapcopaint.utils.PaintUtil;
@@ -38,6 +34,9 @@ import com.example.tapcopaint.view.DrawingPath;
 import com.example.tapcopaint.view.TsSurfaceView;
 
 public class PaintFragment extends BaseFragment implements OnClickListener, OnBackPressListener, OnTouchListener {
+    
+    
+    public static int KK = 0;
 
     private int id;
     private ImageView img, imgErase;
@@ -201,7 +200,7 @@ public class PaintFragment extends BaseFragment implements OnClickListener, OnBa
 
     @Override
     public void onClick(View v) {
-        QuickAction quickAction = new QuickAction(v);
+        QuickAction2 quickAction = new QuickAction2(v);
         switch (v.getId()) {
         case R.id.paint_btn_cancel:
             onBackPress();
@@ -279,16 +278,17 @@ public class PaintFragment extends BaseFragment implements OnClickListener, OnBa
                 color = PaintUtil.getColor(i);
                 log.d("log>>> " + "color:" + color);
             }
-            TsPopupWindow tsPopupWindow2 = new TsPopupWindow(v);
+
+            TsPopupWindow tsPopupWindow2 = new TsPopupWindow(v, color);
             tsPopupWindow2.show();
 
-//            FragmentManager fm = getChildFragmentManager();
-//            FragmentTransaction ft = fm.beginTransaction();
-//
-//            ColorPickerDialog f = ColorPickerDialog.newInstance(color);
-//            f.setOnListener(colorPickerListener);
-//            ft.add(f, null);
-//            ft.commitAllowingStateLoss();
+            // FragmentManager fm = getChildFragmentManager();
+            // FragmentTransaction ft = fm.beginTransaction();
+            //
+            // ColorPickerDialog f = ColorPickerDialog.newInstance(color);
+            // f.setOnListener(colorPickerListener);
+            // ft.add(f, null);
+            // ft.commitAllowingStateLoss();
             break;
 
         default:

@@ -4,32 +4,202 @@
     android:layout_height="wrap_content"
     android:background="@android:color/transparent" >
 
-    <ScrollView
-        android:id="@+id/scroller"
+    <LinearLayout
+        android:id="@+id/tracks"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:fadingEdgeLength="5dp"
-        android:scrollbars="none" >
+        android:background="@android:color/white"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:padding="8dp" >
+
+        <!-- left -->
 
         <LinearLayout
-            android:id="@+id/tracks"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/white"
-            android:orientation="vertical"
-            android:padding="10dp" >
+            android:orientation="vertical" >
 
-            <include
-                android:id="@+id/view_color_pick"
-                layout="@layout/color_picker_2" />
+            <!-- color preview -->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:background="@drawable/d_color_bg_black" >
+
+                <ImageView
+                    android:id="@+id/color_pick_img_preview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="2dp"
+                    android:background="#ff0000"
+                    android:tag="preview" />
+            </LinearLayout>
+            <!-- red config -->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal" >
+
+                <LinearLayout
+                    android:layout_width="60dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/d_color_bg_black" >
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" >
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="2dp"
+                            android:src="#ff0000" />
+
+                        <TextView
+                            android:id="@+id/color_pick_txt_value_r"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:singleLine="true"
+                            android:tag="txt_value_r"
+                            android:text="R:155"
+                            android:textColor="@android:color/white"
+                            android:textStyle="bold" />
+                    </FrameLayout>
+                </LinearLayout>
+
+                <SeekBar
+                    android:id="@+id/color_pick_seekbar_r"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:max="255"
+                    android:progress="0"
+                    android:tag="seek_r" />
+            </LinearLayout>
+
+            <!-- green config -->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal" >
+
+                <LinearLayout
+                    android:layout_width="60dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/d_color_bg_black" >
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" >
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="2dp"
+                            android:src="#00ff00" />
+
+                        <TextView
+                            android:id="@+id/color_pick_txt_value_g"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:singleLine="true"
+                            android:tag="txt_value_g"
+                            android:text="G:155"
+                            android:textColor="@android:color/white"
+                            android:textStyle="bold" />
+                    </FrameLayout>
+                </LinearLayout>
+
+                <SeekBar
+                    android:id="@+id/color_pick_seekbar_g"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:max="255"
+                    android:progress="0"
+                    android:tag="seek_g" />
+            </LinearLayout>
+            <!-- blue config -->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal" >
+
+                <LinearLayout
+                    android:layout_width="60dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/d_color_bg_black" >
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" >
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="2dp"
+                            android:src="#0000ff" />
+
+                        <TextView
+                            android:id="@+id/color_pick_txt_value_b"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:singleLine="true"
+                            android:tag="txt_value_b"
+                            android:text="B:155"
+                            android:textColor="@android:color/white"
+                            android:textStyle="bold" />
+                    </FrameLayout>
+                </LinearLayout>
+
+                <SeekBar
+                    android:id="@+id/color_pick_seekbar_b"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:max="255"
+                    android:progress="0"
+                    android:tag="seek_b" />
+            </LinearLayout>
         </LinearLayout>
-    </ScrollView>
+
+        <!-- right -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp" >
+
+            <GridView
+                android:id="@+id/color_pick_grid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:horizontalSpacing="8dp"
+                android:numColumns="8"
+                android:verticalSpacing="8dp" >
+            </GridView>
+        </LinearLayout>
+    </LinearLayout>
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/scroller"
+        android:layout_below="@id/tracks"
         android:layout_marginTop="-4dp"
         android:src="@drawable/ic_arrow_down"
         android:tag="down" />

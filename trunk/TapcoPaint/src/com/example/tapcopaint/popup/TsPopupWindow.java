@@ -1,6 +1,10 @@
 package com.example.tapcopaint.popup;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
@@ -14,13 +18,21 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.TextView;
 
 import com.example.tapcopaint.R;
+import com.example.tapcopaint.adapter.ColorAdapter;
 import com.example.tapcopaint.utils.FilterLog;
+import com.example.tapcopaint.utils.PaintUtil;
 
-public class TsPopupWindow {
+public class TsPopupWindow implements OnSeekBarChangeListener, OnItemClickListener {
     private static final String TAG = "TsPopupWindow";
     FilterLog log = new FilterLog(TAG);
     View anchor;
@@ -34,6 +46,31 @@ public class TsPopupWindow {
     Context context;
     LayoutInflater inflater;
     ImageView arrowDown;
+
+    //
+    private String color;
+    private List<String> list = new ArrayList<String>();
+    private ColorAdapter adapter;
+
+    private SeekBar seekBarR, seekBarG, seekBarB;
+    private TextView txtR, txtG, txtB;
+    private ImageView imgPreview;
+    IColorPickerListener listener;
+
+    public interface IColorPickerListener {
+        public void onIColorPickerDone(String color);
+    }
+
+    public void setOnListener(IColorPickerListener listener) {
+        this.listener = listener;
+    }
+
+    public TsPopupWindow(View anchor, String color) {
+        this(anchor);
+        this.color = color;
+        //
+        initLayout(rootView);
+    }
 
     public TsPopupWindow(View anchor) {
         log.d("log>>> " + "TsPopupWindow");
@@ -71,8 +108,6 @@ public class TsPopupWindow {
 
     }
 
-    int i = 0;
-
     private void preShow() {
 
         if (rootView == null) {
@@ -90,37 +125,10 @@ public class TsPopupWindow {
         popupWindow.setTouchable(true);
         popupWindow.setFocusable(true);
         popupWindow.setOutsideTouchable(true);
-        popupWindow.setAnimationStyle(R.style.Animations_PopUpMenu_Center);
+        popupWindow.setAnimationStyle(R.style.Animations_PopUpMenu_Left);
         popupWindow.setContentView(rootView);
         log.d("log>>> " + "preShow rootView W:" + rootView.getMeasuredWidth());
-        switch (i) {
-        case 0:
-            popupWindow.setAnimationStyle(R.style.Animations_PopUpMenu_Left);
 
-            break;
-        case 1:
-            popupWindow.setAnimationStyle(R.style.Animations_PopDownMenu_Left);
-            break;
-        case 2:
-            popupWindow.setAnimationStyle(R.style.Animations_PopUpMenu_Right);
-            break;
-        case 3:
-            popupWindow.setAnimationStyle(R.style.Animations_PopDownMenu_Right);
-            break;
-        case 4:
-            popupWindow.setAnimationStyle(R.style.Animations_PopUpMenu_Center);
-            break;
-        case 5:
-            popupWindow.setAnimationStyle(R.style.Animations_PopDownMenu_Center);
-            break;
-
-        default:
-            break;
-        }
-        i++;
-        if (i == 6) {
-            i = 0;
-        }
     }
 
     /**
@@ -169,5 +177,89 @@ public class TsPopupWindow {
         final int arrowWidth = arrowDown.getMeasuredWidth();
         ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) arrowDown.getLayoutParams();
         marginLayoutParams.leftMargin = requestedX - (arrowWidth / 2);
+    }
+
+    private void initLayout(View dialog) {
+        imgPreview = (ImageView) dialog.findViewById(R.id.color_pick_img_preview);
+
+        seekBarR = (SeekBar) dialog.findViewById(R.id.color_pick_seekbar_r);
+        seekBarG = (SeekBar) dialog.findViewById(R.id.color_pick_seekbar_g);
+        seekBarB = (SeekBar) dialog.findViewById(R.id.color_pick_seekbar_b);
+
+        seekBarR.setOnSeekBarChangeListener(this);
+        seekBarG.setOnSeekBarChangeListener(this);
+        seekBarB.setOnSeekBarChangeListener(this);
+
+        txtR = (TextView) dialog.findViewById(R.id.color_pick_txt_value_r);
+        txtG = (TextView) dialog.findViewById(R.id.color_pick_txt_value_g);
+        txtB = (TextView) dialog.findViewById(R.id.color_pick_txt_value_b);
+
+        GridView lv = (GridView) dialog.findViewById(R.id.color_pick_grid);
+        lv.setOnItemClickListener(this);
+        adapter = new ColorAdapter(context, list);
+        lv.setAdapter(adapter);
+        updateView(color);
+        initGrid();
+    }
+
+    private void updateView(String color) {
+        imgPreview.setBackgroundColor(Color.parseColor(color));
+        int[] intColor = PaintUtil.getRGB(color);
+        if (intColor == null || intColor.length == 0) {
+            return;
+        }
+        txtR.setText("R:" + intColor[0]);
+        txtG.setText("G:" + intColor[1]);
+        txtB.setText("B:" + intColor[2]);
+
+        seekBarR.setProgress(intColor[0]);
+        seekBarG.setProgress(intColor[1]);
+        seekBarB.setProgress(intColor[2]);
+    }
+
+    void initGrid() {
+        list.clear();
+        String[] arrayColor = context.getResources().getStringArray(R.array.array_color_picker);
+        for (String string : arrayColor) {
+            list.add(string);
+        }
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        if (seekBar == seekBarR) {
+            txtR.setText("R:" + progress);
+        }
+        if (seekBar == seekBarG) {
+            txtG.setText("G:" + progress);
+        }
+        if (seekBar == seekBarB) {
+            txtB.setText("B:" + progress);
+        }
+
+        String color = PaintUtil.getColor(seekBarR.getProgress(), seekBarG.getProgress(), seekBarB.getProgress());
+        log.d("log>>> " + "color:" + color);
+        imgPreview.setBackgroundColor(Color.parseColor(color));
+
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+        String color = list.get(arg2);
+        updateView(color);
+
     }
 }
