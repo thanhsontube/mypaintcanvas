@@ -101,10 +101,14 @@ public class TsSurfaceView extends SurfaceView implements SurfaceHolder.Callback
         commandManager.addCommand(drawingPath, save);
     }
 
-    public void clearTmpStack() {
-        commandManager.clearTempStack();
-    }
+//    public void clearTmpStack() {
+//        commandManager.clearTempStack();
+//    }
 
+    public void drawCurrent(DrawingPath drawingPath) {
+    	commandManager.drawCurrent(drawingPath);
+    }
+    
     public boolean hasMoreRedo() {
         return commandManager.hasMoreRedo();
     }

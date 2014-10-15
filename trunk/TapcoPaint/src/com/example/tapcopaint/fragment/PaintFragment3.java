@@ -190,7 +190,7 @@ public class PaintFragment3 extends BaseFragment implements OnTouchListener {
     private void touchUp(float x, float y) {
         currentDrawingPath.path.lineTo(mX, mY);
         tsSurfaceView.addDrawingPath(currentDrawingPath, true);
-        tsSurfaceView.clearTmpStack();
+//        tsSurfaceView.clearTmpStack();
     }
 
     @Override

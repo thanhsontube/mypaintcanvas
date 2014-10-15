@@ -328,7 +328,8 @@ public class PaintFragment extends BaseFragment implements OnClickListener, OnBa
         currentDrawingPath.path = new Path();
         currentDrawingPath.path.moveTo(x, y);
         currentDrawingPath.path.lineTo(x, y);
-        tsSurfaceView.addDrawingPath(currentDrawingPath, false);
+        tsSurfaceView.drawCurrent(currentDrawingPath);
+//        tsSurfaceView.addDrawingPath(currentDrawingPath, false);
     }
 
     @Override
@@ -350,7 +351,8 @@ public class PaintFragment extends BaseFragment implements OnClickListener, OnBa
             mX = x;
             mY = y;
         }
-        tsSurfaceView.addDrawingPath(currentDrawingPath, false);
+        tsSurfaceView.drawCurrent(currentDrawingPath);
+//        tsSurfaceView.addDrawingPath(currentDrawingPath, false);
     }
 
     private void touchUp(float x, float y) {
@@ -358,7 +360,8 @@ public class PaintFragment extends BaseFragment implements OnClickListener, OnBa
         tsSurfaceView.onMyDraw(path, mPaint);
         currentDrawingPath.path.lineTo(mX, mY);
         tsSurfaceView.addDrawingPath(currentDrawingPath, true);
-        tsSurfaceView.clearTmpStack();
+//        tsSurfaceView.clearTmpStack();
+        tsSurfaceView.drawCurrent(null);
 
         mPaint = resetPaint();
     }
