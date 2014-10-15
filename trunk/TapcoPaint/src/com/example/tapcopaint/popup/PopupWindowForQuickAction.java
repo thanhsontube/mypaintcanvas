@@ -47,7 +47,8 @@ public class PopupWindowForQuickAction {
 
 	protected void onShow() {}
 
-	protected void preShow() {
+	@SuppressWarnings("deprecation")
+    protected void preShow() {
 		if (rootView == null) {
 			throw new IllegalStateException("setContentView was not called with a view to display.");
 		}
@@ -60,7 +61,7 @@ public class PopupWindowForQuickAction {
 			window.setBackgroundDrawable(background);
 		}
 
-		window.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
+		window.setWidth(WindowManager.LayoutParams.MATCH_PARENT);
 		window.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
 		window.setTouchable(true);
 		window.setFocusable(true);
