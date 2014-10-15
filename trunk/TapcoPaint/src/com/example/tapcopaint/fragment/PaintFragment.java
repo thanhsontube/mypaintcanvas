@@ -24,18 +24,17 @@ import android.widget.TextView;
 import com.example.tapcopaint.R;
 import com.example.tapcopaint.base.BaseFragment;
 import com.example.tapcopaint.base.BaseFragmentActivity.OnBackPressListener;
-import com.example.tapcopaint.dialog.ColorPickerDialog.IColorPickerListener;
 import com.example.tapcopaint.popup.ActionItem;
 import com.example.tapcopaint.popup.QuickAction2;
 import com.example.tapcopaint.popup.TsPopupWindow;
+import com.example.tapcopaint.popup.TsPopupWindow.IColorPickerListener;
 import com.example.tapcopaint.utils.FilterLog;
 import com.example.tapcopaint.utils.PaintUtil;
 import com.example.tapcopaint.view.DrawingPath;
 import com.example.tapcopaint.view.TsSurfaceView;
 
 public class PaintFragment extends BaseFragment implements OnClickListener, OnBackPressListener, OnTouchListener {
-    
-    
+
     public static int KK = 0;
 
     private int id;
@@ -262,7 +261,8 @@ public class PaintFragment extends BaseFragment implements OnClickListener, OnBa
             // MyQuickAction myQuickAction = new MyQuickAction(v);
             // myQuickAction.show();
 
-            TsPopupWindow tsPopupWindow = new TsPopupWindow(v);
+            TsPopupWindow tsPopupWindow = new TsPopupWindow(v, "#ff00ff");
+            tsPopupWindow.setOnListener(colorPickerListener);
             tsPopupWindow.show();
             break;
         case R.id.color_review:
@@ -280,6 +280,7 @@ public class PaintFragment extends BaseFragment implements OnClickListener, OnBa
             }
 
             TsPopupWindow tsPopupWindow2 = new TsPopupWindow(v, color);
+            tsPopupWindow2.setOnListener(colorPickerListener);
             tsPopupWindow2.show();
 
             // FragmentManager fm = getChildFragmentManager();
@@ -301,6 +302,7 @@ public class PaintFragment extends BaseFragment implements OnClickListener, OnBa
 
         @Override
         public void onIColorPickerDone(String color) {
+            log.d("log>>> " + "onIColorPickerDone color:" + color);
             colorView.setBackgroundColor(Color.parseColor(color));
             mPaint = resetPaint();
         }
