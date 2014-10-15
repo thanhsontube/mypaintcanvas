@@ -5,25 +5,23 @@ import java.util.List;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.view.Display;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.ViewTreeObserver;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
-import android.widget.PopupWindow.OnDismissListener;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -33,7 +31,7 @@ import com.example.tapcopaint.adapter.ColorAdapter;
 import com.example.tapcopaint.utils.FilterLog;
 import com.example.tapcopaint.utils.PaintUtil;
 
-public class TsPopupWindow implements OnSeekBarChangeListener, OnItemClickListener {
+public class TsPopupWindow2 extends PopupWindows implements OnSeekBarChangeListener, OnItemClickListener {
     private static final String TAG = "TsPopupWindow";
     FilterLog log = new FilterLog(TAG);
     View anchor;
@@ -66,49 +64,56 @@ public class TsPopupWindow implements OnSeekBarChangeListener, OnItemClickListen
         this.listener = listener;
     }
 
-    public TsPopupWindow(View anchor, String color) {
-        log.d("log>>> " + "TsPopupWindow");
+    public TsPopupWindow2(View anchor, String color) {
+        super(anchor.getContext());
         this.color = color;
-
         this.anchor = anchor;
         this.context = anchor.getContext();
-        this.popupWindow = new PopupWindow(context);
-        this.popupWindow.setTouchInterceptor(new OnTouchListener() {
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
-                    log.d("log>>> " + "ACTION_OUTSIDE");
-                    popupWindow.dismiss();
-                    return true;
-                }
-                return false;
-            }
-        });
-
-        this.popupWindow.setOnDismissListener(new OnDismissListener() {
-
-            @Override
-            public void onDismiss() {
-                if (listener != null) {
-                    log.d("log>>> " + "ACTION_OUTSIDE 2");
-                    String color = PaintUtil.getColor(seekBarR.getProgress(), seekBarG.getProgress(),
-                            seekBarB.getProgress());
-                    listener.onIColorPickerDone(color);
-                }
-
-            }
-        });
-        windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        Display display = windowManager.getDefaultDisplay();
-        Point point = new Point();
-        display.getSize(point);
-        screenW = point.x;
-        screenH = point.y;
-        log.d("log>>> " + "screenW:" + screenW + ";screenH:" + screenH);
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        onCreate();
+        setRootViewId(R.layout.ts_popup_window);
+
+        //
+        // initLayout(rootView);
     }
+
+    public void setRootViewId(int id) {
+        mRootView = (ViewGroup) inflater.inflate(id, null);
+        arrowDown = (ImageView) mRootView.findViewWithTag("down");
+
+        // This was previously defined on show() method, moved here to prevent force close that occured
+        // when tapping fastly on a view to show quickaction dialog.
+        // Thanx to zammbi (github.com/zammbi)
+        mRootView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+
+        setContentView(mRootView);
+    }
+
+    // public TsPopupWindow2(View anchor) {
+    // log.d("log>>> " + "TsPopupWindow");
+    // this.anchor = anchor;
+    // this.context = anchor.getContext();
+    // this.popupWindow = new PopupWindow(context);
+    // this.popupWindow.setTouchInterceptor(new OnTouchListener() {
+    //
+    // @Override
+    // public boolean onTouch(View v, MotionEvent event) {
+    // if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
+    // popupWindow.dismiss();
+    // return true;
+    // }
+    // return false;
+    // }
+    // });
+    // windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+    // Display display = windowManager.getDefaultDisplay();
+    // Point point = new Point();
+    // display.getSize(point);
+    // screenW = point.x;
+    // screenH = point.y;
+    // log.d("log>>> " + "screenW:" + screenW + ";screenH:" + screenH);
+    // inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    // onCreate();
+    // }
 
     protected void onCreate() {
         log.d("log>>> " + "onCreate");
@@ -116,31 +121,63 @@ public class TsPopupWindow implements OnSeekBarChangeListener, OnItemClickListen
         rootView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
         log.d("log>>> " + "onCreate rootView W:" + rootView.getMeasuredWidth());
         arrowDown = (ImageView) rootView.findViewWithTag("down");
-        View dialog = rootView.findViewById(R.id.view_color_picker);
-        //
-        initLayout(dialog);
+
     }
 
-    private void preShow() {
+    private int rootWidth = 0;
 
-        if (rootView == null) {
-            throw new IllegalStateException("setContentView was not called with a view to display.");
+    public void show2() {
+        preShow();
 
+        int xPos, yPos, arrowPos;
+
+        int[] location = new int[2];
+
+        anchor.getLocationOnScreen(location);
+
+        Rect anchorRect = new Rect(location[0], location[1], location[0] + anchor.getWidth(), location[1]
+                + anchor.getHeight());
+
+        // mRootView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+
+        mRootView.measure(0,0);
+        
+
+        int rootHeight = mRootView.getMeasuredHeight();
+
+        if (rootWidth == 0) {
+            rootWidth = mRootView.getMeasuredWidth();
         }
-        if (drawable == null) {
-            popupWindow.setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-        } else {
-            popupWindow.setBackgroundDrawable(drawable);
-        }
+        Log.e("", ">>>rootWidth: " + rootWidth + ";rootHeight:" + rootHeight);
+        int screenWidth = mWindowManager.getDefaultDisplay().getWidth();
+        int screenHeight = mWindowManager.getDefaultDisplay().getHeight();
 
-        popupWindow.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
-        popupWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
-        popupWindow.setTouchable(true);
-        popupWindow.setFocusable(true);
-        popupWindow.setOutsideTouchable(true);
-        popupWindow.setAnimationStyle(R.style.Animations_PopUpMenu_Left);
-        popupWindow.setContentView(rootView);
-        log.d("log>>> " + "preShow rootView W:" + rootView.getMeasuredWidth());
+        LinearLayout ll2 = (LinearLayout) mRootView.findViewById(R.id.tracks);
+        int[] location2 = new int[2];
+
+        ll2.getLocationOnScreen(location2);
+
+        log.d("log>>> " + "WW:" + ll2.getMeasuredWidth() + ";HH:" + ll2.getMeasuredHeight());
+        Rect anchorRect2 = new Rect(location2[0], location2[1], location2[0] + ll2.getWidth(), location2[1]
+                + ll2.getHeight());
+        ll2.getLocationOnScreen(location2);
+        log.d("log>>> " + "ll2 rect left:" + anchorRect2.left + ";right:" + anchorRect2.right + ";top:"
+                + anchorRect2.top + ";bottom:" + anchorRect2.bottom);
+
+//        ViewTreeObserver viewTreeObserver = mRootView.getViewTreeObserver();
+//        if (viewTreeObserver.isAlive()) {
+//            viewTreeObserver.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+//                @Override
+//                public void onGlobalLayout() {
+//                  
+//                    int a = mRootView.getWidth();
+//                    int b = mRootView.getHeight();
+//                    log.d("log>>> " + "a:" + a + ";b:" + b);
+//                }
+//            });
+//        }
+
+        mWindow.showAtLocation(anchor, Gravity.NO_GRAVITY, 0, 0);
 
     }
 
@@ -183,7 +220,7 @@ public class TsPopupWindow implements OnSeekBarChangeListener, OnItemClickListen
         }
         log.d("log>>> " + "final xPos:" + xPos + ";yPos:" + yPos);
         showArrow(anchorRect.centerX() - xPos);
-        popupWindow.showAtLocation(anchor, Gravity.CENTER, 0, 0);
+        popupWindow.showAtLocation(anchor, Gravity.NO_GRAVITY, xPos, yPos);
     }
 
     public void showArrow(int requestedX) {
@@ -216,7 +253,6 @@ public class TsPopupWindow implements OnSeekBarChangeListener, OnItemClickListen
     }
 
     private void updateView(String color) {
-        log.d("log>>> " + "updateView color:" + color);
         imgPreview.setBackgroundColor(Color.parseColor(color));
         int[] intColor = PaintUtil.getRGB(color);
         if (intColor == null || intColor.length == 0) {
