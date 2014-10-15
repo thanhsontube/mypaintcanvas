@@ -6,8 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 
@@ -18,25 +16,30 @@ import android.graphics.PorterDuffXfermode;
 public class CommandManager {
     private List<DrawingPath> currentStack;
     private List<DrawingPath> redoStack;
-    private List<DrawingPath> tmpStack;
-
+//    private List<DrawingPath> tmpStack;
+    private DrawingPath mCurrentDP;
+    
     public CommandManager() {
         currentStack = Collections.synchronizedList(new ArrayList<DrawingPath>());
         redoStack = Collections.synchronizedList(new ArrayList<DrawingPath>());
-        tmpStack = Collections.synchronizedList(new ArrayList<DrawingPath>());
+//        tmpStack = Collections.synchronizedList(new ArrayList<DrawingPath>());
     }
 
     public void addCommand(DrawingPath command, boolean save) {
-        if (save) {
+//        if (save) {
             redoStack.clear();
             currentStack.add(command);
-        } else {
-            tmpStack.add(command);
-        }
+//        } else {
+//            tmpStack.add(command);
+//        }
     }
 
-    public void clearTempStack() {
-        tmpStack.clear();
+//    public void clearTempStack() {
+//        tmpStack.clear();
+//    }
+    
+    public void drawCurrent(DrawingPath dp) {
+    	mCurrentDP = dp;
     }
 
     public void undo() {
@@ -50,7 +53,7 @@ public class CommandManager {
     }
 
     public void clear() {
-        tmpStack.clear();
+//        tmpStack.clear();
         currentStack.clear();
         redoStack.clear();
     }
@@ -87,6 +90,9 @@ public class CommandManager {
 //                }
 //            }
 //        }
+        if(mCurrentDP != null) {
+        	mCurrentDP.draw(canvas);
+        }
     }
 
     public boolean hasMoreRedo() {
