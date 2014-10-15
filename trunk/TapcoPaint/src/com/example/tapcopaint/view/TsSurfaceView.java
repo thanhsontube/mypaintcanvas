@@ -8,187 +8,187 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.graphics.PorterDuff;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import com.example.tapcopaint.utils.FilterLog;
 
-public class TsSurfaceView extends SurfaceView implements SurfaceHolder.Callback {
+public class TsSurfaceView extends SurfaceView implements
+		SurfaceHolder.Callback {
 
-    private static final String TAG = "TsSurfaceView";
-    FilterLog log = new FilterLog(TAG);
-    int id = -1;
-    Bitmap bitmapBackGround;
-    Bitmap bitmapPaint;
+	private static final String TAG = "TsSurfaceView";
+	FilterLog log = new FilterLog(TAG);
+	int id = -1;
+	Bitmap bitmapBackGround;
+	Bitmap bitmapPaint;
 
-    public void setId(int id) {
-        log.v(">>> setid:" + id);
-        this.id = id;
-    }
+	private boolean mDrawing = false;
 
-    CommandManager commandManager;
-    private Boolean _run;
-    protected DrawThread thread;
+	public void setId(int id) {
+		this.id = id;
+	}
 
-    public TsSurfaceView(Context context) {
-        super(context);
-    }
+	CommandManager commandManager;
+	private Boolean _run;
+	protected DrawThread thread;
 
-    public TsSurfaceView(Context context, AttributeSet attrs) {
-        super(context, attrs);
+	public TsSurfaceView(Context context) {
+		super(context);
+	}
 
-        getHolder().addCallback(this);
-        setZOrderOnTop(true);
-        getHolder().setFormat(PixelFormat.TRANSPARENT);
-        setWillNotDraw(false);
+	public TsSurfaceView(Context context, AttributeSet attrs) {
+		super(context, attrs);
 
-        commandManager = new CommandManager();
-        thread = new DrawThread(getHolder());
-    }
+		getHolder().addCallback(this);
+		setZOrderOnTop(true);
+		getHolder().setFormat(PixelFormat.TRANSPARENT);
+		setWillNotDraw(false);
 
-    class DrawThread extends Thread {
-        private SurfaceHolder mSurfaceHolder;
+		commandManager = new CommandManager();
+		thread = new DrawThread(getHolder());
+	}
 
-        public DrawThread(SurfaceHolder surfaceHolder) {
-            mSurfaceHolder = surfaceHolder;
+	class DrawThread extends Thread {
+		private SurfaceHolder mSurfaceHolder;
 
-        }
+		public DrawThread(SurfaceHolder surfaceHolder) {
+			mSurfaceHolder = surfaceHolder;
 
-        public void setRunning(boolean run) {
-            _run = run;
-        }
+		}
 
-        @Override
-        public void run() {
-            Canvas canvas = null;
-            while (_run) {
-                try {
-                    canvas = mSurfaceHolder.lockCanvas(null);
+		public void setRunning(boolean run) {
+			_run = run;
+		}
 
-                    if (bitmapBackGround != null) {
-                        // canvas.drawBitmap(bitmapBackGround, 0, 0, new Paint(Paint.DITHER_FLAG));
-                        //
-                        // canvas.drawColor(Color.GREEN);
-//                        canvas.drawBitmap(bitmapPaint, 0, 0, new Paint(Paint.DITHER_FLAG));
-                    }
-                    canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-//                    if (path != null && paint != null) {
-//
-//                        canvas.drawPath(path, paint);
-//                    }
-                    commandManager.executeAll(canvas);
-                } finally {
-                    mSurfaceHolder.unlockCanvasAndPost(canvas);
+		@Override
+		public void run() {
+			Canvas canvas = null;
+			while (_run) {
+				if (mDrawing) {
+					try {
+						canvas = mSurfaceHolder.lockCanvas(null);
+						canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+						commandManager.executeAll(canvas);
+					} finally {
+						mSurfaceHolder.unlockCanvasAndPost(canvas);
+					}
+				}
+			}
+		}
+	}
 
-                }
-            }
+	Path path;
+	Paint paint;
 
-        }
+	public void onMyDraw(Path path, Paint paint) {
+		this.paint = paint;
+		this.path = path;
+	}
 
-    }
+	public void addDrawingPath(DrawingPath drawingPath, boolean save) {
+		commandManager.addCommand(drawingPath, save);
+	}
 
-    Path path;
-    Paint paint;
+	public void drawCurrent(DrawingPath drawingPath) {
+		commandManager.drawCurrent(drawingPath);
+	}
 
-    public void onMyDraw(Path path, Paint paint) {
-        this.paint = paint;
-        this.path = path;
-    }
+	public boolean hasMoreRedo() {
+		return commandManager.hasMoreRedo();
+	}
 
-    public void addDrawingPath(DrawingPath drawingPath, boolean save) {
-        log.d("log>>> " + "addDrawingPath currentStack size:" + commandManager.currentStackLength());
-        commandManager.addCommand(drawingPath, save);
-    }
+	public void redo() {
+		commandManager.redo();
+		redrawSurface();
+	}
 
-//    public void clearTmpStack() {
-//        commandManager.clearTempStack();
-//    }
+	public void undo() {
+		commandManager.undo();
+		redrawSurface();
+	}
 
-    public void drawCurrent(DrawingPath drawingPath) {
-    	commandManager.drawCurrent(drawingPath);
-    }
-    
-    public boolean hasMoreRedo() {
-        return commandManager.hasMoreRedo();
-    }
+	public void clear() {
+		path = null;
+		commandManager.clear();
+		redrawSurface();
+	}
 
-    public void redo() {
-        commandManager.redo();
-    }
+	public void earse() {
+		commandManager.earse();
+	}
 
-    public void undo() {
-        commandManager.undo();
-    }
+	public boolean hasMoreUndo() {
+		return commandManager.hasMoreRedo();
+	}
 
-    public void clear() {
-        path = null;
-        commandManager.clear();
-    }
+	@Override
+	public void surfaceCreated(SurfaceHolder holder) {
+		log.v("log>>> surfaceCreated:" + id);
+		if (id != -1) {
+			bitmapBackGround = BitmapFactory.decodeResource(getResources(), id);
+			bitmapBackGround = Bitmap.createScaledBitmap(bitmapBackGround,
+					getWidth(), getHeight(), true);
+		}
+		bitmapPaint = Bitmap.createBitmap(getWidth(), getHeight(),
+				Bitmap.Config.ARGB_8888);
+		thread.setRunning(true);
+		if (!thread.isInterrupted()) {
+			thread.start();
+		}
+	}
 
-    public void earse() {
-        commandManager.earse();
-    }
+	public void setRunning(boolean isRun) {
+		this._run = isRun;
+	}
 
-    public boolean hasMoreUndo() {
-        return commandManager.hasMoreRedo();
-    }
+	public void setDrawing(boolean isDrawing) {
+		mDrawing = isDrawing;
+	}
 
-    @Override
-    public void surfaceCreated(SurfaceHolder holder) {
-        log.v("log>>> surfaceCreated:" + id);
-        if (id != -1) {
+	public void stopThread() {
+		boolean retry = true;
+		thread.setRunning(false);
+		while (retry) {
+			try {
+				thread.join();
+				thread.interrupt();
+				retry = false;
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
-            bitmapBackGround = BitmapFactory.decodeResource(getResources(), id);
-            bitmapBackGround = Bitmap.createScaledBitmap(bitmapBackGround, getWidth(), getHeight(), true);
-        }
+	@Override
+	public void surfaceDestroyed(SurfaceHolder holder) {
+		boolean retry = true;
+		thread.setRunning(false);
+		while (retry) {
+			try {
+				thread.join();
+				retry = false;
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
-        bitmapPaint = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
-        thread.setRunning(true);
-        if (!thread.isInterrupted()) {
-            thread.start();
+	@Override
+	public void surfaceChanged(SurfaceHolder holder, int format, int width,
+			int height) {
 
-        }
-    }
+	}
 
-    public void setRunning(boolean isRun) {
-        this._run = isRun;
-    }
-
-    public void stopThread() {
-        boolean retry = true;
-        thread.setRunning(false);
-        while (retry) {
-            try {
-                thread.join();
-                thread.interrupt();
-                retry = false;
-            } catch (InterruptedException e) {
-                // we will try it again and again...
-            }
-        }
-    }
-
-    @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
-
-        // TODO Auto-generated method stub
-        boolean retry = true;
-        thread.setRunning(false);
-        while (retry) {
-            try {
-                thread.join();
-                retry = false;
-            } catch (InterruptedException e) {
-                // we will try it again and again...
-            }
-        }
-
-    }
-
-    @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
-    }
+	private void redrawSurface() {
+		mDrawing = true;
+		new Handler().postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				mDrawing = false;
+			}
+		}, 100);
+	}
 
 }
