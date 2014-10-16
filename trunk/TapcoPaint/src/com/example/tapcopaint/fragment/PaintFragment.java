@@ -199,12 +199,12 @@ public class PaintFragment extends BaseFragment implements OnClickListener,
 		mPaint.setStrokeCap(Paint.Cap.ROUND);
 		// option
 		mPaint = PaintUtil.setStrokeWidth(mPaint, weightSeekbar.getProgress());
-		mPaint = PaintUtil.setAlpha(mPaint, opacitySeekbar.getProgress());
 		Drawable background = colorView.getBackground();
 		if (background instanceof ColorDrawable) {
 			int intColor = ((ColorDrawable) background).getColor();
 			mPaint = PaintUtil.setColor(mPaint, PaintUtil.getColor(intColor));
 		}
+		mPaint = PaintUtil.setAlpha(mPaint, opacitySeekbar.getProgress());
 		return mPaint;
 	}
 
