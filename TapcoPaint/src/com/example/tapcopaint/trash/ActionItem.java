@@ -1,4 +1,4 @@
-package com.example.tapcopaint.popup;
+package com.example.tapcopaint.trash;
 
 import android.graphics.drawable.Drawable;
 import android.view.View.OnClickListener;

@@ -1,4 +1,4 @@
-package com.example.tapcopaint.popup;
+package com.example.tapcopaint.trash;
 
 import java.util.ArrayList;
 

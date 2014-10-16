@@ -1,4 +1,4 @@
-package com.example.tapcopaint.view;
+package com.example.tapcopaint.trash;
 
 import java.util.ArrayList;
 

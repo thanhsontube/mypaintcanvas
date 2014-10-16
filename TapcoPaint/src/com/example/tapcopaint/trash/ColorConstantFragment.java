@@ -1,4 +1,4 @@
-package com.example.tapcopaint.fragment;
+package com.example.tapcopaint.trash;
 
 import com.example.tapcopaint.base.BaseFragment;
 
