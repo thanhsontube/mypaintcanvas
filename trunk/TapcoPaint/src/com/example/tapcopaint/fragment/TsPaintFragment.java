@@ -342,7 +342,7 @@ public class TsPaintFragment extends BaseFragment implements OnClickListener, On
     }
 
     private void touchStart(float x, float y) {
-        tsSurfaceView.setDrawing(true);
+//        tsSurfaceView.setDrawing(true);
         path.reset();
         path.moveTo(x, y);
         mX = x;
@@ -380,7 +380,7 @@ public class TsPaintFragment extends BaseFragment implements OnClickListener, On
         currentDrawingPath.path.lineTo(mX, mY);
         tsSurfaceView.addDrawingPath(currentDrawingPath, true);
         tsSurfaceView.drawCurrent(null);
-        tsSurfaceView.setDrawing(false);
+//        tsSurfaceView.setDrawing(false);
         mPaint = resetPaint();
     }
 
