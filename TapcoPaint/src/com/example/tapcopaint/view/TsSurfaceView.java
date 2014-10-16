@@ -188,7 +188,7 @@ public class TsSurfaceView extends SurfaceView implements
 			public void run() {
 				mDrawing = false;
 			}
-		}, 100);
+		}, 300);
 	}
 
 }

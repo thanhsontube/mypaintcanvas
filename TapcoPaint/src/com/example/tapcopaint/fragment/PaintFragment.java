@@ -8,6 +8,8 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Xfermode;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -187,7 +189,7 @@ public class PaintFragment extends BaseFragment implements OnClickListener,
 		weightPointView.setLayoutParams(new RelativeLayout.LayoutParams(
 				PaintUtil.getStrokeWidth(weightSeekbar.getProgress()),
 				PaintUtil.getStrokeWidth(weightSeekbar.getProgress())));
-
+		setWeightColorView(getColorView());
 	}
 
 	public Paint resetPaint() {
@@ -199,13 +201,25 @@ public class PaintFragment extends BaseFragment implements OnClickListener,
 		mPaint.setStrokeCap(Paint.Cap.ROUND);
 		// option
 		mPaint = PaintUtil.setStrokeWidth(mPaint, weightSeekbar.getProgress());
-		Drawable background = colorView.getBackground();
-		if (background instanceof ColorDrawable) {
-			int intColor = ((ColorDrawable) background).getColor();
-			mPaint = PaintUtil.setColor(mPaint, PaintUtil.getColor(intColor));
-		}
+		mPaint = PaintUtil.setColor(mPaint, PaintUtil.getColor(getColorView()));
 		mPaint = PaintUtil.setAlpha(mPaint, opacitySeekbar.getProgress());
 		return mPaint;
+	}
+
+	private int getColorView() {
+		Drawable background = colorView.getBackground();
+		if (background instanceof ColorDrawable) {
+			return ((ColorDrawable) background).getColor();
+		}
+		return 0;
+	}
+
+	private void setWeightColorView(int intColor) {
+		LayerDrawable bgDrawable = (LayerDrawable) weightPointView
+				.getBackground();
+		final GradientDrawable shape = (GradientDrawable) bgDrawable
+				.findDrawableByLayerId(R.id.shape_circle);
+		shape.setColor(intColor);
 	}
 
 	@Override
@@ -317,6 +331,7 @@ public class PaintFragment extends BaseFragment implements OnClickListener,
 		@Override
 		public void onIColorPickerDone(String color) {
 			colorView.setBackgroundColor(Color.parseColor(color));
+			setWeightColorView(getColorView());
 			mPaint = resetPaint();
 		}
 	};
