@@ -1,4 +1,4 @@
-package com.example.tapcopaint.fragment;
+package com.example.tapcopaint.trash;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,10 +28,8 @@ import android.widget.Toast;
 
 import com.example.tapcopaint.R;
 import com.example.tapcopaint.base.BaseFragment;
+import com.example.tapcopaint.trash.TsCustomView2.ITsCustomListener;
 import com.example.tapcopaint.utils.FilterLog;
-import com.example.tapcopaint.view.TsCustomView;
-import com.example.tapcopaint.view.TsCustomView2;
-import com.example.tapcopaint.view.TsCustomView2.ITsCustomListener;
 
 public class PaintFragment2 extends BaseFragment {
 

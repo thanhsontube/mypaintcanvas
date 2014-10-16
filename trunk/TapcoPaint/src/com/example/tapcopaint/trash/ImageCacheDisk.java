@@ -1,4 +1,4 @@
-package com.example.tapcopaint.utils;
+package com.example.tapcopaint.trash;
 
 import java.io.File;
 

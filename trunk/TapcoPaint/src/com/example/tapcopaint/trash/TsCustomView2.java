@@ -1,4 +1,4 @@
-package com.example.tapcopaint.view;
+package com.example.tapcopaint.trash;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,6 @@ import android.widget.Toast;
 import com.androidquery.AQuery;
 import com.example.tapcopaint.R;
 import com.example.tapcopaint.utils.FilterLog;
-import com.example.tapcopaint.utils.ImageCache;
 
 public class TsCustomView2 extends View implements OnTouchListener {
     private static final String TAG = "TsCustomView";

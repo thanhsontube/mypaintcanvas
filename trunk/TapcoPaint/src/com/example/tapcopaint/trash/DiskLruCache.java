@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.tapcopaint.utils;
+package com.example.tapcopaint.trash;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
