@@ -16,7 +16,6 @@ import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.graphics.PorterDuff;
 import android.os.Environment;
-import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -34,7 +33,7 @@ public class TsSurfaceView extends SurfaceView implements
 
 	private Canvas mCanvas;
 
-	private boolean mDrawing = false;
+	// private boolean mDrawing = false;
 
 	public void setId(int id) {
 		this.id = id;
@@ -76,15 +75,15 @@ public class TsSurfaceView extends SurfaceView implements
 		public void run() {
 			mCanvas = null;
 			while (_run) {
-				if (mDrawing) {
-					try {
-						mCanvas = mSurfaceHolder.lockCanvas(null);
-						mCanvas.drawColor(0, PorterDuff.Mode.CLEAR);
-						commandManager.executeAll(mCanvas);
-					} finally {
-						mSurfaceHolder.unlockCanvasAndPost(mCanvas);
-					}
+				// if (mDrawing) {
+				try {
+					mCanvas = mSurfaceHolder.lockCanvas(null);
+					mCanvas.drawColor(0, PorterDuff.Mode.CLEAR);
+					commandManager.executeAll(mCanvas);
+				} finally {
+					mSurfaceHolder.unlockCanvasAndPost(mCanvas);
 				}
+				// }
 			}
 		}
 	}
@@ -111,18 +110,18 @@ public class TsSurfaceView extends SurfaceView implements
 
 	public void redo() {
 		commandManager.redo();
-		redrawSurface();
+		// redrawSurface();
 	}
 
 	public void undo() {
 		commandManager.undo();
-		redrawSurface();
+		// redrawSurface();
 	}
 
 	public void clear() {
 		path = null;
 		commandManager.clear();
-		redrawSurface();
+		// redrawSurface();
 	}
 
 	public void earse() {
@@ -147,7 +146,7 @@ public class TsSurfaceView extends SurfaceView implements
 		if (!thread.isInterrupted()) {
 			thread = new DrawThread(getHolder());
 			thread.start();
-			redrawSurface();
+			// redrawSurface();
 		}
 	}
 
@@ -155,9 +154,9 @@ public class TsSurfaceView extends SurfaceView implements
 		this._run = isRun;
 	}
 
-	public void setDrawing(boolean isDrawing) {
-		mDrawing = isDrawing;
-	}
+	// public void setDrawing(boolean isDrawing) {
+	// mDrawing = isDrawing;
+	// }
 
 	public void stopThread() {
 		boolean retry = true;
@@ -193,15 +192,15 @@ public class TsSurfaceView extends SurfaceView implements
 
 	}
 
-	private void redrawSurface() {
-		mDrawing = true;
-		new Handler().postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				mDrawing = false;
-			}
-		}, 300);
-	}
+	// private void redrawSurface() {
+	// mDrawing = true;
+	// new Handler().postDelayed(new Runnable() {
+	// @Override
+	// public void run() {
+	// mDrawing = false;
+	// }
+	// }, 300);
+	// }
 
 	public void saveBitmap() {
 		Bitmap bm = Bitmap.createBitmap(getWidth(), getHeight(),
