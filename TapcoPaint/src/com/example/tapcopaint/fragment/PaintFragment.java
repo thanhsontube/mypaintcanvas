@@ -230,6 +230,7 @@ public class PaintFragment extends BaseFragment implements OnClickListener,
 			onBackPress();
 			break;
 		case R.id.paint_btn_done:
+			tsSurfaceView.saveBitmap();
 			break;
 		case R.id.paint_back:
 			tsSurfaceView.undo();

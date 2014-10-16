@@ -1,13 +1,21 @@
 package com.example.tapcopaint.view;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.List;
+
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.graphics.PorterDuff;
+import android.os.Environment;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.SurfaceHolder;
@@ -23,6 +31,8 @@ public class TsSurfaceView extends SurfaceView implements
 	int id = -1;
 	Bitmap bitmapBackGround;
 	Bitmap bitmapPaint;
+
+	private Canvas mCanvas;
 
 	private boolean mDrawing = false;
 
@@ -64,15 +74,15 @@ public class TsSurfaceView extends SurfaceView implements
 
 		@Override
 		public void run() {
-			Canvas canvas = null;
+			mCanvas = null;
 			while (_run) {
 				if (mDrawing) {
 					try {
-						canvas = mSurfaceHolder.lockCanvas(null);
-						canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-						commandManager.executeAll(canvas);
+						mCanvas = mSurfaceHolder.lockCanvas(null);
+						mCanvas.drawColor(0, PorterDuff.Mode.CLEAR);
+						commandManager.executeAll(mCanvas);
 					} finally {
-						mSurfaceHolder.unlockCanvasAndPost(canvas);
+						mSurfaceHolder.unlockCanvasAndPost(mCanvas);
 					}
 				}
 			}
@@ -189,6 +199,29 @@ public class TsSurfaceView extends SurfaceView implements
 				mDrawing = false;
 			}
 		}, 300);
+	}
+
+	public void saveBitmap() {
+		Bitmap bm = Bitmap.createBitmap(getWidth(), getHeight(),
+				Bitmap.Config.ARGB_8888);
+		Canvas c = new Canvas();
+		c.setBitmap(bm);
+		List<DrawingPath> currentStack = commandManager.getCurrentStack();
+		for (DrawingPath dp : currentStack) {
+			c.drawPath(dp.path, dp.paint);
+		}
+		try {
+			this.setDrawingCacheEnabled(true);
+			FileOutputStream fos = new FileOutputStream(new File(
+					Environment.getExternalStorageDirectory() + "/tmp.png"));
+			bm.compress(CompressFormat.PNG, 100, fos);
+			fos.flush();
+			fos.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

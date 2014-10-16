@@ -89,4 +89,8 @@ public class CommandManager {
 			currentStack.add(redoCommand);
 		}
 	}
+
+	public List<DrawingPath> getCurrentStack() {
+		return currentStack;
+	}
 }
