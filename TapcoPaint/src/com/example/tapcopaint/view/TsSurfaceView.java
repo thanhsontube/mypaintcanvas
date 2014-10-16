@@ -145,7 +145,9 @@ public class TsSurfaceView extends SurfaceView implements
 				Bitmap.Config.ARGB_8888);
 		thread.setRunning(true);
 		if (!thread.isInterrupted()) {
+			thread = new DrawThread(getHolder());
 			thread.start();
+			redrawSurface();
 		}
 	}
 
