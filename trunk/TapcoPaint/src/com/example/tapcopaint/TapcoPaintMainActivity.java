@@ -7,10 +7,11 @@ import android.view.Menu;
 import com.example.tapcopaint.base.BaseFragmentActivity;
 import com.example.tapcopaint.fragment.MainFragment;
 import com.example.tapcopaint.fragment.MainFragment.IMainFragmentListener;
-import com.example.tapcopaint.fragment.PaintFragment;
 import com.example.tapcopaint.fragment.TsPaintFragment;
+import com.example.tapcopaint.fragment.TsRenderFragment;
 
 public class TapcoPaintMainActivity extends BaseFragmentActivity implements IMainFragmentListener {
+    boolean isTest = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,11 +38,17 @@ public class TapcoPaintMainActivity extends BaseFragmentActivity implements IMai
 
     @Override
     public void onIMainFragmentitemClick(int dto) {
-         PaintFragment f = PaintFragment.newInstance(dto);
-         showFragment(f, true);
+        // PaintFragment f = PaintFragment.newInstance(dto);
 
-//        TsPaintFragment f = TsPaintFragment.newInstance(dto);
-//        showFragment(f, true);
+        if (isTest) {
+
+            TsRenderFragment f = TsRenderFragment.newInstance(dto);
+
+            showFragment(f, true);
+        } else {
+            TsPaintFragment f = TsPaintFragment.newInstance(dto);
+            showFragment(f, true);
+        }
 
     }
 
