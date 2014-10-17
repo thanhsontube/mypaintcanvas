@@ -194,9 +194,8 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
                     if (canvas != null) {
                         synchronized (this.surfaceHolder_) {
                             TsSurfaceRender.this.renderer_.draw(canvas);
-
-                            canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-                            commandManager.executeAll(canvas);
+                            // canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+                            // commandManager.executeAll(canvas);
                         }
                     }
                 } finally {
@@ -221,7 +220,30 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
         }
 
         @Override
+        public boolean onScaleBegin(ScaleGestureDetector detector) {
+            // TODO Auto-generated method stub\
+            log.d("log>>> " + "onScaleBegin");
+            return true;
+            // return super.onScaleBegin(detector);
+        }
+
+        @Override
+        public void onScaleEnd(ScaleGestureDetector detector) {
+            // TODO Auto-generated method stub
+            log.d("log>>> " + "onScaleEnd");
+            float scaleFactor = detector.getScaleFactor();
+            if (scaleFactor != 0f && scaleFactor != 1.0f) {
+                scaleFactor = 1 / scaleFactor;
+                this.screenFocus.set(detector.getFocusX(), detector.getFocusY());
+                TsSurfaceRender.this.renderer_.zoom(scaleFactor, this.screenFocus);
+                invalidate();
+            }
+            TsSurfaceRender.this.lastScaleTime_ = System.currentTimeMillis();
+        }
+
+        @Override
         public boolean onScale(ScaleGestureDetector detector) {
+            log.d("log>>> " + "onScale .............");
             float scaleFactor = detector.getScaleFactor();
             if (scaleFactor != 0f && scaleFactor != 1.0f) {
                 scaleFactor = 1 / scaleFactor;
@@ -439,24 +461,43 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        this.gesture_.onTouchEvent(event);
-        this.scaleGesture_.onTouchEvent(event);
+        boolean consumed = this.gesture_.onTouchEvent(event);
+        if (consumed) {
 
-        int action = MotionEventCompat.getActionMasked(event);
-        float x = event.getX();
-        float y = event.getY();
-        switch (action) {
+            return true;
+        }
+        this.scaleGesture_.onTouchEvent(event);
+        // Calculate actual event_ position in background view
+        Point c = new Point();
+        this.renderer_.getViewPosition(c);
+        float s = this.renderer_.getZoom();
+        int x = (int) (c.x + (event.getX() * s));
+        int y = (int) (c.y + (event.getY() * s));
+        switch (event.getAction() & MotionEvent.ACTION_MASK) {
         case MotionEvent.ACTION_DOWN:
             touchStart(x, y);
             return this.touch_.down(event);
         case MotionEvent.ACTION_MOVE:
-            log.d("log>>> " + "ACTION_MOVE");
+            // log.d("log>>> " + "ACTION_MOVE");
 
-            touchMove(x, y);
+            long SCALE_MOVE_GUARD = 500;
+            if (this.scaleGesture_.isInProgress()
+                    || System.currentTimeMillis() - this.lastScaleTime_ < SCALE_MOVE_GUARD) {
+
+                break;
+            }
             return this.touch_.move(event);
         case MotionEvent.ACTION_UP:
             touchUp(x, y);
             return this.touch_.up(event);
+        case MotionEvent.ACTION_POINTER_UP:
+            final int pointerIndex = (event.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK) >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+            final int pointerId = event.getPointerId(pointerIndex);
+            log.d("log>>> " + "ACTION_POINTER_UP:" + pointerIndex);
+            break;
+        case MotionEvent.ACTION_POINTER_DOWN:
+            log.d("log>>> " + "ACTION_POINTER_DOWN:");
+            break;
         case MotionEvent.ACTION_CANCEL:
             return this.touch_.cancel(event);
         default:
