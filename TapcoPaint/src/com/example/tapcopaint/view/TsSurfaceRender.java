@@ -231,14 +231,7 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
         public void onScaleEnd(ScaleGestureDetector detector) {
             // TODO Auto-generated method stub
             log.d("log>>> " + "onScaleEnd");
-            float scaleFactor = detector.getScaleFactor();
-            if (scaleFactor != 0f && scaleFactor != 1.0f) {
-                scaleFactor = 1 / scaleFactor;
-                this.screenFocus.set(detector.getFocusX(), detector.getFocusY());
-                TsSurfaceRender.this.renderer_.zoom(scaleFactor, this.screenFocus);
-                invalidate();
-            }
-            TsSurfaceRender.this.lastScaleTime_ = System.currentTimeMillis();
+
         }
 
         @Override

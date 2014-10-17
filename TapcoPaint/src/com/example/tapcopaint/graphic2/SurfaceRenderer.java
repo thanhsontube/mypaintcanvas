@@ -12,6 +12,8 @@
  */
 package com.example.tapcopaint.graphic2;
 
+import com.example.tapcopaint.utils.FilterLog;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -23,29 +25,34 @@ import android.graphics.RectF;
 import android.util.Log;
 
 /**
- * SurfaceRenderer is the superclass of the renderer. The game should subclass the renderer and extend the drawing methods to add game drawing.
+ * SurfaceRenderer is the superclass of the renderer. The game should subclass the renderer and extend the drawing
+ * methods to add game drawing.
  * <p/>
- * - BitmapSurfaceRenderer can be extended for apps that require background images
- * - TileMapSurfaceRenderer can be extended for apps that need to display TileMaps (not currently up to date)
- * - HexMapSurfaceRenderer can be extended for apps that need to display HexMaps
- *
+ * - BitmapSurfaceRenderer can be extended for apps that require background images - TileMapSurfaceRenderer can be
+ * extended for apps that need to display TileMaps (not currently up to date) - HexMapSurfaceRenderer can be extended
+ * for apps that need to display HexMaps
+ * 
  * @author micabyte
  */
 public abstract class SurfaceRenderer {
     // View Size Minimum
     private final static int MINIMUM_PIXELS_IN_VIEW = 50;
+    private static final String TAG = "SurfaceRenderer";
     // Context
     protected final Context context_;
     // The ViewPort
     protected final ViewPort viewPort_ = new ViewPort();
     // The Dimensions of the Game Area
     protected final Point backgroundSize_ = new Point();
+    FilterLog log = new FilterLog(TAG);
 
     /**
      * Constructor for the surface renderer
-     *
-     * @param c We need to pass in the context, so that we have it when we create bitmaps for drawing operations later. Since the draw operations are
-     *          run in a thread, we can't pass the context through the thread (at least not easily)
+     * 
+     * @param c
+     *            We need to pass in the context, so that we have it when we create bitmaps for drawing operations
+     *            later. Since the draw operations are run in a thread, we can't pass the context through the thread (at
+     *            least not easily)
      */
     protected SurfaceRenderer(Context c) {
         this.context_ = c;
@@ -103,8 +110,8 @@ public abstract class SurfaceRenderer {
     }
 
     /**
-     * Set the position (center) of the view based on map coordinates. This is intended to be used with Tile/HexMaps, and needs to be implemented in
-     * the derived player Map class.
+     * Set the position (center) of the view based on map coordinates. This is intended to be used with Tile/HexMaps,
+     * and needs to be implemented in the derived player Map class.
      */
     public void setMapPosition(int x, int y) {
         this.viewPort_.setOrigin(x, y);
@@ -130,7 +137,6 @@ public abstract class SurfaceRenderer {
     public Point getBackgroundSize() {
         return this.backgroundSize_;
     }
-
 
     public void zoom(float scaleFactor, PointF screenFocus) {
         this.viewPort_.zoom(scaleFactor, screenFocus);
@@ -198,11 +204,9 @@ public abstract class SurfaceRenderer {
                     y = SurfaceRenderer.this.backgroundSize_.y - h;
                 // Set the Window rect
                 this.window.set(x, y, x + w, y + h);
-                /*this.window.set(
-                        this.window.left,
-                        this.window.top,
-                        this.window.left + w,
-                        this.window.top + h);*/
+                /*
+                 * this.window.set( this.window.left, this.window.top, this.window.left + w, this.window.top + h);
+                 */
             }
         }
 
@@ -233,7 +237,9 @@ public abstract class SurfaceRenderer {
         }
 
         public void zoom(float factor, PointF screenFocus) {
-            if (this.bitmap_ == null) return;
+            log.v("log>>> " + "zoom factor:" + factor + "bitmap_:" + bitmap_);
+            if (this.bitmap_ == null)
+                return;
             if (factor != 1.0) {
                 PointF screenSize = new PointF(this.bitmap_.getWidth(), this.bitmap_.getHeight());
                 PointF sceneSize = new PointF(getBackgroundSize());
@@ -243,10 +249,8 @@ public abstract class SurfaceRenderer {
                     float newZoom = this.zoom * factor;
                     RectF w1 = new RectF(this.window);
                     RectF w2 = new RectF();
-                    PointF sceneFocus = new PointF(
-                            w1.left + (screenFocus.x / screenSize.x) * w1.width(),
-                            w1.top + (screenFocus.y / screenSize.y) * w1.height()
-                    );
+                    PointF sceneFocus = new PointF(w1.left + (screenFocus.x / screenSize.x) * w1.width(), w1.top
+                            + (screenFocus.y / screenSize.y) * w1.height());
                     float w2Width = getPhysicalWidth() * newZoom;
                     if (w2Width > sceneSize.x) {
                         w2Width = sceneSize.x;
