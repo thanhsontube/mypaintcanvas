@@ -11,7 +11,7 @@ import com.example.tapcopaint.fragment.TsPaintFragment;
 import com.example.tapcopaint.fragment.TsRenderFragment;
 
 public class TapcoPaintMainActivity extends BaseFragmentActivity implements IMainFragmentListener {
-    boolean isTest = false;
+    boolean isTest = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

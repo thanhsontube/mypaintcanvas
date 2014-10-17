@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.widget.ImageView.ScaleType;
 
 import com.androidquery.AQuery;
 import com.example.tapcopaint.utils.FilterLog;
@@ -97,7 +98,5 @@ public class MyRender extends SurfaceRenderer {
     public void drawLayer(Context context, ViewPort viewPort) {
 
     }
-    
-    
 
 }
