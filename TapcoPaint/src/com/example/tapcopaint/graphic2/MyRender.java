@@ -32,7 +32,10 @@ public class MyRender extends SurfaceRenderer {
 
     @Override
     public void start() {
-
+        minScale = 1;
+        maxScale = 3;
+        superMinScale = SUPER_MIN_MULTIPLIER * minScale;
+        superMaxScale = SUPER_MAX_MULTIPLIER * maxScale;
     }
 
     @Override
@@ -88,6 +91,14 @@ public class MyRender extends SurfaceRenderer {
     private AQuery aQuery;
     private boolean onDrawReady;
     private ZoomVariables delayedZoomVariables;
+    private float normalizedScale = 1f;
+
+    private float minScale;
+    private float maxScale;
+    private float superMinScale;
+    private float superMaxScale;
+    private static final float SUPER_MIN_MULTIPLIER = .75f;
+    private static final float SUPER_MAX_MULTIPLIER = 1.25f;
 
     // bitmap = Bitmap.createBitmap(viewPort.getPhysicalWidth(), viewPort.getPhysicalHeight(),
     // Bitmap.Config.ARGB_8888);
@@ -124,10 +135,17 @@ public class MyRender extends SurfaceRenderer {
             log.d("log>>> " + "backgroundW :" + backgroundW + ";backgroundH:" + backgroundH);
         }
 
-        matrix = new Matrix();
-        prevMatrix = new Matrix();
+        if (!onDrawReady) {
 
-        drawMatrix(context, id, viewPort);
+            matrix = new Matrix();
+            prevMatrix = new Matrix();
+
+            drawMatrix(context, id, viewPort);
+        } else {
+            Canvas canvas = new Canvas(viewPort_.bitmap_);
+            canvas.drawBitmap(bitmap, matrix, paint);
+        }
+
     }
 
     public void drawMatrix(Context context, int id, ViewPort viewPort) {
@@ -162,7 +180,6 @@ public class MyRender extends SurfaceRenderer {
             break;
         }
 
-        // matrix.setTranslate(-10, -40);
         matrix.setScale(scaleX, scaleY);
 
         // center the image
@@ -171,20 +188,46 @@ public class MyRender extends SurfaceRenderer {
 
         matrix.postTranslate(paddingX / 2, paddingY / 2);
         canvas.drawBitmap(bitmap, matrix, paint);
+
         onDrawReady = true;
 
     }
-    
-    public void setZoom (float scale, float focusX, float focusY, ScaleType scaleType) {
+
+    public void setZoom(float scale, float focusX, float focusY, ScaleType scaleType) {
         if (!onDrawReady) {
             delayedZoomVariables = new ZoomVariables(scale, focusX, focusY, scaleType);
             return;
         }
-        
+
         if (scaleType != mScaleType) {
             this.mScaleType = scaleType;
         }
-        
+
+    }
+
+    public void scaleCanvas(double deltaScale, float focusX, float focusY, boolean isStretchImageToSuper) {
+        float lowerScale, upperScale;
+        if (isStretchImageToSuper) {
+            lowerScale = superMinScale;
+            upperScale = superMaxScale;
+        } else {
+            lowerScale = minScale;
+            upperScale = maxScale;
+        }
+
+        float origScale = normalizedScale;
+        normalizedScale *= deltaScale;
+
+        if (normalizedScale > upperScale) {
+            normalizedScale = upperScale;
+            deltaScale = normalizedScale / origScale;
+        } else if (normalizedScale < lowerScale) {
+            normalizedScale = lowerScale;
+            deltaScale = normalizedScale / origScale;
+        }
+
+        matrix.postScale((float) deltaScale, (float) deltaScale, focusX, focusY);
+
     }
 
     public void drawCurrent(Context context, int id, ViewPort viewPort) {
