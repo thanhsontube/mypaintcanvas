@@ -78,6 +78,7 @@ public class TsSurfaceView extends SurfaceView implements
 				// if (mDrawing) {
 				try {
 					mCanvas = mSurfaceHolder.lockCanvas(null);
+					mCanvas.scale(x, y);
 					mCanvas.drawColor(0, PorterDuff.Mode.CLEAR);
 					commandManager.executeAll(mCanvas);
 				} finally {
@@ -225,4 +226,28 @@ public class TsSurfaceView extends SurfaceView implements
 		}
 	}
 
+	private float x = 1;
+	private float y = 1;
+	
+	public float getX() {
+		return x;
+	}
+
+	public void setX(float x) {
+		this.x = x;
+	}
+
+	public float getY() {
+		return y;
+	}
+
+	public void setY(float y) {
+		this.y = y;
+	}
+
+	public void scale(float x, float y) {
+		this.x = x;
+		this.y = y;
+	}
+	
 }
