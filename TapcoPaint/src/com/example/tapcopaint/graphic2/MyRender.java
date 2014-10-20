@@ -4,9 +4,11 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.widget.ImageView.ScaleType;
 
@@ -21,6 +23,12 @@ public class MyRender extends SurfaceRenderer {
 
     int id;
 
+    public static enum RenderMode {
+        NONE, DRAW, ZOOM, FLING
+    };
+
+    private RenderMode mMode;
+
     protected MyRender(Context c) {
         super(c);
     }
@@ -32,6 +40,7 @@ public class MyRender extends SurfaceRenderer {
 
     @Override
     public void start() {
+        mMode = RenderMode.NONE;
         minScale = 1;
         maxScale = 3;
         superMinScale = SUPER_MIN_MULTIPLIER * minScale;
@@ -52,8 +61,16 @@ public class MyRender extends SurfaceRenderer {
 
     @Override
     protected void drawBase() {
-        // TODO Auto-generated method stub
-        drawOriginalImage(context_, id, viewPort_);
+        if (mMode == RenderMode.ZOOM) {
+            return;
+        }
+
+        if (mMode == RenderMode.NONE) {
+
+            drawOriginalImage(context_, id, viewPort_);
+        }
+
+        // drawOriginalImage(context_, id, viewPort_);
 
     }
 
@@ -100,6 +117,8 @@ public class MyRender extends SurfaceRenderer {
     private static final float SUPER_MIN_MULTIPLIER = .75f;
     private static final float SUPER_MAX_MULTIPLIER = 1.25f;
 
+    private float fScale = 0.5f;
+
     // bitmap = Bitmap.createBitmap(viewPort.getPhysicalWidth(), viewPort.getPhysicalHeight(),
     // Bitmap.Config.ARGB_8888);
 
@@ -135,16 +154,10 @@ public class MyRender extends SurfaceRenderer {
             log.d("log>>> " + "backgroundW :" + backgroundW + ";backgroundH:" + backgroundH);
         }
 
-        if (!onDrawReady) {
+        matrix = new Matrix();
+        prevMatrix = new Matrix();
 
-            matrix = new Matrix();
-            prevMatrix = new Matrix();
-
-            drawMatrix(context, id, viewPort);
-        } else {
-            Canvas canvas = new Canvas(viewPort_.bitmap_);
-            canvas.drawBitmap(bitmap, matrix, paint);
-        }
+        drawMatrix(context, id, viewPort);
 
     }
 
@@ -180,13 +193,32 @@ public class MyRender extends SurfaceRenderer {
             break;
         }
 
-        matrix.setScale(scaleX, scaleY);
+        // if (i < 20) {
+        // fScale += .1f;
+        // } else {
+        // // i -=2;
+        // fScale -= .1f;
+        // if (fScale <= 0.5f) {
+        // i = 0;
+        // }
+        //
+        // }
+        // matrix.setScale(fScale, fScale);
+        // float paddingX = canvasW - (fScale * backgroundW);
+        // float paddingY = canvasH - (fScale * backgroundH);
 
         // center the image
         float paddingX = canvasW - (scaleX * backgroundW);
         float paddingY = canvasH - (scaleY * backgroundH);
+        if (mMode != RenderMode.ZOOM) {
 
-        matrix.postTranslate(paddingX / 2, paddingY / 2);
+            matrix.setScale(scaleX, scaleY);
+            matrix.postTranslate(paddingX / 2, paddingY / 2);
+        }
+
+        // canvas.drawColor(Color.BLACK);
+        canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+
         canvas.drawBitmap(bitmap, matrix, paint);
 
         onDrawReady = true;
@@ -206,6 +238,11 @@ public class MyRender extends SurfaceRenderer {
     }
 
     public void scaleCanvas(double deltaScale, float focusX, float focusY, boolean isStretchImageToSuper) {
+
+        mMode = RenderMode.ZOOM;
+
+        // reset zoom
+
         float lowerScale, upperScale;
         if (isStretchImageToSuper) {
             lowerScale = superMinScale;
@@ -227,6 +264,17 @@ public class MyRender extends SurfaceRenderer {
         }
 
         matrix.postScale((float) deltaScale, (float) deltaScale, focusX, focusY);
+
+        Canvas canvas = new Canvas(viewPort_.bitmap_);
+        float a, b;
+        a = (float) deltaScale;
+        b = (float) deltaScale;
+        log.d("log>>> " + "scale a:" + a + ";b:" + b + ";x:" + focusX + ";y:" + focusY);
+
+        canvas.scale((float) deltaScale, (float) deltaScale, focusX, focusY);
+         canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+        
+         canvas.drawBitmap(bitmap, matrix, paint);
 
     }
 
