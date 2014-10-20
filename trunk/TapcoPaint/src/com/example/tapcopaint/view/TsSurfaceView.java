@@ -22,232 +22,273 @@ import android.view.SurfaceView;
 
 import com.example.tapcopaint.utils.FilterLog;
 
-public class TsSurfaceView extends SurfaceView implements
-		SurfaceHolder.Callback {
+public class TsSurfaceView extends SurfaceView implements SurfaceHolder.Callback {
 
-	private static final String TAG = "TsSurfaceView";
-	FilterLog log = new FilterLog(TAG);
-	int id = -1;
-	Bitmap bitmapBackGround;
-	Bitmap bitmapPaint;
+    private static final String TAG = "TsSurfaceView";
+    FilterLog log = new FilterLog(TAG);
+    int id = -1;
+    Bitmap bitmapBackGround;
+    Bitmap bitmapPaint;
 
-	private Canvas mCanvas;
+    private Canvas mCanvas;
 
-	// private boolean mDrawing = false;
+    // private boolean mDrawing = false;
 
-	public void setId(int id) {
-		this.id = id;
-	}
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	CommandManager commandManager;
-	private Boolean _run;
-	protected DrawThread thread;
+    CommandManager commandManager;
+    private Boolean _run;
+    protected DrawThread thread;
 
-	public TsSurfaceView(Context context) {
-		super(context);
-	}
+    public TsSurfaceView(Context context) {
+        super(context);
+    }
 
-	public TsSurfaceView(Context context, AttributeSet attrs) {
-		super(context, attrs);
+    public TsSurfaceView(Context context, AttributeSet attrs) {
+        super(context, attrs);
 
-		getHolder().addCallback(this);
-		setZOrderOnTop(true);
-		getHolder().setFormat(PixelFormat.TRANSPARENT);
-		setWillNotDraw(false);
+        getHolder().addCallback(this);
+        setZOrderOnTop(true);
+        getHolder().setFormat(PixelFormat.TRANSPARENT);
+        setWillNotDraw(false);
 
-		commandManager = new CommandManager();
-		thread = new DrawThread(getHolder());
-	}
+        minScale = 1;
+        maxScale = 3;
+        superMinScale = SUPER_MIN_MULTIPLIER * minScale;
+        superMaxScale = SUPER_MAX_MULTIPLIER * maxScale;
 
-	class DrawThread extends Thread {
-		private SurfaceHolder mSurfaceHolder;
+        commandManager = new CommandManager();
+        thread = new DrawThread(getHolder());
+    }
 
-		public DrawThread(SurfaceHolder surfaceHolder) {
-			mSurfaceHolder = surfaceHolder;
+    class DrawThread extends Thread {
+        private SurfaceHolder mSurfaceHolder;
 
-		}
+        public DrawThread(SurfaceHolder surfaceHolder) {
+            mSurfaceHolder = surfaceHolder;
 
-		public void setRunning(boolean run) {
-			_run = run;
-		}
+        }
 
-		@Override
-		public void run() {
-			mCanvas = null;
-			while (_run) {
-				// if (mDrawing) {
-				try {
-					mCanvas = mSurfaceHolder.lockCanvas(null);
-					mCanvas.scale(x, y);
-					mCanvas.drawColor(0, PorterDuff.Mode.CLEAR);
-					commandManager.executeAll(mCanvas);
-				} finally {
-					mSurfaceHolder.unlockCanvasAndPost(mCanvas);
-				}
-				// }
-			}
-		}
-	}
+        public void setRunning(boolean run) {
+            _run = run;
+        }
 
-	Path path;
-	Paint paint;
+        @Override
+        public void run() {
+            mCanvas = null;
+            while (_run) {
+                // if (mDrawing) {
+                try {
+                    mCanvas = mSurfaceHolder.lockCanvas(null);
+                    // mCanvas.scale(a, b);
+//                    mCanvas.scale(a, b, x, y);
+                    mCanvas.scale(a, b, x, y);
 
-	public void onMyDraw(Path path, Paint paint) {
-		this.paint = paint;
-		this.path = path;
-	}
+                    mCanvas.drawColor(0, PorterDuff.Mode.CLEAR);
+                    commandManager.executeAll(mCanvas);
+                } finally {
+                    mSurfaceHolder.unlockCanvasAndPost(mCanvas);
+                }
+                // }
+            }
+        }
+    }
 
-	public void addDrawingPath(DrawingPath drawingPath, boolean save) {
-		commandManager.addCommand(drawingPath, save);
-	}
+    Path path;
+    Paint paint;
 
-	public void drawCurrent(DrawingPath drawingPath) {
-		commandManager.drawCurrent(drawingPath);
-	}
+    public void onMyDraw(Path path, Paint paint) {
+        this.paint = paint;
+        this.path = path;
+    }
 
-	public boolean hasMoreRedo() {
-		return commandManager.hasMoreRedo();
-	}
+    public void addDrawingPath(DrawingPath drawingPath, boolean save) {
+        commandManager.addCommand(drawingPath, save);
+    }
 
-	public void redo() {
-		commandManager.redo();
-		// redrawSurface();
-	}
+    public void drawCurrent(DrawingPath drawingPath) {
+        commandManager.drawCurrent(drawingPath);
+    }
 
-	public void undo() {
-		commandManager.undo();
-		// redrawSurface();
-	}
+    public boolean hasMoreRedo() {
+        return commandManager.hasMoreRedo();
+    }
 
-	public void clear() {
-		path = null;
-		commandManager.clear();
-		// redrawSurface();
-	}
+    public void redo() {
+        commandManager.redo();
+        // redrawSurface();
+    }
 
-	public void earse() {
-		commandManager.earse();
-	}
+    public void undo() {
+        commandManager.undo();
+        // redrawSurface();
+    }
 
-	public boolean hasMoreUndo() {
-		return commandManager.hasMoreRedo();
-	}
+    public void clear() {
+        path = null;
+        commandManager.clear();
+        // redrawSurface();
+    }
 
-	@Override
-	public void surfaceCreated(SurfaceHolder holder) {
-		log.v("log>>> surfaceCreated:" + id);
-		if (id != -1) {
-			bitmapBackGround = BitmapFactory.decodeResource(getResources(), id);
-			bitmapBackGround = Bitmap.createScaledBitmap(bitmapBackGround,
-					getWidth(), getHeight(), true);
-		}
-		bitmapPaint = Bitmap.createBitmap(getWidth(), getHeight(),
-				Bitmap.Config.ARGB_8888);
-		thread.setRunning(true);
-		if (!thread.isInterrupted()) {
-			thread = new DrawThread(getHolder());
-			thread.start();
-			// redrawSurface();
-		}
-	}
+    public void earse() {
+        commandManager.earse();
+    }
 
-	public void setRunning(boolean isRun) {
-		this._run = isRun;
-	}
+    public boolean hasMoreUndo() {
+        return commandManager.hasMoreRedo();
+    }
 
-	// public void setDrawing(boolean isDrawing) {
-	// mDrawing = isDrawing;
-	// }
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+        log.v("log>>> surfaceCreated:" + id);
+        if (id != -1) {
+            bitmapBackGround = BitmapFactory.decodeResource(getResources(), id);
+            bitmapBackGround = Bitmap.createScaledBitmap(bitmapBackGround, getWidth(), getHeight(), true);
+        }
+        bitmapPaint = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+        thread.setRunning(true);
+        if (!thread.isInterrupted()) {
+            thread = new DrawThread(getHolder());
+            thread.start();
+            // redrawSurface();
+        }
+    }
 
-	public void stopThread() {
-		boolean retry = true;
-		thread.setRunning(false);
-		while (retry) {
-			try {
-				thread.join();
-				thread.interrupt();
-				retry = false;
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-	}
+    public void setRunning(boolean isRun) {
+        this._run = isRun;
+    }
 
-	@Override
-	public void surfaceDestroyed(SurfaceHolder holder) {
-		boolean retry = true;
-		thread.setRunning(false);
-		while (retry) {
-			try {
-				thread.join();
-				retry = false;
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-	}
+    // public void setDrawing(boolean isDrawing) {
+    // mDrawing = isDrawing;
+    // }
 
-	@Override
-	public void surfaceChanged(SurfaceHolder holder, int format, int width,
-			int height) {
+    public void stopThread() {
+        boolean retry = true;
+        thread.setRunning(false);
+        while (retry) {
+            try {
+                thread.join();
+                thread.interrupt();
+                retry = false;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
-	}
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+        boolean retry = true;
+        thread.setRunning(false);
+        while (retry) {
+            try {
+                thread.join();
+                retry = false;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
-	// private void redrawSurface() {
-	// mDrawing = true;
-	// new Handler().postDelayed(new Runnable() {
-	// @Override
-	// public void run() {
-	// mDrawing = false;
-	// }
-	// }, 300);
-	// }
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 
-	public void saveBitmap() {
-		Bitmap bm = Bitmap.createBitmap(getWidth(), getHeight(),
-				Bitmap.Config.ARGB_8888);
-		Canvas c = new Canvas();
-		c.setBitmap(bm);
-		List<DrawingPath> currentStack = commandManager.getCurrentStack();
-		for (DrawingPath dp : currentStack) {
-			c.drawPath(dp.path, dp.paint);
-		}
-		try {
-			this.setDrawingCacheEnabled(true);
-			FileOutputStream fos = new FileOutputStream(new File(
-					Environment.getExternalStorageDirectory() + "/tmp.png"));
-			bm.compress(CompressFormat.PNG, 100, fos);
-			fos.flush();
-			fos.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+    }
 
-	private float x = 1;
-	private float y = 1;
-	
-	public float getX() {
-		return x;
-	}
+    // private void redrawSurface() {
+    // mDrawing = true;
+    // new Handler().postDelayed(new Runnable() {
+    // @Override
+    // public void run() {
+    // mDrawing = false;
+    // }
+    // }, 300);
+    // }
 
-	public void setX(float x) {
-		this.x = x;
-	}
+    public void saveBitmap() {
+        Bitmap bm = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas();
+        c.setBitmap(bm);
+        List<DrawingPath> currentStack = commandManager.getCurrentStack();
+        for (DrawingPath dp : currentStack) {
+            c.drawPath(dp.path, dp.paint);
+        }
+        try {
+            this.setDrawingCacheEnabled(true);
+            FileOutputStream fos = new FileOutputStream(
+                    new File(Environment.getExternalStorageDirectory() + "/tmp.png"));
+            bm.compress(CompressFormat.PNG, 100, fos);
+            fos.flush();
+            fos.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-	public float getY() {
-		return y;
-	}
+    float a = 1, b = 1;
+    private float x = 1;
+    private float y = 1;
 
-	public void setY(float y) {
-		this.y = y;
-	}
+    public float getX() {
+        return x;
+    }
 
-	public void scale(float x, float y) {
-		this.x = x;
-		this.y = y;
-	}
-	
+    public void setX(float x) {
+        this.x = x;
+    }
+
+    public float getY() {
+        return y;
+    }
+
+    public void setY(float y) {
+        this.y = y;
+    }
+
+    public void scale(float x, float y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    private float normalizedScale = 1f;
+
+    private float minScale;
+    private float maxScale;
+    private float superMinScale;
+    private float superMaxScale;
+    private static final float SUPER_MIN_MULTIPLIER = .75f;
+    private static final float SUPER_MAX_MULTIPLIER = 8.25f;
+
+    public void scaleCanvas(double deltaScale, float focusX, float focusY, boolean isStretchImageToSuper) {
+        float lowerScale, upperScale;
+        if (isStretchImageToSuper) {
+            lowerScale = superMinScale;
+            upperScale = superMaxScale;
+        } else {
+            lowerScale = minScale;
+            upperScale = maxScale;
+        }
+
+        float origScale = normalizedScale;
+        normalizedScale *= deltaScale;
+
+        if (normalizedScale > upperScale) {
+            normalizedScale = upperScale;
+            deltaScale = normalizedScale / origScale;
+        } else if (normalizedScale < lowerScale) {
+            normalizedScale = lowerScale;
+            deltaScale = normalizedScale / origScale;
+        }
+
+        a = (float) deltaScale;
+        b = (float) deltaScale;
+        x = focusX;
+        y = focusY;
+
+    }
+
 }
