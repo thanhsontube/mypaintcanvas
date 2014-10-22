@@ -59,6 +59,7 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
     public void setId(int id) {
         this.id = id;
         renderer_ = new MyRender(context, id);
+        commandManager = ((MyRender)renderer_).commandManager;
     }
 
     CommandManager commandManager;
@@ -115,7 +116,11 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
         setFocusable(true);
         path = new Path();
         mPaint = resetPaint();
-        commandManager = new CommandManager();
+        
+//        if(renderer_ != null) {
+//            commandManager = ((MyRender)renderer_).commandManager;
+//        }
+//        commandManager = new CommandManager();
     }
 
     @Override
@@ -470,10 +475,11 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
         int y = (int) (c.y + (event.getY() * s));
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
         case MotionEvent.ACTION_DOWN:
+            log.d("log>>> " + "ACTION_DOWN");
             touchStart(x, y);
             return this.touch_.down(event);
         case MotionEvent.ACTION_MOVE:
-            // log.d("log>>> " + "ACTION_MOVE");
+             log.d("log>>> " + "ACTION_MOVE");
 
             long SCALE_MOVE_GUARD = 500;
             if (this.scaleGesture_.isInProgress()
@@ -483,6 +489,7 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
             }
             return this.touch_.move(event);
         case MotionEvent.ACTION_UP:
+            log.d("log>>> " + "ACTION_UP");
             touchUp(x, y);
             return this.touch_.up(event);
         case MotionEvent.ACTION_POINTER_UP:

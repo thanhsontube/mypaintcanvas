@@ -9,6 +9,7 @@ import com.example.tapcopaint.fragment.MainFragment;
 import com.example.tapcopaint.fragment.MainFragment.IMainFragmentListener;
 import com.example.tapcopaint.fragment.TsPaintFragment;
 import com.example.tapcopaint.fragment.TsRenderFragment;
+import com.example.tapcopaint.rotation.RotationFragment;
 
 public class TapcoPaintMainActivity extends BaseFragmentActivity implements IMainFragmentListener {
     boolean isTest = true;

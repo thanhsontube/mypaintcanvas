@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/tracks"
         android:layout_marginTop="-4dp"
-        android:src="@drawable/ic_arrow_down"
+        android:src="@drawable/btn_paint_edit_image_arrow_down"
         android:tag="down" />
 
 </RelativeLayout>

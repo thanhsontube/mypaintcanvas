@@ -56,19 +56,20 @@
             android:layout_height="match_parent"
             android:tag="ll" >
 
-            <ImageView
-                android:layout_width="wrap_content"
+            <com.example.tapcopaint.zoom.TsImageView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:scaleType="fitXY"
                 android:src="@drawable/pic5"
                 android:tag="image"
-                android:visibility="visible" />
+                android:visibility="visible" >
+            </com.example.tapcopaint.zoom.TsImageView>
 
             <com.example.tapcopaint.view.TsSurfaceView
                 android:id="@+id/paint_tssurface"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:visibility="gone" />
         </FrameLayout>
     </LinearLayout>
 

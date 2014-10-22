@@ -82,9 +82,8 @@ public class TsSurfaceView extends SurfaceView implements SurfaceHolder.Callback
                 // if (mDrawing) {
                 try {
                     mCanvas = mSurfaceHolder.lockCanvas(null);
-                    // mCanvas.scale(a, b);
+//                     mCanvas.scale(a, b);
 //                    mCanvas.scale(a, b, x, y);
-                    mCanvas.scale(a, b, x, y);
 
                     mCanvas.drawColor(0, PorterDuff.Mode.CLEAR);
                     commandManager.executeAll(mCanvas);
