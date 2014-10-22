@@ -1,5 +1,7 @@
 package com.example.tapcopaint.graphic2;
 
+import java.sql.Ref;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,6 +13,7 @@ import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.widget.ImageView.ScaleType;
 
 import com.androidquery.AQuery;
@@ -277,8 +280,9 @@ public class MyRender extends SurfaceRenderer {
         matrix.postScale((float) deltaScale, (float) deltaScale, focusX, focusY);
 
         Canvas canvas = new Canvas(viewPort_.bitmap_);
+       RectF f = new RectF();
+       myPath.computeBounds(f, true);
 
-        canvas.drawLine(0, 0, 400, 400, resetPaint());
         float a, b;
         a = (float) deltaScale;
         b = (float) deltaScale;
@@ -286,8 +290,9 @@ public class MyRender extends SurfaceRenderer {
 
         canvas.scale((float) deltaScale, (float) deltaScale, focusX, focusY);
         canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-
         canvas.drawBitmap(bitmap, matrix, paint);
+        canvas.drawPath(myPath, paint);
+        myPath.transform(matrix);
 
     }
 
@@ -409,15 +414,21 @@ public class MyRender extends SurfaceRenderer {
 
     // draw path
     public CommandManager commandManager;
+    Path myPath;
 
     public void drawLayerFisrt(Context context, ViewPort viewPort) {
         Canvas mCanvas = new Canvas(viewPort_.bitmap_);
         // mCanvas.drawColor(0, PorterDuff.Mode.CLEAR);
-        commandManager.executeAll(mCanvas);
+        // commandManager.executeAll(mCanvas);
 
         Paint p = resetPaint();
 
-        mCanvas.drawLine(0, 0, 300, 300, p);
+        // mCanvas.drawLine(0, 0, 300, 300, p);
+
+         myPath = new Path();
+        myPath.moveTo(0, 0);
+        myPath.lineTo(400, 500);
+        mCanvas.drawPath(myPath, p);
 
     }
 
