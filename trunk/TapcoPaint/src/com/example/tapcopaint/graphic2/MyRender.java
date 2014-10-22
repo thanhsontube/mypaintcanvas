@@ -1,7 +1,5 @@
 package com.example.tapcopaint.graphic2;
 
-import java.sql.Ref;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,14 +9,15 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
+import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.view.View;
 import android.widget.ImageView.ScaleType;
 
 import com.androidquery.AQuery;
 import com.example.tapcopaint.utils.FilterLog;
-import com.example.tapcopaint.utils.PaintUtil;
 import com.example.tapcopaint.view.CommandManager;
 import com.example.tapcopaint.zoom.ZoomVariables;
 
@@ -69,14 +68,14 @@ public class MyRender extends SurfaceRenderer {
 
     @Override
     protected void drawBase() {
-        if (mMode == RenderMode.ZOOM) {
-            return;
-        }
-
-        if (mMode == RenderMode.NONE) {
-
-            drawOriginalImage(context_, id, viewPort_);
-        }
+        // if (mMode == RenderMode.ZOOM) {
+        // return;
+        // }
+        //
+        // if (mMode == RenderMode.NONE) {
+        //
+        // drawOriginalImage(context_, id, viewPort_);
+        // }
 
         // drawOriginalImage(context_, id, viewPort_);
 
@@ -84,21 +83,20 @@ public class MyRender extends SurfaceRenderer {
 
     @Override
     protected void drawLayer() {
-        if (mMode == RenderMode.ZOOM) {
-            return;
-        }
-
-        if (mMode == RenderMode.NONE) {
-
-            drawLayer(context_, viewPort_);
-        }
+        // if (mMode == RenderMode.ZOOM) {
+        // return;
+        // }
+        //
+        // if (mMode == RenderMode.NONE) {
+        //
+        // drawLayer(context_, viewPort_);
+        // }
 
     }
 
     @Override
     protected void drawFinal() {
-        // TODO Auto-generated method stub
-
+        drawRect(viewPort_);
     }
 
     private final Rect canvasRect_ = new Rect(0, 0, 0, 0);
@@ -280,8 +278,8 @@ public class MyRender extends SurfaceRenderer {
         matrix.postScale((float) deltaScale, (float) deltaScale, focusX, focusY);
 
         Canvas canvas = new Canvas(viewPort_.bitmap_);
-       RectF f = new RectF();
-       myPath.computeBounds(f, true);
+        RectF f = new RectF();
+        myPath.computeBounds(f, true);
 
         float a, b;
         a = (float) deltaScale;
@@ -291,8 +289,53 @@ public class MyRender extends SurfaceRenderer {
         canvas.scale((float) deltaScale, (float) deltaScale, focusX, focusY);
         canvas.drawColor(0, PorterDuff.Mode.CLEAR);
         canvas.drawBitmap(bitmap, matrix, paint);
-        canvas.drawPath(myPath, paint);
-        myPath.transform(matrix);
+        canvas.drawPath(myPath, resetPaint());
+
+        // myPath.transform(matrix);
+
+    }
+
+    public void scaleCanvas2(double deltaScale, float focusX, float focusY, boolean isStretchImageToSuper) {
+
+        mMode = RenderMode.ZOOM;
+
+        // reset zoom
+
+        float lowerScale, upperScale;
+        if (isStretchImageToSuper) {
+            lowerScale = superMinScale;
+            upperScale = superMaxScale;
+        } else {
+            lowerScale = minScale;
+            upperScale = maxScale;
+        }
+
+        float origScale = normalizedScale;
+        normalizedScale *= deltaScale;
+
+        if (normalizedScale > upperScale) {
+            normalizedScale = upperScale;
+            deltaScale = normalizedScale / origScale;
+        } else if (normalizedScale < lowerScale) {
+            normalizedScale = lowerScale;
+            deltaScale = normalizedScale / origScale;
+        }
+
+        // matrix.postScale((float) deltaScale, (float) deltaScale, focusX, focusY);
+
+        log.d("log>>> " + "focusX:" + focusX + ";focusY:" + focusY + ";deltaScale:" + deltaScale);
+
+        scaleX *= (float) deltaScale;
+        scaleY *= (float) deltaScale;
+        
+//        final float x = (float) ((viewPort_.getPhysicalWidth() - deltaScale)/deltaScale);
+//        final float y = (float) ((viewPort_.getPhysicalHeight() - deltaScale)/deltaScale);
+//        
+//        translateX = x - focusX + focusX; // canvas X
+//        translateY = y - focusY + focusY; // canvas Y
+
+        // translateX = focusX;
+        // translateY = focusY;
 
     }
 
@@ -425,7 +468,7 @@ public class MyRender extends SurfaceRenderer {
 
         // mCanvas.drawLine(0, 0, 300, 300, p);
 
-         myPath = new Path();
+        myPath = new Path();
         myPath.moveTo(0, 0);
         myPath.lineTo(400, 500);
         mCanvas.drawPath(myPath, p);
@@ -444,6 +487,78 @@ public class MyRender extends SurfaceRenderer {
         // option
 
         return mPaint;
+    }
+
+    float translateX = 0f;
+    float translateY = 0f;
+
+    float scaleX = 1;
+    float scaleY = 1;
+
+    float mScaleFactor = 1;
+
+    public void drawRect(ViewPort viewPort) {
+
+        Point p = new Point();
+        viewPort.getSize(p);
+
+        // log.d("log>>> " + "Viewport X:" + p.x + ";y:" + p.y);
+        Canvas canvas = new Canvas(viewPort_.bitmap_);
+
+        RectF rectF = new RectF(100, 100, 300, 500);
+
+        canvas.drawColor(Color.WHITE);
+        canvas.translate(translateX, translateY);
+        canvas.scale(scaleX, scaleY);
+
+        Paint pCircle = resetPaint();
+        pCircle.setColor(Color.GREEN);
+
+        float r = 100;
+
+        // mid of rectangle
+
+        canvas.drawPoint(200, 300, resetPaint());
+
+        // mid of circle
+
+        canvas.drawPoint(550, 300, resetPaint());
+
+        canvas.drawCircle(550, 300, r, pCircle);
+
+        canvas.drawRect(rectF, resetPaint());
+
+        // finger point 1
+        canvas.drawCircle(550, 100, 50, pCircle);
+        // finger point 2
+        canvas.drawCircle(550, 500, 50, pCircle);
+
+        // draw line
+        Path p1 = new Path();
+        p1.moveTo(200, 300);
+        p1.lineTo(550, 300);
+        Paint pPath = resetPaint();
+        pPath.setStrokeWidth(5);
+        pPath.setColor(Color.BLUE);
+
+        canvas.drawPath(p1, pPath);
+
+    }
+
+    public float[] getAbsolutePosition(float Ax, float Ay, float Bx, float By) {
+
+        Point p = new Point();
+        viewPort_.getSize(p);
+
+        float fromAxToBxInCanvasSpace = (translateX - Ax) / mScaleFactor;
+        float fromBxToCanvasEdge = p.x - Bx;
+        float x = p.x - fromAxToBxInCanvasSpace - fromBxToCanvasEdge;
+
+        float fromAyToByInCanvasSpace = (p.y - Ay) / mScaleFactor;
+        float fromByToCanvasEdge = p.y - By;
+        float y = p.y - fromAyToByInCanvasSpace - fromByToCanvasEdge;
+
+        return new float[] { x, y };
     }
 
 }
