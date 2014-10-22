@@ -59,7 +59,7 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
     public void setId(int id) {
         this.id = id;
         renderer_ = new MyRender(context, id);
-        commandManager = ((MyRender)renderer_).commandManager;
+        commandManager = ((MyRender) renderer_).commandManager;
     }
 
     CommandManager commandManager;
@@ -116,11 +116,11 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
         setFocusable(true);
         path = new Path();
         mPaint = resetPaint();
-        
-//        if(renderer_ != null) {
-//            commandManager = ((MyRender)renderer_).commandManager;
-//        }
-//        commandManager = new CommandManager();
+
+        // if(renderer_ != null) {
+        // commandManager = ((MyRender)renderer_).commandManager;
+        // }
+        // commandManager = new CommandManager();
     }
 
     @Override
@@ -242,16 +242,17 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
             log.d("log>>> " + "onScale .............");
-//            float scaleFactor = detector.getScaleFactor();
-//            if (scaleFactor != 0f && scaleFactor != 1.0f) {
-//                scaleFactor = 1 / scaleFactor;
-//                this.screenFocus.set(detector.getFocusX(), detector.getFocusY());
-//                TsSurfaceRender.this.renderer_.zoom(scaleFactor, this.screenFocus);
-//                invalidate();
-//            }
-//            TsSurfaceRender.this.lastScaleTime_ = System.currentTimeMillis();
-            
-            ((MyRender)renderer_).scaleCanvas(detector.getScaleFactor(), detector.getFocusX(), detector.getFocusY(), true);
+            // float scaleFactor = detector.getScaleFactor();
+            // if (scaleFactor != 0f && scaleFactor != 1.0f) {
+            // scaleFactor = 1 / scaleFactor;
+            // this.screenFocus.set(detector.getFocusX(), detector.getFocusY());
+            // TsSurfaceRender.this.renderer_.zoom(scaleFactor, this.screenFocus);
+            // invalidate();
+            // }
+            // TsSurfaceRender.this.lastScaleTime_ = System.currentTimeMillis();
+
+            ((MyRender) renderer_).scaleCanvas2(detector.getScaleFactor(), detector.getFocusX(), detector.getFocusY(),
+                    true);
             return true;
         }
     }
@@ -479,7 +480,7 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
             touchStart(x, y);
             return this.touch_.down(event);
         case MotionEvent.ACTION_MOVE:
-             log.d("log>>> " + "ACTION_MOVE");
+            log.d("log>>> " + "ACTION_MOVE");
 
             long SCALE_MOVE_GUARD = 500;
             if (this.scaleGesture_.isInProgress()
