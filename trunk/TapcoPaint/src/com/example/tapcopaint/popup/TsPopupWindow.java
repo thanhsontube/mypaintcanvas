@@ -14,6 +14,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.MeasureSpec;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -133,7 +134,7 @@ public class TsPopupWindow implements OnSeekBarChangeListener, OnItemClickListen
             popupWindow.setBackgroundDrawable(drawable);
         }
 
-        popupWindow.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
+        popupWindow.setWidth(WindowManager.LayoutParams.MATCH_PARENT);
         popupWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
         popupWindow.setTouchable(true);
         popupWindow.setFocusable(true);
@@ -149,41 +150,32 @@ public class TsPopupWindow implements OnSeekBarChangeListener, OnItemClickListen
      */
 
     public void show() {
-        log.d("log>>> " + "show");
         preShow();
-        int xPos, yPos;
+        int xPos, yPos, arrowPos;
         int[] location = new int[2];
         anchor.getLocationOnScreen(location);
-
-        log.d("log>>> " + "anchor x:" + location[0] + ";y:" + location[1]);
-
         Rect anchorRect = new Rect(location[0], location[1], location[0] + anchor.getWidth(), location[1]
                 + anchor.getHeight());
 
-        log.d("log>>> " + "rect left:" + anchorRect.left + ";right:" + anchorRect.right + ";top:" + anchorRect.top
+        log.v(">>>: anchor: L:" + anchorRect.left + ";right:" + anchorRect.right + ";top:" + anchorRect.top
                 + ";bottom:" + anchorRect.bottom);
-
-        rootView.measure(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        // rootView.measure(LayoutParams.WRAP_CONTENT,
+        // LayoutParams.WRAP_CONTENT);
+        rootView.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
 
         int rootWidth = rootView.getMeasuredWidth();
         int rootHeight = rootView.getMeasuredHeight();
 
-        log.d("log>>> " + "rootWidth:" + rootWidth + ";rootHeight:" + rootHeight);
+        log.v(">>>:rootView:W:" + rootWidth + ";H:" + rootHeight);
+        // xPos = anchorRect.centerX();
 
-        // xPos = anchorRect.left + anchorRect.width() / 2;
-        xPos = anchorRect.centerX();
-        yPos = anchorRect.top - rootHeight - 12;
+        xPos = (screenW - rootWidth) / 2;
+        yPos = anchorRect.top - rootHeight - arrowDown.getMeasuredHeight() - 32;
 
-        if (rootWidth > screenW) {
-            log.e("log>>> " + "error rootWidth:" + rootWidth);
-            xPos = 16;
-
-        } else {
-            xPos = (screenW - rootWidth) / 2;
-        }
-        log.d("log>>> " + "final xPos:" + xPos + ";yPos:" + yPos);
-        showArrow(anchorRect.centerX() - xPos);
-        popupWindow.showAtLocation(anchor, Gravity.CENTER, 0, 0);
+        arrowPos = anchorRect.centerX() - xPos;
+        showArrow(arrowPos);
+        // popupWindow.showAtLocation(anchor, Gravity.NO_GRAVITY, xPos, yPos);
+        popupWindow.showAtLocation(anchor, Gravity.CENTER | Gravity.BOTTOM, 0, screenH - anchorRect.top);
     }
 
     public void showArrow(int requestedX) {

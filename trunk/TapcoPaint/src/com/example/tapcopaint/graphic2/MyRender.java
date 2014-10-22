@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
@@ -14,6 +15,8 @@ import android.widget.ImageView.ScaleType;
 
 import com.androidquery.AQuery;
 import com.example.tapcopaint.utils.FilterLog;
+import com.example.tapcopaint.utils.PaintUtil;
+import com.example.tapcopaint.view.CommandManager;
 import com.example.tapcopaint.zoom.ZoomVariables;
 
 public class MyRender extends SurfaceRenderer {
@@ -36,6 +39,7 @@ public class MyRender extends SurfaceRenderer {
     public MyRender(Context c, int id) {
         this(c);
         this.id = id;
+        commandManager = new CommandManager();
     }
 
     @Override
@@ -45,6 +49,7 @@ public class MyRender extends SurfaceRenderer {
         maxScale = 3;
         superMinScale = SUPER_MIN_MULTIPLIER * minScale;
         superMaxScale = SUPER_MAX_MULTIPLIER * maxScale;
+
     }
 
     @Override
@@ -76,8 +81,14 @@ public class MyRender extends SurfaceRenderer {
 
     @Override
     protected void drawLayer() {
-        // TODO Auto-generated method stub
-        drawLayer(context_, viewPort_);
+        if (mMode == RenderMode.ZOOM) {
+            return;
+        }
+
+        if (mMode == RenderMode.NONE) {
+
+            drawLayer(context_, viewPort_);
+        }
 
     }
 
@@ -266,15 +277,17 @@ public class MyRender extends SurfaceRenderer {
         matrix.postScale((float) deltaScale, (float) deltaScale, focusX, focusY);
 
         Canvas canvas = new Canvas(viewPort_.bitmap_);
+
+        canvas.drawLine(0, 0, 400, 400, resetPaint());
         float a, b;
         a = (float) deltaScale;
         b = (float) deltaScale;
         log.d("log>>> " + "scale a:" + a + ";b:" + b + ";x:" + focusX + ";y:" + focusY);
 
         canvas.scale((float) deltaScale, (float) deltaScale, focusX, focusY);
-         canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-        
-         canvas.drawBitmap(bitmap, matrix, paint);
+        canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+
+        canvas.drawBitmap(bitmap, matrix, paint);
 
     }
 
@@ -391,6 +404,35 @@ public class MyRender extends SurfaceRenderer {
      * 
      */
     public void drawLayer(Context context, ViewPort viewPort) {
+        drawLayerFisrt(context, viewPort);
+    }
+
+    // draw path
+    public CommandManager commandManager;
+
+    public void drawLayerFisrt(Context context, ViewPort viewPort) {
+        Canvas mCanvas = new Canvas(viewPort_.bitmap_);
+        // mCanvas.drawColor(0, PorterDuff.Mode.CLEAR);
+        commandManager.executeAll(mCanvas);
+
+        Paint p = resetPaint();
+
+        mCanvas.drawLine(0, 0, 300, 300, p);
+
+    }
+
+    public Paint resetPaint() {
+        Paint mPaint = new Paint();
+        // default
+        mPaint.setDither(true);
+        mPaint.setStyle(Paint.Style.STROKE);
+        mPaint.setStrokeJoin(Paint.Join.ROUND);
+        mPaint.setStrokeCap(Paint.Cap.ROUND);
+        mPaint.setStrokeWidth(12);
+        mPaint.setColor(Color.RED);
+        // option
+
+        return mPaint;
     }
 
 }

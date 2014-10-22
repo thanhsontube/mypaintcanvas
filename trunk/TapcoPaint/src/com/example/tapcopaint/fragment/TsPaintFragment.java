@@ -37,6 +37,8 @@ import com.example.tapcopaint.utils.FilterLog;
 import com.example.tapcopaint.utils.PaintUtil;
 import com.example.tapcopaint.view.DrawingPath;
 import com.example.tapcopaint.view.TsSurfaceView;
+import com.example.tapcopaint.zoom.TouchImageView;
+import com.example.tapcopaint.zoom.TsImageView;
 
 public class TsPaintFragment extends BaseFragment implements OnClickListener, OnBackPressListener, OnTouchListener,
         OnScaleGestureListener {
@@ -44,7 +46,8 @@ public class TsPaintFragment extends BaseFragment implements OnClickListener, On
     public static int KK = 0;
 
     private int id;
-    private ImageView img, imgErase;
+    private TsImageView img;
+    private ImageView imgErase;
     private static final String TAG = "PaintFragment";
     private Paint mPaint;
 
@@ -112,7 +115,7 @@ public class TsPaintFragment extends BaseFragment implements OnClickListener, On
         tsSurfaceView = (TsSurfaceView) rootView.findViewById(R.id.paint_tssurface);
         tsSurfaceView.setOnTouchListener(this);
 
-        img = (ImageView) rootView.findViewWithTag("image");
+        img = (TsImageView) rootView.findViewWithTag("image");
         img.setImageResource(id);
 
         View viewCancel = rootView.findViewById(R.id.paint_btn_cancel);

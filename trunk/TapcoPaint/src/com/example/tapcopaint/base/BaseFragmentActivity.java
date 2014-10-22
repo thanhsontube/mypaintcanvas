@@ -1,5 +1,6 @@
 package com.example.tapcopaint.base;
 
+import java.util.Collection;
 import java.util.Stack;
 
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import com.example.tapcopaint.utils.FilterLog;
 public abstract class BaseFragmentActivity extends FragmentActivity implements OnBackStackChangedListener {
 
     public static final String FRAGMENT_KEY = "fragment-key";
+    protected static final String SAVE_KEY_STACK = "tag_stack";
     private static final String TAG = "BaseFragmentActivity";
     FilterLog log = new FilterLog(TAG);
 
@@ -23,6 +25,7 @@ public abstract class BaseFragmentActivity extends FragmentActivity implements O
 
     protected final Stack<String> mFragmentTagStack = new Stack<String>();
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,9 +35,12 @@ public abstract class BaseFragmentActivity extends FragmentActivity implements O
             getSupportFragmentManager().beginTransaction()
                     .add(getFragmentContainerId(), createFragmentMain(savedInstanceState), FRAGMENT_KEY)
                     .setTransition(FragmentTransaction.TRANSIT_NONE).commit();
+        } else {
+            mFragmentTagStack.addAll((Collection<String>) savedInstanceState.getSerializable(SAVE_KEY_STACK));
+            restoreFragmentsState();
         }
-
         getSupportFragmentManager().addOnBackStackChangedListener(this);
+
     }
 
     /**
@@ -114,6 +120,32 @@ public abstract class BaseFragmentActivity extends FragmentActivity implements O
     public interface OnBackPressListener {
 
         boolean onBackPress();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(SAVE_KEY_STACK, mFragmentTagStack);
+    }
+
+    protected void restoreFragmentsState() {
+        final FragmentManager fm = getSupportFragmentManager();
+        final FragmentTransaction ft = fm.beginTransaction();
+        if (mFragmentTagStack.size() == 0) {
+            ft.show(fm.findFragmentByTag(FRAGMENT_KEY));
+        } else {
+            ft.hide(fm.findFragmentByTag(FRAGMENT_KEY));
+            for (int i = 0; i < mFragmentTagStack.size(); i++) {
+                String tag = mFragmentTagStack.get(i);
+                Fragment f = fm.findFragmentByTag(tag);
+                if (i + 1 < mFragmentTagStack.size()) {
+                    ft.hide(f);
+                } else {
+                    ft.show(f);
+                }
+            }
+        }
+        ft.commit();
     }
 
 }
