@@ -18,6 +18,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
@@ -142,6 +143,10 @@ public abstract class SurfaceRenderer {
         this.viewPort_.zoom(scaleFactor, screenFocus);
     }
 
+    public void zoomCanvas(float scale, float focusX, float focusY) {
+        this.viewPort_.zoomCanvas(scale, new PointF(focusX, focusY));
+    }
+
     public float getZoom() {
         return this.viewPort_.getZoom();
     }
@@ -156,6 +161,9 @@ public abstract class SurfaceRenderer {
         public final Rect window = new Rect(0, 0, 0, 0);
         // The zoom factor of the viewport
         float zoom = 1.0f;
+
+        float translateX = 1f;
+        float translateY = 1f;
 
         public void getOrigin(Point p) {
             synchronized (this) {
@@ -297,11 +305,42 @@ public abstract class SurfaceRenderer {
             drawBase();
             drawLayer();
             drawFinal();
+
+            // c.drawColor(Color.WHITE);
+
+            scale(c, zoom);
+            translate(c, translateX, translateY);
             synchronized (this) {
                 if (c != null && this.bitmap_ != null) {
                     c.drawBitmap(this.bitmap_, 0F, 0F, null);
                 }
             }
+        }
+
+        public void zoomCanvas(float factor, PointF screenFocus) {
+
+            if (bitmap_ == null) {
+                return;
+            }
+
+            if (factor != 1.0f) {
+                synchronized (this) {
+
+                    this.zoom *= factor;
+                }
+            }
+
+            // calculate translateX, translateY from focusX, focusY
+
+        }
+
+        void scale(Canvas c, float scale) {
+
+            c.scale(scale, scale);
+        }
+
+        void translate(Canvas c, float translateX, float translateY) {
+            c.translate(translateX, translateY);
         }
     }
 

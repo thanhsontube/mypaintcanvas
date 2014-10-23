@@ -615,10 +615,10 @@ public class MyRender extends SurfaceRenderer {
         RectF rectF = new RectF(100, 100, 300, 500);
 
         canvas.drawColor(Color.WHITE);
-
-        canvas.scale(scaleX, scaleY);
-
-        canvas.translate(-translateX / scaleX, -translateY / scaleY);
+//
+//        canvas.scale(scaleX, scaleY);
+//
+//        canvas.translate(-translateX / scaleX, -translateY / scaleY);
 
         Paint pCircle = resetPaint();
         pCircle.setColor(Color.GREEN);

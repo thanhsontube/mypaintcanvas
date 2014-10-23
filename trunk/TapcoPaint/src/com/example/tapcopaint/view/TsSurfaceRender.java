@@ -229,15 +229,17 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
             log.d("log>>> " + "onScale .............");
             float scaleFactor = detector.getScaleFactor();
             if (scaleFactor != 0f && scaleFactor != 1.0f) {
-                scaleFactor = 1 / scaleFactor;
+                // scaleFactor = 1 / scaleFactor;
                 this.screenFocus.set(detector.getFocusX(), detector.getFocusY());
-                TsSurfaceRender.this.renderer_.zoom(scaleFactor, this.screenFocus);
+                // TsSurfaceRender.this.renderer_.zoom(scaleFactor, this.screenFocus);
+                TsSurfaceRender.this.renderer_.zoomCanvas(scaleFactor, detector.getFocusX(), detector.getFocusY());
                 invalidate();
             }
             TsSurfaceRender.this.lastScaleTime_ = System.currentTimeMillis();
 
-            ((MyRender) renderer_).scaleCanvas2(detector.getScaleFactor(), detector.getFocusX(), detector.getFocusY(),
-                    true);
+            // ((MyRender) renderer_).scaleCanvas2(detector.getScaleFactor(), detector.getFocusX(),
+            // detector.getFocusY(),
+            // true);
             return true;
         }
     }
@@ -316,15 +318,17 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
         /** Handle a move event_ */
         boolean move(MotionEvent event) {
             if (this.state_ == TouchState.IN_TOUCH) {
-                log.d("log>>> " + "move IN_TOUCH");
+
                 float zoom = TsSurfaceRender.this.renderer_.getZoom();
+                if (zoom != 1.0f) {
+                    log.d("log>>> " + "move IN_TOUCH");
+                }
                 float deltaX = (event.getX() - this.touchDown_.x) * zoom;
                 float deltaY = (event.getY() - this.touchDown_.y) * zoom;
                 float newX = this.viewCenterAtDown_.x - deltaX;
                 float newY = this.viewCenterAtDown_.y - deltaY;
                 TsSurfaceRender.this.renderer_.setViewPosition((int) newX, (int) newY);
 
-                ((MyRender) renderer_).onMove(event.getX(), event.getY());
                 TsSurfaceRender.this.invalidate();
 
                 return true;
