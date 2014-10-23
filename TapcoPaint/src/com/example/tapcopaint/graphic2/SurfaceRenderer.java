@@ -12,18 +12,17 @@
  */
 package com.example.tapcopaint.graphic2;
 
-import com.example.tapcopaint.utils.FilterLog;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.Log;
+
+import com.example.tapcopaint.utils.FilterLog;
 
 /**
  * SurfaceRenderer is the superclass of the renderer. The game should subclass the renderer and extend the drawing

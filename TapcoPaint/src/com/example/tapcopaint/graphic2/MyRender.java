@@ -73,6 +73,7 @@ public class MyRender extends SurfaceRenderer {
 
     @Override
     protected void drawBase() {
+        drawRect(viewPort_);
         // if (mMode == RenderMode.ZOOM) {
         // return;
         // }
@@ -88,20 +89,11 @@ public class MyRender extends SurfaceRenderer {
 
     @Override
     protected void drawLayer() {
-        // if (mMode == RenderMode.ZOOM) {
-        // return;
-        // }
-        //
-        // if (mMode == RenderMode.NONE) {
-        //
-        // drawLayer(context_, viewPort_);
-        // }
-
+        drawPath();
     }
 
     @Override
     protected void drawFinal() {
-        drawRect(viewPort_);
     }
 
     private final Rect canvasRect_ = new Rect(0, 0, 0, 0);
@@ -615,10 +607,10 @@ public class MyRender extends SurfaceRenderer {
         RectF rectF = new RectF(100, 100, 300, 500);
 
         canvas.drawColor(Color.WHITE);
-//
-//        canvas.scale(scaleX, scaleY);
-//
-//        canvas.translate(-translateX / scaleX, -translateY / scaleY);
+        //
+        // canvas.scale(scaleX, scaleY);
+        //
+        // canvas.translate(-translateX / scaleX, -translateY / scaleY);
 
         Paint pCircle = resetPaint();
         pCircle.setColor(Color.GREEN);
@@ -749,6 +741,11 @@ public class MyRender extends SurfaceRenderer {
             translateX = -x / scaleX;
             translateY = -y / scaleY;
         }
+    }
+
+    public void drawPath() {
+        
+
     }
 
 }
