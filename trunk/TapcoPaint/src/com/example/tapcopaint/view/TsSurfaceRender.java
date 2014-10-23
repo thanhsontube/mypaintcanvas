@@ -225,31 +225,16 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
         }
 
         @Override
-        public boolean onScaleBegin(ScaleGestureDetector detector) {
-            // TODO Auto-generated method stub\
-            log.d("log>>> " + "onScaleBegin");
-            return true;
-            // return super.onScaleBegin(detector);
-        }
-
-        @Override
-        public void onScaleEnd(ScaleGestureDetector detector) {
-            // TODO Auto-generated method stub
-            log.d("log>>> " + "onScaleEnd");
-
-        }
-
-        @Override
         public boolean onScale(ScaleGestureDetector detector) {
             log.d("log>>> " + "onScale .............");
-            // float scaleFactor = detector.getScaleFactor();
-            // if (scaleFactor != 0f && scaleFactor != 1.0f) {
-            // scaleFactor = 1 / scaleFactor;
-            // this.screenFocus.set(detector.getFocusX(), detector.getFocusY());
-            // TsSurfaceRender.this.renderer_.zoom(scaleFactor, this.screenFocus);
-            // invalidate();
-            // }
-            // TsSurfaceRender.this.lastScaleTime_ = System.currentTimeMillis();
+            float scaleFactor = detector.getScaleFactor();
+            if (scaleFactor != 0f && scaleFactor != 1.0f) {
+                scaleFactor = 1 / scaleFactor;
+                this.screenFocus.set(detector.getFocusX(), detector.getFocusY());
+                TsSurfaceRender.this.renderer_.zoom(scaleFactor, this.screenFocus);
+                invalidate();
+            }
+            TsSurfaceRender.this.lastScaleTime_ = System.currentTimeMillis();
 
             ((MyRender) renderer_).scaleCanvas2(detector.getScaleFactor(), detector.getFocusX(), detector.getFocusY(),
                     true);
@@ -257,8 +242,16 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
         }
     }
 
-    enum TouchState {
-        NO_TOUCH, IN_TOUCH, ON_FLING, IN_FLING
+    public enum TouchState {
+
+        NO_TOUCH(0), IN_TOUCH(1), ON_FLING(2), IN_FLING(3);
+
+        TouchState(int ni) {
+            nativeInt = ni;
+        }
+
+        final int nativeInt;
+
     }
 
     class TouchHandler {
@@ -323,13 +316,17 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
         /** Handle a move event_ */
         boolean move(MotionEvent event) {
             if (this.state_ == TouchState.IN_TOUCH) {
+                log.d("log>>> " + "move IN_TOUCH");
                 float zoom = TsSurfaceRender.this.renderer_.getZoom();
                 float deltaX = (event.getX() - this.touchDown_.x) * zoom;
                 float deltaY = (event.getY() - this.touchDown_.y) * zoom;
                 float newX = this.viewCenterAtDown_.x - deltaX;
                 float newY = this.viewCenterAtDown_.y - deltaY;
                 TsSurfaceRender.this.renderer_.setViewPosition((int) newX, (int) newY);
+
+                ((MyRender) renderer_).onMove(event.getX(), event.getY());
                 TsSurfaceRender.this.invalidate();
+
                 return true;
             }
             return false;
@@ -480,8 +477,6 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
             touchStart(x, y);
             return this.touch_.down(event);
         case MotionEvent.ACTION_MOVE:
-            log.d("log>>> " + "ACTION_MOVE");
-
             long SCALE_MOVE_GUARD = 500;
             if (this.scaleGesture_.isInProgress()
                     || System.currentTimeMillis() - this.lastScaleTime_ < SCALE_MOVE_GUARD) {
