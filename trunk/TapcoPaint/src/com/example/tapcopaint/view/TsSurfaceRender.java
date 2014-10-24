@@ -42,7 +42,7 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
     private Path path;
     private float mX, mY;
 
-    public void setId(Context context, int id) {
+    public void setImage(Context context, int id) {
         log.d("log>>> " + "setId");
         this.id = id;
         renderer_.setId(id);

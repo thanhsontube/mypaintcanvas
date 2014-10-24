@@ -1,4 +1,4 @@
-package com.example.tapcopaint.view;
+package com.example.tapcopaint.trash;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -32,9 +32,10 @@ import android.view.SurfaceView;
 import android.widget.Scroller;
 
 import com.example.tapcopaint.R;
-import com.example.tapcopaint.graphic2.BitmapSurfaceRenderer;
 import com.example.tapcopaint.graphic2.SurfaceRenderer;
 import com.example.tapcopaint.utils.FilterLog;
+import com.example.tapcopaint.view.CommandManager;
+import com.example.tapcopaint.view.DrawingPath;
 
 public class TsSurfaceViewRender extends SurfaceView implements SurfaceHolder.Callback, OnGestureListener {
 
