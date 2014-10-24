@@ -168,7 +168,7 @@ public class TsSurfaceViewRender extends SurfaceView implements SurfaceHolder.Ca
         this.thread_.setRunning(true);
         this.thread_.start();
         this.renderer_.start();
-//        this.touch_.start();
+        // this.touch_.start();
     }
 
     public void setRunning(boolean isRun) {
@@ -206,7 +206,7 @@ public class TsSurfaceViewRender extends SurfaceView implements SurfaceHolder.Ca
             }
         }
 
-//        this.touch_.stop();
+        // this.touch_.stop();
         this.renderer_.stop();
         this.thread_.setRunning(false);
         // this.thread_.surfaceDestroyed();
@@ -279,16 +279,14 @@ public class TsSurfaceViewRender extends SurfaceView implements SurfaceHolder.Ca
         renderer_ = new BitmapSurfaceRenderer(context);
         InputStream iStream = getResources().openRawResource(R.drawable.pic2);
         try {
-            ((BitmapSurfaceRenderer)renderer_).setBitmap(iStream);
-        }
-        catch (IOException e) {
+            ((BitmapSurfaceRenderer) renderer_).setBitmap(iStream);
+        } catch (IOException e) {
             Log.e(TAG, e.getMessage());
             e.printStackTrace();
         }
         try {
             iStream.close();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             Log.e(TAG, e.getMessage());
             e.printStackTrace();
         }
@@ -433,6 +431,7 @@ public class TsSurfaceViewRender extends SurfaceView implements SurfaceHolder.Ca
                 Point p = new Point();
                 TsSurfaceViewRender.this.renderer_.getViewPosition(p);
                 this.viewCenterAtDown_.set(p.x, p.y);
+                
             }
             return true;
         }

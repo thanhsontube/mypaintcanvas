@@ -1,132 +1,88 @@
 package com.example.tapcopaint.view;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.PointF;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Xfermode;
 import android.os.Build;
 import android.support.v4.view.MotionEventCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
-import android.widget.ImageView;
 import android.widget.Scroller;
 
-import com.example.tapcopaint.R;
-import com.example.tapcopaint.graphic2.BitmapSurfaceRenderer;
 import com.example.tapcopaint.graphic2.MyRender;
-import com.example.tapcopaint.graphic2.SurfaceRenderer;
+import com.example.tapcopaint.paint.TsPaint;
 import com.example.tapcopaint.utils.FilterLog;
-import com.example.tapcopaint.utils.PaintUtil;
 
 public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callback, OnGestureListener {
 
     private static final String TAG = "TsSurfaceView";
+    private static final float TOUCH_TOLERANCE = 4;
     FilterLog log = new FilterLog(TAG);
-    int id = -1;
-    Bitmap bitmapBackGround;
-    Bitmap bitmapPaint;
+    private int id = -1;
 
-    private Canvas mCanvas;
-
-    private boolean mDrawing = false;
-    private Context context;
-
-    SurfaceRenderer renderer_;
-
+    private MyRender renderer_;
     private TouchHandler touch_;
     private GestureDetector gesture_;
     private ScaleGestureDetector scaleGesture_;
     private long lastScaleTime_ = 0;
     private GameSurfaceViewThread thread_ = null;
+    private TsState tsState = TsState.TS_NONE;
 
-    public void setId(int id) {
+    private DrawingPath pathStore;
+    private DrawingPath pathDraw;
+    private Path path;
+    private float mX, mY;
+
+    public void setId(Context context, int id) {
+        log.d("log>>> " + "setId");
         this.id = id;
-        renderer_ = new MyRender(context, id);
-        commandManager = ((MyRender) renderer_).commandManager;
+        renderer_.setId(id);
     }
-
-    CommandManager commandManager;
-    private Boolean _run;
 
     public TsSurfaceRender(Context context) {
         super(context);
-        getHolder().addCallback(this);
-        setZOrderOnTop(true);
-        getHolder().setFormat(PixelFormat.TRANSPARENT);
-        setWillNotDraw(false);
-        this.context = context;
-        this.touch_ = new TouchHandler(context);
-        initRender();
-
+        initRender(context);
     }
 
     public TsSurfaceRender(Context context, AttributeSet attrs) {
         super(context, attrs);
+        initRender(context);
+    }
 
+    public TsSurfaceRender(Context context, AttributeSet attrs, int style) {
+        super(context, attrs, style);
+        initRender(context);
+    }
+
+    private void initRender(Context context) {
+        log.d("log>>> " + "initRender");
         getHolder().addCallback(this);
         setZOrderOnTop(true);
         getHolder().setFormat(PixelFormat.TRANSPARENT);
         setWillNotDraw(false);
-        this.context = context;
+        renderer_ = new MyRender(context);
         this.touch_ = new TouchHandler(context);
 
-        initRender();
-
-    }
-
-    private void initRender() {
-
-        // Set SurfaceHolder callback
-        getHolder().addCallback(this);
-        // Initialize touch handlers
         this.gesture_ = new GestureDetector(context, this);
-        this.scaleGesture_ = new ScaleGestureDetector(context, new ScaleListener());
+        // this.scaleGesture_ = new ScaleGestureDetector(context, new ScaleListener());
+        this.scaleGesture_ = new ScaleGestureDetector(context, null);
 
-        InputStream iStream = getResources().openRawResource(R.drawable.pic2);
-        // try {
-        // ((BitmapSurfaceRenderer) renderer_).setBitmap(iStream);
-        // } catch (IOException e) {
-        // Log.e(TAG, e.getMessage());
-        // e.printStackTrace();
-        // }
-        // try {
-        // iStream.close();
-        // } catch (IOException e) {
-        // Log.e(TAG, e.getMessage());
-        // e.printStackTrace();
-        // }
-        // Allow focus
-        setFocusable(true);
         path = new Path();
-        mPaint = resetPaint();
-
-        // if(renderer_ != null) {
-        // commandManager = ((MyRender)renderer_).commandManager;
-        // }
-        // commandManager = new CommandManager();
+        setFocusable(true);
     }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         log.v("log>>> surfaceCreated:" + id);
-
         this.thread_ = new GameSurfaceViewThread(holder);
         this.thread_.setName("drawThread");
         this.thread_.setRunning(true);
@@ -199,8 +155,6 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
                     if (canvas != null) {
                         synchronized (this.surfaceHolder_) {
                             TsSurfaceRender.this.renderer_.draw(canvas);
-                            // canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-                            // commandManager.executeAll(canvas);
                         }
                     }
                 } finally {
@@ -214,6 +168,127 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
 
     }
 
+    // TODO touch event
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        boolean consumed = this.gesture_.onTouchEvent(event);
+        if (consumed) {
+            return true;
+        }
+        this.scaleGesture_.onTouchEvent(event);
+
+        int action = MotionEventCompat.getActionMasked(event);
+        float x, y;
+        x = MotionEventCompat.getX(event, 0);
+        y = MotionEventCompat.getY(event, 0);
+        switch (action & MotionEventCompat.ACTION_MASK) {
+        case MotionEvent.ACTION_DOWN:
+            tsState = TsState.TS_INTOUCH;
+            // pathStore = new DrawingPath();
+            // pathStore.paint = TsPaint.getBluePaint();
+            // pathStore.path = path;
+
+            pathDraw = new DrawingPath();
+            pathDraw.paint = TsPaint.getRedPaint();
+            path.reset();
+            path.moveTo(x, y);
+            mX = x;
+            mY = y;
+
+            pathDraw.path = path;
+            renderer_.addCurrentpath(pathDraw);
+
+            return true;
+            // return this.touch_.down(event);
+        case MotionEvent.ACTION_MOVE:
+            long SCALE_MOVE_GUARD = 500;
+            if (this.scaleGesture_.isInProgress()
+                    || System.currentTimeMillis() - this.lastScaleTime_ < SCALE_MOVE_GUARD) {
+                // this is goto onScale
+                tsState = TsState.TS_ZOOM;
+                break;
+            }
+            tsState = TsState.TS_MOVE;
+            float dx = Math.abs(x - mX);
+            float dy = Math.abs(y - mY);
+            if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE) {
+                path.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
+                pathDraw.path = path;
+                renderer_.addCurrentpath(pathDraw);
+                mX = x;
+                mY = y;
+            }
+            return true;
+            // return this.touch_.move(event);
+        case MotionEvent.ACTION_UP:
+            path.lineTo(x, y);
+
+            pathStore = new DrawingPath(path, TsPaint.getGreenPaint());
+
+            renderer_.addStorePath(pathStore);
+            // pathDraw.path = path;
+            renderer_.addCurrentpath(null);
+            tsState = TsState.TS_NONE;
+            return true;
+            // return this.touch_.up(event);
+
+        case MotionEvent.ACTION_CANCEL:
+            tsState = TsState.TS_NONE;
+            return true;
+            // return this.touch_.cancel(event);
+        default:
+            return true;
+        }
+        return true;
+    }
+
+    // TODO onGesturelistener
+
+    @Override
+    public boolean onDown(MotionEvent e) {
+        return false;
+    }
+
+    @Override
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        return true;
+        // return this.touch_.fling(e1, e2, velocityX, velocityY);
+    }
+
+    @Override
+    public void onLongPress(MotionEvent e) {
+
+    }
+
+    @Override
+    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+        if (tsState == TsState.TS_MOVE) {
+            // draw a path at here
+            // path.rQuadTo(e1.getX(), e1.getY(), e2.getX(), e2.getY());
+            // pathDraw.path = path;
+            // renderer_.addCurrentpath(pathDraw);
+        }
+        return false;
+    }
+
+    @Override
+    public void onShowPress(MotionEvent e) {
+
+    }
+
+    @Override
+    public boolean onSingleTapUp(MotionEvent e) {
+        log.d("log>>> " + "onSingleTapUp");
+        return false;
+    }
+
+    public enum TsState {
+        TS_NONE, TS_INTOUCH, TS_ZOOM, TS_MOVE;
+    }
+
+    // TODO scale
+
     /**
      * Scale Listener Used to change the scale factor on the GameSurfaceRenderer
      */
@@ -226,20 +301,16 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
 
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
-            log.d("log>>> " + "onScale .............");
             float scaleFactor = detector.getScaleFactor();
-            if (scaleFactor != 0f && scaleFactor != 1.0f) {
-                // scaleFactor = 1 / scaleFactor;
-                this.screenFocus.set(detector.getFocusX(), detector.getFocusY());
-                // TsSurfaceRender.this.renderer_.zoom(scaleFactor, this.screenFocus);
-                TsSurfaceRender.this.renderer_.zoomCanvas(scaleFactor, detector.getFocusX(), detector.getFocusY());
-                invalidate();
-            }
+            // if (scaleFactor == 0f || scaleFactor == 1.0f) {
+            // return true;
+            // }
+            float focusX = detector.getFocusX();
+            float focusY = detector.getFocusY();
+            this.screenFocus.set(focusX, focusY);
+            renderer_.zoomCanvas(scaleFactor, focusX, focusY);
+            invalidate();
             TsSurfaceRender.this.lastScaleTime_ = System.currentTimeMillis();
-
-            // ((MyRender) renderer_).scaleCanvas2(detector.getScaleFactor(), detector.getFocusX(),
-            // detector.getFocusY(),
-            // true);
             return true;
         }
     }
@@ -273,6 +344,9 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
         final Scroller scroller_;
         // Thread for handling
         TouchHandlerThread touchThread_;
+
+        private DrawingPath tsPathStore;
+        private DrawingPath tsPathDraw;
 
         TouchHandler(Context context) {
             this.scroller_ = new Scroller(context);
@@ -311,6 +385,18 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
                 Point p = new Point();
                 TsSurfaceRender.this.renderer_.getViewPosition(p);
                 this.viewCenterAtDown_.set(p.x, p.y);
+
+                renderer_.setPreviousPosition(new Point(touchDown_.x, touchDown_.y));
+
+                Path path = new Path();
+                path.moveTo(this.touchDown_.x, this.touchDown_.y);
+                path.moveTo(this.touchDown_.x, this.touchDown_.y);
+                Paint paint = TsPaint.getRedPaint();
+
+                tsPathStore = new DrawingPath(path, paint);
+                tsPathDraw = new DrawingPath(path, paint);
+                // renderer_.addCurrentpath(tsPathDraw);
+
             }
             return true;
         }
@@ -318,6 +404,20 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
         /** Handle a move event_ */
         boolean move(MotionEvent event) {
             if (this.state_ == TouchState.IN_TOUCH) {
+                int index = MotionEventCompat.getActionIndex(event);
+
+                int mX = renderer_.getPreviousPosition().x;
+                int mY = renderer_.getPreviousPosition().y;
+                float x = MotionEventCompat.getX(event, 0);
+                float y = MotionEventCompat.getY(event, 0);
+
+                float dx = Math.abs(event.getX() - renderer_.getPreviousPosition().x);
+                float dy = Math.abs(event.getY() - renderer_.getPreviousPosition().y);
+                tsPathDraw.path.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
+
+                tsPathStore.path.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
+                // renderer_.addCurrentpath(tsPathDraw);
+                renderer_.setPreviousPosition(new Point(mX, mY));
 
                 float zoom = TsSurfaceRender.this.renderer_.getZoom();
                 if (zoom != 1.0f) {
@@ -338,6 +438,8 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
 
         /** Handle an up event_ */
         boolean up(MotionEvent event) {
+
+            renderer_.addStorePath(tsPathStore);
             if (this.state_ == TouchState.IN_TOUCH) {
                 this.state_ = TouchState.NO_TOUCH;
             }
@@ -353,6 +455,7 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
         }
 
         boolean fling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            log.d("log>>> " + "fling");
             TsSurfaceRender.this.renderer_.getViewPosition(this.viewCenterAtFling_);
             TsSurfaceRender.this.renderer_.getViewSize(this.viewSizeAtFling_);
             this.backgroundSizeAtFling_ = TsSurfaceRender.this.renderer_.getBackgroundSize();
@@ -424,192 +527,6 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
 
         }
 
-    }
-
-    @Override
-    public boolean onDown(MotionEvent e) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-        return this.touch_.fling(e1, e2, velocityX, velocityY);
-    }
-
-    @Override
-    public void onLongPress(MotionEvent e) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public void onShowPress(MotionEvent e) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public boolean onSingleTapUp(MotionEvent e) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        boolean consumed = this.gesture_.onTouchEvent(event);
-        if (consumed) {
-
-            return true;
-        }
-        this.scaleGesture_.onTouchEvent(event);
-        // Calculate actual event_ position in background view
-        Point c = new Point();
-        this.renderer_.getViewPosition(c);
-        float s = this.renderer_.getZoom();
-        int x = (int) (c.x + (event.getX() * s));
-        int y = (int) (c.y + (event.getY() * s));
-        switch (event.getAction() & MotionEvent.ACTION_MASK) {
-        case MotionEvent.ACTION_DOWN:
-            log.d("log>>> " + "ACTION_DOWN");
-            touchStart(x, y);
-            return this.touch_.down(event);
-        case MotionEvent.ACTION_MOVE:
-            long SCALE_MOVE_GUARD = 500;
-            if (this.scaleGesture_.isInProgress()
-                    || System.currentTimeMillis() - this.lastScaleTime_ < SCALE_MOVE_GUARD) {
-
-                break;
-            }
-            return this.touch_.move(event);
-        case MotionEvent.ACTION_UP:
-            log.d("log>>> " + "ACTION_UP");
-            touchUp(x, y);
-            return this.touch_.up(event);
-        case MotionEvent.ACTION_POINTER_UP:
-            final int pointerIndex = (event.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK) >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
-            final int pointerId = event.getPointerId(pointerIndex);
-            log.d("log>>> " + "ACTION_POINTER_UP:" + pointerIndex);
-            break;
-        case MotionEvent.ACTION_POINTER_DOWN:
-            log.d("log>>> " + "ACTION_POINTER_DOWN:");
-            break;
-        case MotionEvent.ACTION_CANCEL:
-            return this.touch_.cancel(event);
-        default:
-            break;
-        }
-        return super.onTouchEvent(event);
-    }
-
-    private ImageView img, imgErase;
-    private Paint mPaint;
-
-    public Xfermode MODE_EARSE = new PorterDuffXfermode(PorterDuff.Mode.CLEAR);
-    private boolean isErase;
-    private View rootView;
-    View colorView;
-
-    private static final float TOUCH_TOLERANCE = 4;
-
-    private DrawingPath currentDrawingPath;
-    private float mX, mY;
-    private Path path;
-
-    private void touchStart(float x, float y) {
-        path.reset();
-        path.moveTo(x, y);
-        mX = x;
-        mY = y;
-
-        if (isErase) {
-            mPaint.setXfermode(MODE_EARSE);
-        } else {
-            mPaint.setXfermode(null);
-        }
-
-        currentDrawingPath = new DrawingPath();
-        currentDrawingPath.paint = mPaint;
-        currentDrawingPath.path = new Path();
-        currentDrawingPath.path.moveTo(x, y);
-        currentDrawingPath.path.lineTo(x, y);
-        drawCurrent(currentDrawingPath);
-    }
-
-    private void touchMove(float x, float y) {
-        float dx = Math.abs(x - mX);
-        float dy = Math.abs(y - mY);
-        if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE) {
-            path.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
-            currentDrawingPath.path.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
-            mX = x;
-            mY = y;
-        }
-        drawCurrent(currentDrawingPath);
-    }
-
-    private void touchUp(float x, float y) {
-        path.lineTo(mX, mY);
-        onMyDraw(path, mPaint);
-        currentDrawingPath.path.lineTo(mX, mY);
-        addDrawingPath(currentDrawingPath, true);
-        drawCurrent(null);
-        mPaint = resetPaint();
-    }
-
-    public Paint resetPaint() {
-        Paint mPaint = new Paint();
-        // default
-        mPaint.setDither(true);
-        mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setStrokeJoin(Paint.Join.ROUND);
-        mPaint.setStrokeCap(Paint.Cap.ROUND);
-
-        return mPaint;
-    }
-
-    public void onMyDraw(Path path, Paint paint) {
-        this.mPaint = paint;
-        this.path = path;
-    }
-
-    public void addDrawingPath(DrawingPath drawingPath, boolean save) {
-        commandManager.addCommand(drawingPath, save);
-    }
-
-    public void drawCurrent(DrawingPath drawingPath) {
-        commandManager.drawCurrent(drawingPath);
-    }
-
-    public boolean hasMoreRedo() {
-        return commandManager.hasMoreRedo();
-    }
-
-    public void redo() {
-        commandManager.redo();
-    }
-
-    public void undo() {
-        commandManager.undo();
-    }
-
-    public void clear() {
-        path = null;
-        commandManager.clear();
-    }
-
-    public void earse() {
-        commandManager.earse();
-    }
-
-    public boolean hasMoreUndo() {
-        return commandManager.hasMoreRedo();
     }
 
 }

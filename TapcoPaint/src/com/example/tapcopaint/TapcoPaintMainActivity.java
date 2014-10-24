@@ -12,7 +12,7 @@ import com.example.tapcopaint.fragment.TsRenderFragment;
 import com.example.tapcopaint.rotation.RotationFragment;
 
 public class TapcoPaintMainActivity extends BaseFragmentActivity implements IMainFragmentListener {
-    boolean isTest = true;
+    boolean isTest = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

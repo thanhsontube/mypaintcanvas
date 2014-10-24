@@ -51,26 +51,26 @@
 
         <!-- middle -->
 
-        <FrameLayout
+        <com.example.tapcopaint.zoom.ZoomView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:padding="30dp"
             android:tag="ll" >
 
-            <com.example.tapcopaint.zoom.TsImageView
+            <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:src="@drawable/pic5"
                 android:tag="image"
-                android:visibility="visible" >
-            </com.example.tapcopaint.zoom.TsImageView>
+                android:visibility="visible" />
 
             <com.example.tapcopaint.view.TsSurfaceView
                 android:id="@+id/paint_tssurface"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="gone" />
-        </FrameLayout>
+                android:visibility="visible" />
+        </com.example.tapcopaint.zoom.ZoomView>
     </LinearLayout>
 
     <!-- Bottom -->

@@ -18,11 +18,13 @@ import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.Log;
 
 import com.example.tapcopaint.utils.FilterLog;
+import com.example.tapcopaint.view.DrawingPath;
 
 /**
  * SurfaceRenderer is the superclass of the renderer. The game should subclass the renderer and extend the drawing
@@ -46,6 +48,8 @@ public abstract class SurfaceRenderer {
     protected final Point backgroundSize_ = new Point();
     FilterLog log = new FilterLog(TAG);
 
+    private StackPathManager manager;
+
     /**
      * Constructor for the surface renderer
      * 
@@ -56,6 +60,7 @@ public abstract class SurfaceRenderer {
      */
     protected SurfaceRenderer(Context c) {
         this.context_ = c;
+        manager = new StackPathManager(c);
     }
 
     /**
@@ -307,8 +312,8 @@ public abstract class SurfaceRenderer {
 
             // c.drawColor(Color.WHITE);
 
-            scale(c, zoom);
-            translate(c, translateX, translateY);
+//            scale(c, zoom);
+//            translate(c, translateX, translateY);
             synchronized (this) {
                 if (c != null && this.bitmap_ != null) {
                     c.drawBitmap(this.bitmap_, 0F, 0F, null);
@@ -341,6 +346,30 @@ public abstract class SurfaceRenderer {
         void translate(Canvas c, float translateX, float translateY) {
             c.translate(translateX, translateY);
         }
+    }
+
+    public void addStorePath(DrawingPath path) {
+        manager.addStack(path);
+    }
+
+    public void addCurrentpath(DrawingPath path) {
+        manager.setCurrentPath(path);
+        log.d("log>>> " + "addCurrentpath size:" + manager.getSize());
+
+    }
+
+    protected void drawPathStore(Canvas canvas) {
+        manager.restoreAll(canvas);
+    }
+
+    private Point previousPosition;
+
+    public void setPreviousPosition(Point p) {
+        previousPosition = p;
+    }
+
+    public Point getPreviousPosition() {
+        return previousPosition;
     }
 
 }
