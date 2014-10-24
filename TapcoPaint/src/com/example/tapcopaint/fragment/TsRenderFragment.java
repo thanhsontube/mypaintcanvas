@@ -2,9 +2,6 @@ package com.example.tapcopaint.fragment;
 
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Xfermode;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -25,8 +22,6 @@ import com.example.tapcopaint.base.BaseFragment;
 import com.example.tapcopaint.paint.TsPaint;
 import com.example.tapcopaint.popup.TsPopupWindow;
 import com.example.tapcopaint.popup.TsPopupWindow.IColorPickerListener;
-import com.example.tapcopaint.trash.ActionItem;
-import com.example.tapcopaint.trash.QuickAction2;
 import com.example.tapcopaint.utils.FilterLog;
 import com.example.tapcopaint.utils.PaintUtil;
 import com.example.tapcopaint.view.TsSurfaceRender;
@@ -92,11 +87,11 @@ public class TsRenderFragment extends BaseFragment implements OnClickListener {
         imgErase = (ImageView) rootView.findViewById(R.id.paint_img_earse);
         imgZoom = (ImageView) rootView.findViewById(R.id.paint_img_zoom);
 
-        // View viewCancel = rootView.findViewById(R.id.paint_btn_cancel);
-        // viewCancel.setOnClickListener(this);
-        //
-        // View viewDone = rootView.findViewById(R.id.paint_btn_done);
-        // viewDone.setOnClickListener(this);
+        View viewCancel = rootView.findViewById(R.id.paint_btn_cancel);
+        viewCancel.setOnClickListener(this);
+
+        View viewDone = rootView.findViewById(R.id.paint_btn_done);
+        viewDone.setOnClickListener(this);
 
         View viewBack = rootView.findViewById(R.id.paint_back);
         viewBack.setOnClickListener(this);
@@ -172,7 +167,6 @@ public class TsRenderFragment extends BaseFragment implements OnClickListener {
     @Override
     public void onClick(View v) {
 
-        QuickAction2 quickAction = new QuickAction2(v);
         switch (v.getId()) {
         case R.id.paint_btn_cancel:
             break;
@@ -193,17 +187,6 @@ public class TsRenderFragment extends BaseFragment implements OnClickListener {
             break;
         case R.id.paint_edit:
             isZoom = false;
-            ActionItem item4 = new ActionItem(getResources().getDrawable(R.drawable.ic_navigation_back));
-            ActionItem item5 = new ActionItem(getResources().getDrawable(R.drawable.ic_navigation_forward));
-            ActionItem item6 = new ActionItem(getResources().getDrawable(R.drawable.ic_edit));
-            item4.setTitle("A");
-            item5.setTitle("B");
-            item6.setTitle("C");
-
-            quickAction.addActionItem(item4);
-            quickAction.addActionItem(item5);
-            quickAction.addActionItem(item6);
-            quickAction.show();
             break;
         case R.id.paint_erase:
             isZoom = false;
