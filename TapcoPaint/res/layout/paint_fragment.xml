@@ -82,7 +82,7 @@
 
         <include
             android:id="@+id/color_option_container"
-            layout="@layout/color_option"
+            layout="@layout/paint_layout_color_option"
             android:visibility="visible" />
 
         <LinearLayout
