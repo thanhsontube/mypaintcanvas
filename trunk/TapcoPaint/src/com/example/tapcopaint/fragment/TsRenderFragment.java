@@ -208,19 +208,9 @@ public class TsRenderFragment extends BaseFragment implements OnClickListener {
         case R.id.paint_erase:
             isZoom = false;
             isErase = !isErase;
-            if (isErase) {
-                imgErase.setImageResource(R.drawable.ic_erase_red);
-            } else {
-                imgErase.setImageResource(R.drawable.ic_erase_blue);
-            }
             break;
         case R.id.paint_move:
             isZoom = !isZoom;
-            if (isZoom) {
-                imgZoom.setImageResource(R.drawable.ic_zoom_red);
-            } else {
-                imgZoom.setImageResource(R.drawable.ic_zoom_blue);
-            }
             break;
         case R.id.color_review:
             int i = 0;
