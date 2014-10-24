@@ -85,6 +85,7 @@
             android:foreground="?android:attr/selectableItemBackground" >
 
             <ImageView
+                android:id="@+id/paint_img_earse"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -102,6 +103,7 @@
             android:foreground="?android:attr/selectableItemBackground" >
 
             <ImageView
+                android:id="@+id/paint_img_zoom"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
