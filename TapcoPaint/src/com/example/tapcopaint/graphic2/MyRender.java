@@ -30,7 +30,7 @@ public class MyRender extends SurfaceRenderer {
 
     FilterLog log = new FilterLog(TAG);
 
-    int id;
+    int id = -1;
 
     public static enum RenderMode {
         NONE, DRAW, ZOOM, FLING
@@ -84,7 +84,7 @@ public class MyRender extends SurfaceRenderer {
             log.d("log>>> " + "id = -1");
             return;
         }
-//         drawRect(viewPort_);
+        // drawRect(viewPort_);
         // if (mMode == RenderMode.ZOOM) {
         // return;
         // }
@@ -94,7 +94,7 @@ public class MyRender extends SurfaceRenderer {
         // drawOriginalImage(context_, id, viewPort_);
         // }
 
-        // drawOriginalImage(context_, id, viewPort_);
+        drawOriginalImage(context_, id, viewPort_);
 
     }
 
@@ -766,9 +766,9 @@ public class MyRender extends SurfaceRenderer {
         // // addCurrentpath(drawingPath);
         // addStorePath(drawingPath);
 
-        Canvas canvas = new Canvas(viewPort_.bitmap_);
-        canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-        drawPathStore(canvas);
+        // Canvas canvas = new Canvas(viewPort_.bitmap_);
+        // canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+        // drawPathStore(canvas);
 
     }
 

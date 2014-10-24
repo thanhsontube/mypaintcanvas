@@ -1,4 +1,4 @@
-package com.example.tapcopaint.fragment;
+package com.example.tapcopaint.trash;
 
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -28,8 +28,6 @@ import com.example.tapcopaint.base.BaseFragment;
 import com.example.tapcopaint.base.BaseFragmentActivity.OnBackPressListener;
 import com.example.tapcopaint.popup.TsPopupWindow;
 import com.example.tapcopaint.popup.TsPopupWindow.IColorPickerListener;
-import com.example.tapcopaint.trash.ActionItem;
-import com.example.tapcopaint.trash.QuickAction2;
 import com.example.tapcopaint.utils.FilterLog;
 import com.example.tapcopaint.utils.PaintUtil;
 import com.example.tapcopaint.view.DrawingPath;

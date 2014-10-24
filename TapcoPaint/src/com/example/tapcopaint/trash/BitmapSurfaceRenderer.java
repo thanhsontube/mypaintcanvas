@@ -10,7 +10,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.example.tapcopaint.graphic2;
+package com.example.tapcopaint.trash;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,6 +26,8 @@ import android.graphics.Rect;
 import android.util.Log;
 
 import com.example.tapcopaint.BuildConfig;
+import com.example.tapcopaint.graphic2.SurfaceRenderer;
+import com.example.tapcopaint.graphic2.SurfaceRenderer.ViewPort;
 
 /**
  * GameSurfaceRendererBitmap is a renderer that handles the rendering of a background bitmap to the
