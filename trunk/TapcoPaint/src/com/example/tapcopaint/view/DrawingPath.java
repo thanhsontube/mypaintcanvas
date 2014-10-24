@@ -11,6 +11,19 @@ import android.graphics.Path;
 public class DrawingPath implements ICanvasCommand {
     public Path path;
     public Paint paint;
+    
+    
+
+    public DrawingPath() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+    public DrawingPath(Path path, Paint paint) {
+        super();
+        this.path = path;
+        this.paint = paint;
+    }
 
     public void draw(Canvas canvas) {
         canvas.drawPath(path, paint);

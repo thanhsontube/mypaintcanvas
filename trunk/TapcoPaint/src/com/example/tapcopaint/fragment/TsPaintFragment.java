@@ -37,7 +37,6 @@ import com.example.tapcopaint.utils.FilterLog;
 import com.example.tapcopaint.utils.PaintUtil;
 import com.example.tapcopaint.view.DrawingPath;
 import com.example.tapcopaint.view.TsSurfaceView;
-import com.example.tapcopaint.zoom.TouchImageView;
 import com.example.tapcopaint.zoom.TsImageView;
 
 public class TsPaintFragment extends BaseFragment implements OnClickListener, OnBackPressListener, OnTouchListener,
@@ -46,13 +45,15 @@ public class TsPaintFragment extends BaseFragment implements OnClickListener, On
     public static int KK = 0;
 
     private int id;
-    private TsImageView img;
+    // private TsImageView img;
+    private ImageView img;
     private ImageView imgErase;
     private static final String TAG = "PaintFragment";
     private Paint mPaint;
 
     FilterLog log = new FilterLog(TAG);
     public Xfermode MODE_EARSE = new PorterDuffXfermode(PorterDuff.Mode.CLEAR);
+    // private TsSurfaceView tsSurfaceView;
     private TsSurfaceView tsSurfaceView;
     private boolean isErase;
     private boolean isZoom;
@@ -114,8 +115,7 @@ public class TsPaintFragment extends BaseFragment implements OnClickListener, On
 
         tsSurfaceView = (TsSurfaceView) rootView.findViewById(R.id.paint_tssurface);
         tsSurfaceView.setOnTouchListener(this);
-
-        img = (TsImageView) rootView.findViewWithTag("image");
+        img = (ImageView) rootView.findViewWithTag("image");
         img.setImageResource(id);
 
         View viewCancel = rootView.findViewById(R.id.paint_btn_cancel);
@@ -429,7 +429,7 @@ public class TsPaintFragment extends BaseFragment implements OnClickListener, On
         super.onResume();
         log.d("log>>> " + "onResume");
         if (tsSurfaceView == null) {
-            tsSurfaceView = (TsSurfaceView) rootView.findViewById(R.id.paint_tssurface);
+            // tsSurfaceView = (TsSurfaceView) rootView.findViewById(R.id.paint_tssurface);
         }
     }
 

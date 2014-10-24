@@ -22,6 +22,7 @@ import com.androidquery.AQuery;
 import com.example.tapcopaint.paint.TsPaint;
 import com.example.tapcopaint.utils.FilterLog;
 import com.example.tapcopaint.view.CommandManager;
+import com.example.tapcopaint.view.DrawingPath;
 import com.example.tapcopaint.zoom.ZoomVariables;
 
 public class MyRender extends SurfaceRenderer {
@@ -37,7 +38,7 @@ public class MyRender extends SurfaceRenderer {
 
     private RenderMode mMode;
 
-    protected MyRender(Context c) {
+    public MyRender(Context c) {
         super(c);
     }
 
@@ -47,8 +48,14 @@ public class MyRender extends SurfaceRenderer {
         commandManager = new CommandManager();
     }
 
+    public void setId(int id) {
+        log.d("log>>> " + "setId");
+        this.id = id;
+    }
+
     @Override
     public void start() {
+        log.d("log>>> " + "start id:" + id);
         mMode = RenderMode.NONE;
         minScale = 1;
         maxScale = 3;
@@ -73,7 +80,11 @@ public class MyRender extends SurfaceRenderer {
 
     @Override
     protected void drawBase() {
-        drawRect(viewPort_);
+        if (id == -1) {
+            log.d("log>>> " + "id = -1");
+            return;
+        }
+//         drawRect(viewPort_);
         // if (mMode == RenderMode.ZOOM) {
         // return;
         // }
@@ -606,7 +617,7 @@ public class MyRender extends SurfaceRenderer {
 
         RectF rectF = new RectF(100, 100, 300, 500);
 
-        canvas.drawColor(Color.WHITE);
+        // canvas.drawColor(Color.WHITE);
         //
         // canvas.scale(scaleX, scaleY);
         //
@@ -744,7 +755,20 @@ public class MyRender extends SurfaceRenderer {
     }
 
     public void drawPath() {
-        
+        // DrawingPath drawingPath = new DrawingPath();
+        // drawingPath.paint = TsPaint.getRedPaint();
+        //
+        // Path p = new Path();
+        // p.moveTo(10, 10);
+        // p.lineTo(300, 500);
+        // drawingPath.path = p;
+        // //
+        // // addCurrentpath(drawingPath);
+        // addStorePath(drawingPath);
+
+        Canvas canvas = new Canvas(viewPort_.bitmap_);
+        canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+        drawPathStore(canvas);
 
     }
 
