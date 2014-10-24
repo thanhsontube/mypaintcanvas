@@ -75,6 +75,7 @@ public class TsRenderFragment extends BaseFragment implements OnClickListener {
         View rootView = (ViewGroup) inflater.inflate(R.layout.surface_render, container, false);
         tsSurfaceRender = (TsSurfaceRender) rootView.findViewById(R.id.paint_tssurfaceRender);
         tsSurfaceRender.setImage(getActivity(), id);
+        mPaint = TsPaint.getRedPaint();
         initBtn(rootView);
         initColorView(rootView);
         return rootView;
