@@ -46,6 +46,7 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
     private Path path;
     private float mX, mY;
     private boolean isErase = false;
+    private boolean isZooming = false;
 
     public void setImage(Context context, int id) {
         log.d("log>>> " + "setId");
@@ -187,7 +188,6 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
             touchStart(x, y);
             break;
         case MotionEvent.ACTION_MOVE:
-
             touchMove(x, y);
             break;
         case MotionEvent.ACTION_UP:
@@ -226,6 +226,15 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
             tsState = TsState.TS_ZOOM;
             return;
         }
+        if (renderer_.getZoom() != 1f) {
+            if (isZooming) {
+                log.d("log>>> " + "DRAG ZOOM");
+            } else {
+                log.d("log>>> " + "DRAW AFTER ZOOMING");
+            }
+            return;
+        }
+
         float dx = Math.abs(x - mX);
         float dy = Math.abs(y - mY);
         if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE) {
@@ -556,7 +565,8 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
     }
 
     public void zoom() {
-        renderer_.zoomCanvas(2.0f, 200, 300);
+        // renderer_.zoomCanvas(2.0f, 200, 300);
+        isZooming = !isZooming;
     }
 
 }
