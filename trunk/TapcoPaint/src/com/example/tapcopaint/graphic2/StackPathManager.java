@@ -4,6 +4,8 @@ import java.util.Stack;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 
 import com.example.tapcopaint.utils.FilterLog;
 import com.example.tapcopaint.view.DrawingPath;
@@ -27,7 +29,6 @@ public class StackPathManager {
     }
 
     public void restoreAll(Canvas canvas) {
-        // log.d("log>>> " + "currentPath:" + currentPath + ";currentStack:" + currentStack.size());
 
         DrawingPath drawingPath;
         synchronized (currentStack) {
@@ -45,6 +46,22 @@ public class StackPathManager {
 
     public int getSize() {
         return currentStack.size();
+    }
+
+    public void undo() {
+        if (!currentStack.isEmpty()) {
+            redoStack.add(currentStack.pop());
+        }
+
+    }
+
+    public void redo() {
+        if (!redoStack.isEmpty()) {
+            currentStack.add(redoStack.pop());
+        }
+    }
+
+    public void erase() {
     }
 
 }

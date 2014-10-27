@@ -16,6 +16,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.PorterDuff;
@@ -48,7 +49,7 @@ public abstract class SurfaceRenderer {
     protected final Point backgroundSize_ = new Point();
     FilterLog log = new FilterLog(TAG);
 
-    private StackPathManager manager;
+    protected StackPathManager manager;
 
     /**
      * Constructor for the surface renderer
@@ -306,14 +307,14 @@ public abstract class SurfaceRenderer {
         }
 
         void draw(Canvas c) {
+            // c.drawColor(Color.BLACK);
+            c.drawColor(0, PorterDuff.Mode.CLEAR);
             drawBase();
             drawLayer();
             drawFinal();
 
-            // c.drawColor(Color.WHITE);
-
-            // scale(c, zoom);
-            // translate(c, translateX, translateY);
+            scale(c, zoom);
+            translate(c, translateX, translateY);
             synchronized (this) {
                 if (c != null && this.bitmap_ != null) {
                     c.drawBitmap(this.bitmap_, 0F, 0F, null);
@@ -321,6 +322,11 @@ public abstract class SurfaceRenderer {
             }
         }
 
+        /**
+         * 
+         * @param factor
+         * @param screenFocus
+         */
         public void zoomCanvas(float factor, PointF screenFocus) {
 
             if (bitmap_ == null) {
@@ -364,6 +370,10 @@ public abstract class SurfaceRenderer {
 
     public Point getPreviousPosition() {
         return previousPosition;
+    }
+
+    public StackPathManager getManager() {
+        return manager;
     }
 
 }
