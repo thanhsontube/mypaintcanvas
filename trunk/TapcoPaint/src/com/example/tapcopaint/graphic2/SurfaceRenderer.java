@@ -312,8 +312,8 @@ public abstract class SurfaceRenderer {
 
             // c.drawColor(Color.WHITE);
 
-//            scale(c, zoom);
-//            translate(c, translateX, translateY);
+            // scale(c, zoom);
+            // translate(c, translateX, translateY);
             synchronized (this) {
                 if (c != null && this.bitmap_ != null) {
                     c.drawBitmap(this.bitmap_, 0F, 0F, null);
@@ -350,12 +350,6 @@ public abstract class SurfaceRenderer {
 
     public void addStorePath(DrawingPath path) {
         manager.addStack(path);
-    }
-
-    public void addCurrentpath(DrawingPath path) {
-        manager.setCurrentPath(path);
-        log.d("log>>> " + "addCurrentpath size:" + manager.getSize());
-
     }
 
     protected void drawPathStore(Canvas canvas) {

@@ -30,15 +30,14 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
     private int id = -1;
 
     private MyRender renderer_;
-    private TouchHandler touch_;
+    // private TouchHandler touch_;
     private GestureDetector gesture_;
     private ScaleGestureDetector scaleGesture_;
     private long lastScaleTime_ = 0;
     private GameSurfaceViewThread thread_ = null;
     private TsState tsState = TsState.TS_NONE;
 
-    private DrawingPath pathStore;
-    private DrawingPath pathDraw;
+    private DrawingPath currentDrawingPath;
     private Path path;
     private float mX, mY;
 
@@ -70,7 +69,7 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
         getHolder().setFormat(PixelFormat.TRANSPARENT);
         setWillNotDraw(false);
         renderer_ = new MyRender(context);
-        this.touch_ = new TouchHandler(context);
+        // this.touch_ = new TouchHandler(context);
 
         this.gesture_ = new GestureDetector(context, this);
         // this.scaleGesture_ = new ScaleGestureDetector(context, new ScaleListener());
@@ -88,13 +87,13 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
         this.thread_.setRunning(true);
         this.thread_.start();
         this.renderer_.start();
-        this.touch_.start();
+        // this.touch_.start();
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
 
-        this.touch_.stop();
+        // this.touch_.stop();
         this.renderer_.stop();
         this.thread_.setRunning(false);
         // this.thread_.surfaceDestroyed();
@@ -185,19 +184,21 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
         switch (action & MotionEventCompat.ACTION_MASK) {
         case MotionEvent.ACTION_DOWN:
             tsState = TsState.TS_INTOUCH;
-            // pathStore = new DrawingPath();
-            // pathStore.paint = TsPaint.getBluePaint();
-            // pathStore.path = path;
+            // currentDrawingPath = new DrawingPath();
+            // currentDrawingPath.paint = TsPaint.getBluePaint();
+            // currentDrawingPath.path = path;
 
-            pathDraw = new DrawingPath();
-            pathDraw.paint = TsPaint.getRedPaint();
+            currentDrawingPath = new DrawingPath();
+            currentDrawingPath.paint = TsPaint.getRedPaint();
+            currentDrawingPath.path = new Path();
+            currentDrawingPath.path.moveTo(x, y);
+            currentDrawingPath.path.lineTo(x, y);
             path.reset();
             path.moveTo(x, y);
             mX = x;
             mY = y;
 
-            pathDraw.path = path;
-            renderer_.addCurrentpath(pathDraw);
+            currentDrawingPath.path = path;
 
             return true;
             // return this.touch_.down(event);
@@ -214,21 +215,19 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
             float dy = Math.abs(y - mY);
             if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE) {
                 path.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
-                pathDraw.path = path;
-                renderer_.addCurrentpath(pathDraw);
+                currentDrawingPath.path.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
                 mX = x;
                 mY = y;
             }
             return true;
             // return this.touch_.move(event);
         case MotionEvent.ACTION_UP:
-            path.lineTo(x, y);
+            path.lineTo(mX, mY);
 
-            pathStore = new DrawingPath(path, TsPaint.getGreenPaint());
+            currentDrawingPath.path.lineTo(mX, mY);
 
-            renderer_.addStorePath(pathStore);
+            renderer_.addStorePath(currentDrawingPath);
             // pathDraw.path = path;
-            renderer_.addCurrentpath(null);
             tsState = TsState.TS_NONE;
             return true;
             // return this.touch_.up(event);

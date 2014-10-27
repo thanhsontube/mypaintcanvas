@@ -68,13 +68,11 @@ public class MyRender extends SurfaceRenderer {
 
     @Override
     public void stop() {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void suspend(boolean b) {
-        // TODO Auto-generated method stub
 
     }
 
@@ -84,17 +82,7 @@ public class MyRender extends SurfaceRenderer {
             log.d("log>>> " + "id = -1");
             return;
         }
-        // drawRect(viewPort_);
-        // if (mMode == RenderMode.ZOOM) {
-        // return;
-        // }
-        //
-        // if (mMode == RenderMode.NONE) {
-        //
         // drawOriginalImage(context_, id, viewPort_);
-        // }
-
-        drawOriginalImage(context_, id, viewPort_);
 
     }
 
@@ -766,9 +754,9 @@ public class MyRender extends SurfaceRenderer {
         // // addCurrentpath(drawingPath);
         // addStorePath(drawingPath);
 
-        // Canvas canvas = new Canvas(viewPort_.bitmap_);
+        Canvas canvas = new Canvas(viewPort_.bitmap_);
         // canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-        // drawPathStore(canvas);
+        drawPathStore(canvas);
 
     }
 
