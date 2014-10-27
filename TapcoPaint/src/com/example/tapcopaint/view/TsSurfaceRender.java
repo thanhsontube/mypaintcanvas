@@ -556,6 +556,7 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
     }
 
     public void zoom() {
+        renderer_.zoomCanvas(2.0f, 200, 300);
     }
 
 }

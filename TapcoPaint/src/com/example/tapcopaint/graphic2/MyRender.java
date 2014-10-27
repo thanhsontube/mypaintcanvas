@@ -576,6 +576,7 @@ public class MyRender extends SurfaceRenderer {
 
     public void drawRect(ViewPort viewPort) {
         Canvas canvas = new Canvas(viewPort_.bitmap_);
+        canvas.drawColor(Color.WHITE);
 
         backgroundW = viewPort_.bitmap_.getWidth();
         backgroundH = viewPort_.bitmap_.getHeight();
@@ -605,13 +606,17 @@ public class MyRender extends SurfaceRenderer {
 
         // mid of rectangle
 
-        canvas.drawPoint(200, 300, resetPaint());
+        canvas.drawCircle(200, 300, 20, TsPaint.getBluePaint());
 
         // mid of circle
 
-        canvas.drawPoint(550, 300, resetPaint());
+        canvas.drawCircle(550, 300, 20, TsPaint.getBluePaint());
+
+        // circle
 
         canvas.drawCircle(canvasW / 2, canvasH / 2, r, pCircle);
+
+        // rectangle
 
         canvas.drawRect(rectF, resetPaint());
 
@@ -630,12 +635,12 @@ public class MyRender extends SurfaceRenderer {
 
         // screen size
 
-        canvas.drawCircle(screenSize.x, screenSize.y, 25, TsPaint.getRedPaint());
-
-        // scenesize
-        canvas.drawCircle(sceneSize.x, sceneSize.y, 25, TsPaint.getGreenPaint());
-
-        canvas.drawCircle(pointMid.x, pointMid.y, 25, TsPaint.getBluePaint());
+        // canvas.drawCircle(screenSize.x, screenSize.y, 25, TsPaint.getRedPaint());
+        //
+        // // scenesize
+        // canvas.drawCircle(sceneSize.x, sceneSize.y, 25, TsPaint.getGreenPaint());
+        //
+        // canvas.drawCircle(pointMid.x, pointMid.y, 25, TsPaint.getBluePaint());
 
         // a1
         pA1.x = 100;
@@ -734,10 +739,12 @@ public class MyRender extends SurfaceRenderer {
         canvas.drawColor(0, PorterDuff.Mode.CLEAR);
         manager.restoreAll(canvas);
 
-        Bitmap bitmap = BitmapFactory.decodeResource(context_.getResources(), R.drawable.pic1);
-        Paint paint = new Paint();
-        paint.setXfermode(TsSurfaceRender.MODE_OVER);
-        canvas.drawBitmap(bitmap, 0, 0, paint);
+        // drawRect(viewPort_);
+
+        // Bitmap bitmap = BitmapFactory.decodeResource(context_.getResources(), R.drawable.pic1);
+        // Paint paint = new Paint();
+        // paint.setXfermode(TsSurfaceRender.MODE_OVER);
+        // canvas.drawBitmap(bitmap, 0, 0, paint);
     }
 
 }

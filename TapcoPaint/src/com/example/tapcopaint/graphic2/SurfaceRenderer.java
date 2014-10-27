@@ -307,17 +307,17 @@ public abstract class SurfaceRenderer {
         }
 
         void draw(Canvas c) {
-            // c.drawColor(Color.BLACK);
-            c.drawColor(0, PorterDuff.Mode.CLEAR);
+            c.drawColor(Color.BLACK);
+            // c.drawColor(0, PorterDuff.Mode.CLEAR);
             drawBase();
             drawLayer();
             drawFinal();
-
-            scale(c, zoom);
             translate(c, translateX, translateY);
+            scale(c, zoom);
             synchronized (this) {
                 if (c != null && this.bitmap_ != null) {
                     c.drawBitmap(this.bitmap_, 0F, 0F, null);
+
                 }
             }
         }
@@ -327,18 +327,31 @@ public abstract class SurfaceRenderer {
          * @param factor
          * @param screenFocus
          */
-        public void zoomCanvas(float factor, PointF screenFocus) {
+        public void zoomCanvas(float factor, PointF p) {
 
             if (bitmap_ == null) {
                 return;
             }
 
-            if (factor != 1.0f) {
-                synchronized (this) {
+            // if (factor != 1.0f) {
+            synchronized (this) {
 
-                    this.zoom *= factor;
-                }
+                this.zoom *= factor;
             }
+            // }
+
+            viewPort_.translateX = p.x - p.x * zoom;
+            viewPort_.translateY = p.y - p.y * zoom;
+            
+//            viewPort_.translateX =p.x  ;
+//            viewPort_.translateY = p.y ;
+            log.d("log>>> " + "zoom:" + zoom);
+
+            // if (zoom == 2) {
+
+            log.d("log>>> " + "zoom:" + zoom + "focus:X:" + p.x + ";focusY:" + p.y + ";transX:" + viewPort_.translateX
+                    + ";transY:" + viewPort_.translateY);
+            // }
 
             // calculate translateX, translateY from focusX, focusY
 
