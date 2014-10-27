@@ -25,7 +25,6 @@ import com.example.tapcopaint.popup.TsPopupWindow.IColorPickerListener;
 import com.example.tapcopaint.utils.FilterLog;
 import com.example.tapcopaint.utils.PaintUtil;
 import com.example.tapcopaint.view.TsSurfaceRender;
-import com.example.tapcopaint.view.TsSurfaceView;
 
 public class TsRenderFragment extends BaseFragment implements OnClickListener {
 
@@ -38,7 +37,6 @@ public class TsRenderFragment extends BaseFragment implements OnClickListener {
     private Paint mPaint;
 
     FilterLog log = new FilterLog(TAG);
-    private TsSurfaceView tsSurfaceView;
     private boolean isErase;
     private boolean isZoom;
     View colorView;

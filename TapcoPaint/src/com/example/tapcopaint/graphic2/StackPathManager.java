@@ -13,7 +13,6 @@ public class StackPathManager {
     private Stack<DrawingPath> currentStack;
     private Stack<DrawingPath> redoStack;
 
-    private DrawingPath currentPath = null;
     FilterLog log = new FilterLog(TAG);
 
     public StackPathManager(Context context) {
@@ -24,6 +23,7 @@ public class StackPathManager {
     public void addStack(DrawingPath path) {
         redoStack.clear();
         currentStack.add(path);
+        log.d("log>>> " + "addStack:" + currentStack.size());
     }
 
     public void restoreAll(Canvas canvas) {
@@ -36,24 +36,11 @@ public class StackPathManager {
                 drawingPath.draw(canvas);
             }
         }
-        // if (currentPath != null) {
-        // synchronized (currentPath) {
-        // currentPath.draw(canvas);
-        // }
-        // }
     }
 
     public void clear() {
         currentStack.clear();
         redoStack.clear();
-    }
-
-    public DrawingPath getCurrentPath() {
-        return currentPath;
-    }
-
-    public void setCurrentPath(DrawingPath currentPath) {
-        this.currentPath = currentPath;
     }
 
     public int getSize() {
