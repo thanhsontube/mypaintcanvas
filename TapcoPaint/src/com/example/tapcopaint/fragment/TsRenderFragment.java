@@ -172,10 +172,13 @@ public class TsRenderFragment extends BaseFragment implements OnClickListener {
         case R.id.paint_btn_done:
             break;
         case R.id.paint_back:
+            tsSurfaceRender.undo();
             break;
         case R.id.paint_forward:
+            tsSurfaceRender.redo();
             break;
         case R.id.paint_delete:
+            tsSurfaceRender.clear();
             isZoom = false;
             isErase = false;
             if (isErase) {
@@ -185,13 +188,16 @@ public class TsRenderFragment extends BaseFragment implements OnClickListener {
             }
             break;
         case R.id.paint_edit:
+            tsSurfaceRender.configPaint();
             isZoom = false;
             break;
         case R.id.paint_erase:
             isZoom = false;
             isErase = !isErase;
+            tsSurfaceRender.erasing();
             break;
         case R.id.paint_move:
+            tsSurfaceRender.zoom();
             isZoom = !isZoom;
             break;
         case R.id.color_review:

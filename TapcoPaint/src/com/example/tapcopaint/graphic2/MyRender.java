@@ -14,15 +14,14 @@ import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.FloatMath;
-import android.view.MotionEvent;
-import android.view.View;
 import android.widget.ImageView.ScaleType;
 
 import com.androidquery.AQuery;
+import com.example.tapcopaint.R;
 import com.example.tapcopaint.paint.TsPaint;
 import com.example.tapcopaint.utils.FilterLog;
 import com.example.tapcopaint.view.CommandManager;
-import com.example.tapcopaint.view.DrawingPath;
+import com.example.tapcopaint.view.TsSurfaceRender;
 import com.example.tapcopaint.zoom.ZoomVariables;
 
 public class MyRender extends SurfaceRenderer {
@@ -93,6 +92,7 @@ public class MyRender extends SurfaceRenderer {
 
     @Override
     protected void drawFinal() {
+        // drawOriginalImage(context_, id, viewPort_);
     }
 
     private final Rect canvasRect_ = new Rect(0, 0, 0, 0);
@@ -201,20 +201,6 @@ public class MyRender extends SurfaceRenderer {
             break;
         }
 
-        // if (i < 20) {
-        // fScale += .1f;
-        // } else {
-        // // i -=2;
-        // fScale -= .1f;
-        // if (fScale <= 0.5f) {
-        // i = 0;
-        // }
-        //
-        // }
-        // matrix.setScale(fScale, fScale);
-        // float paddingX = canvasW - (fScale * backgroundW);
-        // float paddingY = canvasH - (fScale * backgroundH);
-
         // center the image
         float paddingX = canvasW - (scaleX * backgroundW);
         float paddingY = canvasH - (scaleY * backgroundH);
@@ -224,8 +210,9 @@ public class MyRender extends SurfaceRenderer {
             matrix.postTranslate(paddingX / 2, paddingY / 2);
         }
 
-        // canvas.drawColor(Color.BLACK);
-        canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+        // canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+
+        paint.setXfermode(TsSurfaceRender.MODE_OVER);
 
         canvas.drawBitmap(bitmap, matrix, paint);
 
@@ -743,21 +730,14 @@ public class MyRender extends SurfaceRenderer {
     }
 
     public void drawPath() {
-        // DrawingPath drawingPath = new DrawingPath();
-        // drawingPath.paint = TsPaint.getRedPaint();
-        //
-        // Path p = new Path();
-        // p.moveTo(10, 10);
-        // p.lineTo(300, 500);
-        // drawingPath.path = p;
-        // //
-        // // addCurrentpath(drawingPath);
-        // addStorePath(drawingPath);
-
         Canvas canvas = new Canvas(viewPort_.bitmap_);
-        // canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-        drawPathStore(canvas);
+        canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+        manager.restoreAll(canvas);
 
+        Bitmap bitmap = BitmapFactory.decodeResource(context_.getResources(), R.drawable.pic1);
+        Paint paint = new Paint();
+        paint.setXfermode(TsSurfaceRender.MODE_OVER);
+        canvas.drawBitmap(bitmap, 0, 0, paint);
     }
 
 }
