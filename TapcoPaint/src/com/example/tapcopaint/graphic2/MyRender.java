@@ -735,11 +735,11 @@ public class MyRender extends SurfaceRenderer {
     }
 
     public void drawPath() {
-        Canvas canvas = new Canvas(viewPort_.bitmap_);
-        canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-        manager.restoreAll(canvas);
+        // Canvas canvas = new Canvas(viewPort_.bitmap_);
+        // canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+        // manager.restoreAll(canvas);
 
-        // drawRect(viewPort_);
+        drawRect(viewPort_);
 
         // Bitmap bitmap = BitmapFactory.decodeResource(context_.getResources(), R.drawable.pic1);
         // Paint paint = new Paint();

@@ -229,6 +229,13 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
         if (renderer_.getZoom() != 1f) {
             if (isZooming) {
                 log.d("log>>> " + "DRAG ZOOM");
+                float dx = Math.abs(x - mX);
+                float dy = Math.abs(y - mY);
+                dx = x - mX;
+                dy = y - mY;
+                mX = x;
+                mY = y;
+                renderer_.setTranslate(dx, dy);
             } else {
                 log.d("log>>> " + "DRAW AFTER ZOOMING");
             }
@@ -246,10 +253,13 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
     }
 
     private void touchUp(float x, float y) {
-        path.lineTo(mX, mY);
-        currentDrawingPath.path.lineTo(mX, mY);
-        if (tsState != TsState.TS_ZOOM) {
-            renderer_.addStorePath(currentDrawingPath);
+        if (renderer_.getZoom() == 1) {
+
+            path.lineTo(mX, mY);
+            currentDrawingPath.path.lineTo(mX, mY);
+            if (tsState != TsState.TS_ZOOM) {
+                renderer_.addStorePath(currentDrawingPath);
+            }
         }
         tsState = TsState.TS_NONE;
     }
@@ -313,9 +323,11 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
             float scaleFactor = detector.getScaleFactor();
-            // if (scaleFactor == 0f || scaleFactor == 1.0f) {
-            // return true;
-            // }
+            isZooming = true;
+            if (scaleFactor == 0f || scaleFactor == 1.0f) {
+                isZooming = false;
+                // return true;
+            }
             float focusX = detector.getFocusX();
             float focusY = detector.getFocusY();
             this.screenFocus.set(focusX, focusY);
