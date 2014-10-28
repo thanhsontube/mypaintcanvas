@@ -342,9 +342,9 @@ public abstract class SurfaceRenderer {
 
             viewPort_.translateX = p.x - p.x * zoom;
             viewPort_.translateY = p.y - p.y * zoom;
-            
-//            viewPort_.translateX =p.x  ;
-//            viewPort_.translateY = p.y ;
+
+            // viewPort_.translateX =p.x ;
+            // viewPort_.translateY = p.y ;
             log.d("log>>> " + "zoom:" + zoom);
 
             // if (zoom == 2) {
@@ -387,6 +387,11 @@ public abstract class SurfaceRenderer {
 
     public StackPathManager getManager() {
         return manager;
+    }
+
+    public void setTranslate(float x, float y) {
+        viewPort_.translateX += x;
+        viewPort_.translateY += y;
     }
 
 }
