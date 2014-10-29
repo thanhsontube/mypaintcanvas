@@ -62,6 +62,8 @@ public class MyRender extends SurfaceRenderer {
         superMaxScale = SUPER_MAX_MULTIPLIER * maxScale;
         matrix = new Matrix();
         m = new float[9];
+    
+        
 
     }
 
@@ -606,7 +608,10 @@ public class MyRender extends SurfaceRenderer {
 
         // mid of rectangle
 
-        canvas.drawCircle(200, 300, 20, TsPaint.getBluePaint());
+        canvas.drawCircle(100, 100, 20, TsPaint.getBluePaint());
+
+        // bellow mid of rect 100
+        canvas.drawCircle(100, 300, 20, TsPaint.getBlackPaint());
 
         // mid of circle
 
