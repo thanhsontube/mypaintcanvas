@@ -19,7 +19,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.PointF;
-import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.Log;
@@ -335,17 +334,17 @@ public abstract class SurfaceRenderer {
 
             // if (factor != 1.0f) {
             synchronized (this) {
-
+                zoomOld = zoom;
                 this.zoom *= factor;
+            }
+
+            synchronized (this) {
+//                fixTrans(factor, p);
             }
             // }
 
-            viewPort_.translateX = p.x - p.x * zoom;
-            viewPort_.translateY = p.y - p.y * zoom;
-
-            // viewPort_.translateX =p.x ;
-            // viewPort_.translateY = p.y ;
-            log.d("log>>> " + "zoom:" + zoom);
+             viewPort_.translateX = p.x - p.x * zoom;
+             viewPort_.translateY = p.y - p.y * zoom;
 
             // if (zoom == 2) {
 
@@ -355,6 +354,41 @@ public abstract class SurfaceRenderer {
 
             // calculate translateX, translateY from focusX, focusY
 
+        }
+
+        float zoomOld = 1f;
+        float tX, tY;
+        int i = 0;
+
+        void fixTrans(float factor, PointF p) {
+
+            // updae translateX, translateY
+            if (zoomOld == 1f) {
+                viewPort_.translateX = p.x - p.x * zoom;
+                viewPort_.translateY = p.y - p.y * zoom;
+                return;
+            }
+
+            if (i < 2) {
+                log.v("log>>> " + "viewPort_.translateX:" + viewPort_.translateX);
+                i++;
+            }
+            if (i == 2) {
+                log.d("log>>> " + "i ==2");
+                viewPort_.translateX = -100;
+                viewPort_.translateY = -100;
+//                zoom /= factor;
+                // viewPort_.translateX = p.x - p.x * factor;
+                // viewPort_.translateY = p.y - p.y * factor;
+                return;
+            }
+
+            tX = (viewPort_.translateX * (zoom / factor)) - p.x;
+            tY = (viewPort_.translateY * (zoom / factor)) - p.y;
+
+            viewPort_.translateX = tX;
+            viewPort_.translateY = tY;
+            log.d("log>>> " + "tX:" + tX + ";tY:" + tY);
         }
 
         void scale(Canvas c, float scale) {

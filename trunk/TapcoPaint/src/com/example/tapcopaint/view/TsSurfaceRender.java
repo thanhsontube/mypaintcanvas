@@ -568,7 +568,17 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
         renderer_.getManager().clear();
     }
 
+    int i = 1;
+
     public void configPaint() {
+        if (i == 1) {
+            renderer_.zoomCanvas(2.0f, 100, 500);
+            i++;
+
+        } else {
+            renderer_.zoomCanvas(0.5f, 100, 500);
+            i--;
+        }
 
     }
 
@@ -577,7 +587,7 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
     }
 
     public void zoom() {
-        // renderer_.zoomCanvas(2.0f, 200, 300);
+        renderer_.zoomCanvas(2.0f, 100, 100);
         isZooming = !isZooming;
     }
 
