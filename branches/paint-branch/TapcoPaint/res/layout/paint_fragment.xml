@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <!-- TOP -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical" >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal" >
+
+            <FrameLayout
+                android:id="@+id/paint_btn_cancel"
+                android:layout_width="48dp"
+                android:layout_height="match_parent"
+                android:layout_toLeftOf="@+id/paint_btn_done"
+                android:foreground="?android:attr/selectableItemBackground" >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_action_cancel" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/paint_btn_done"
+                android:layout_width="48dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="8dp"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:padding="4dp" >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_action_done" />
+            </FrameLayout>
+        </RelativeLayout>
+
+        <!-- middle -->
+
+        <com.example.tapcopaint.zoom.ZoomView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="30dp"
+            android:tag="ll" >
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/pic5"
+                android:tag="image"
+                android:visibility="visible" />
+
+            <com.example.tapcopaint.view.TsSurfaceView
+                android:id="@+id/paint_tssurface"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="visible" />
+        </com.example.tapcopaint.zoom.ZoomView>
+    </LinearLayout>
+
+    <!-- Bottom -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <include
+            android:id="@+id/color_option_container"
+            layout="@layout/paint_layout_color_option"
+            android:visibility="visible" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="8dp"
+            android:orientation="horizontal"
+            android:padding="8dp" >
+
+            <!-- back -->
+
+            <FrameLayout
+                android:id="@+id/paint_back"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:gravity="center"
+                android:tag="back" >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_navigation_back" />
+            </FrameLayout>
+            <!-- forward -->
+
+            <FrameLayout
+                android:id="@+id/paint_forward"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:foreground="?android:attr/selectableItemBackground" >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_navigation_forward" />
+            </FrameLayout>
+            <!-- delete -->
+
+            <FrameLayout
+                android:id="@+id/paint_delete"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:foreground="?android:attr/selectableItemBackground" >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_discard" />
+            </FrameLayout>
+
+            <!-- edit -->
+
+            <FrameLayout
+                android:id="@+id/paint_edit"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:foreground="?android:attr/selectableItemBackground" >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_edit" />
+            </FrameLayout>
+            <!-- erase -->
+
+            <FrameLayout
+                android:id="@+id/paint_erase"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:foreground="?android:attr/selectableItemBackground" >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_erase_blue"
+                    android:tag="erase" />
+            </FrameLayout>
+
+            <!-- move -->
+
+            <FrameLayout
+                android:id="@+id/paint_move"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:foreground="?android:attr/selectableItemBackground" >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_move" />
+            </FrameLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

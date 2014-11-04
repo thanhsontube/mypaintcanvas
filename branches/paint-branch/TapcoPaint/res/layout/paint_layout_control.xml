@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="8dp"
+        android:orientation="horizontal"
+        android:padding="8dp" >
+
+        <!-- back -->
+
+        <FrameLayout
+            android:id="@+id/paint_back"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:gravity="center"
+            android:tag="back" >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_navigation_back" />
+        </FrameLayout>
+        <!-- forward -->
+
+        <FrameLayout
+            android:id="@+id/paint_forward"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:foreground="?android:attr/selectableItemBackground" >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_navigation_forward" />
+        </FrameLayout>
+        <!-- delete -->
+
+        <FrameLayout
+            android:id="@+id/paint_delete"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:foreground="?android:attr/selectableItemBackground" >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_discard" />
+        </FrameLayout>
+
+        <!-- edit -->
+
+        <FrameLayout
+            android:id="@+id/paint_edit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:foreground="?android:attr/selectableItemBackground" >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_edit" />
+        </FrameLayout>
+        <!-- erase -->
+
+        <FrameLayout
+            android:id="@+id/paint_erase"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:foreground="?android:attr/selectableItemBackground" >
+
+            <ImageView
+                android:id="@+id/paint_img_earse"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_erase_blue"
+                android:tag="erase" />
+        </FrameLayout>
+
+        <!-- move -->
+
+        <FrameLayout
+            android:id="@+id/paint_move"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:foreground="?android:attr/selectableItemBackground" >
+
+            <ImageView
+                android:id="@+id/paint_img_zoom"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_zoom_blue" />
+        </FrameLayout>
+    </LinearLayout>
+
+</LinearLayout>
