@@ -101,6 +101,7 @@ public class TsPaintFragment extends BaseFragment implements OnClickListener, On
 
         tsSurfaceView = (TsSurfaceView) rootView.findViewById(R.id.paint_tssurface);
         tsSurfaceView.setOnTouchListener(this);
+        tsSurfaceView.setId(id);
 
         scaleGestureDetector = new ScaleGestureDetector(getActivity(), new ScaleListener());
 
