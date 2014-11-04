@@ -32,6 +32,9 @@ public class TsSurfaceView extends SurfaceView implements SurfaceHolder.Callback
 
     private Canvas mCanvas;
 
+    float translateX = 1f;
+    float translateY = 1f;
+
     // private boolean mDrawing = false;
 
     public void setId(int id) {
@@ -44,11 +47,21 @@ public class TsSurfaceView extends SurfaceView implements SurfaceHolder.Callback
 
     public TsSurfaceView(Context context) {
         super(context);
+        initRender(context);
     }
 
     public TsSurfaceView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        initRender(context);
+    }
 
+    public TsSurfaceView(Context context, AttributeSet attrs, int style) {
+        super(context, attrs, style);
+        initRender(context);
+    }
+
+    private void initRender(Context context) {
+        log.d("log>>> " + "initRender");
         getHolder().addCallback(this);
         setZOrderOnTop(true);
         getHolder().setFormat(PixelFormat.TRANSPARENT);
@@ -79,13 +92,12 @@ public class TsSurfaceView extends SurfaceView implements SurfaceHolder.Callback
         public void run() {
             mCanvas = null;
             while (_run) {
-                // if (mDrawing) {
                 try {
-                    mCanvas = mSurfaceHolder.lockCanvas(null);
-//                     mCanvas.scale(a, b);
-//                    mCanvas.scale(a, b, x, y);
+                    mCanvas = mSurfaceHolder.lockCanvas();
 
                     mCanvas.drawColor(0, PorterDuff.Mode.CLEAR);
+                    mCanvas.translate(translateX, translateY);
+                    mCanvas.scale(zoom, zoom);
                     commandManager.executeAll(mCanvas);
                 } finally {
                     mSurfaceHolder.unlockCanvasAndPost(mCanvas);
@@ -196,16 +208,6 @@ public class TsSurfaceView extends SurfaceView implements SurfaceHolder.Callback
 
     }
 
-    // private void redrawSurface() {
-    // mDrawing = true;
-    // new Handler().postDelayed(new Runnable() {
-    // @Override
-    // public void run() {
-    // mDrawing = false;
-    // }
-    // }, 300);
-    // }
-
     public void saveBitmap() {
         Bitmap bm = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
         Canvas c = new Canvas();
@@ -228,32 +230,7 @@ public class TsSurfaceView extends SurfaceView implements SurfaceHolder.Callback
         }
     }
 
-    float a = 1, b = 1;
-    private float x = 1;
-    private float y = 1;
-
-    public float getX() {
-        return x;
-    }
-
-    public void setX(float x) {
-        this.x = x;
-    }
-
-    public float getY() {
-        return y;
-    }
-
-    public void setY(float y) {
-        this.y = y;
-    }
-
-    public void scale(float x, float y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    private float normalizedScale = 1f;
+    private float zoom = 1f;
 
     private float minScale;
     private float maxScale;
@@ -263,31 +240,76 @@ public class TsSurfaceView extends SurfaceView implements SurfaceHolder.Callback
     private static final float SUPER_MAX_MULTIPLIER = 8.25f;
 
     public void scaleCanvas(double deltaScale, float focusX, float focusY, boolean isStretchImageToSuper) {
-        float lowerScale, upperScale;
-        if (isStretchImageToSuper) {
-            lowerScale = superMinScale;
-            upperScale = superMaxScale;
-        } else {
-            lowerScale = minScale;
-            upperScale = maxScale;
+        // float lowerScale, upperScale;
+        // if (isStretchImageToSuper) {
+        // lowerScale = superMinScale;
+        // upperScale = superMaxScale;
+        // } else {
+        // lowerScale = minScale;
+        // upperScale = maxScale;
+        // }
+        //
+        // float origScale = zoom;
+        // zoom *= deltaScale;
+        //
+        // if (zoom > upperScale) {
+        // zoom = upperScale;
+        // deltaScale = zoom / origScale;
+        // } else if (zoom < lowerScale) {
+        // zoom = lowerScale;
+        // deltaScale = zoom / origScale;
+        // }
+
+        zoom *= deltaScale;
+        zoom = Math.max(1, Math.min(zoom, 5));
+
+        translateX = focusX - focusX * zoom;
+        translateY = focusY - focusY * zoom;
+
+        fixTrans();
+
+    }
+
+    public void setTranslate(float mX, float mY) {
+        translateX += mX;
+        translateY += mY;
+    }
+
+    private void fixTrans() {
+
+        int displayWidth = getWidth();
+        int displayHeight = getHeight();
+
+        // If translateX times -1 is lesser than zero, let's set it to zero.
+        // This takes care of the left bound
+        if ((translateX * -1) < 0) {
+            translateX = 0;
         }
 
-        float origScale = normalizedScale;
-        normalizedScale *= deltaScale;
-
-        if (normalizedScale > upperScale) {
-            normalizedScale = upperScale;
-            deltaScale = normalizedScale / origScale;
-        } else if (normalizedScale < lowerScale) {
-            normalizedScale = lowerScale;
-            deltaScale = normalizedScale / origScale;
+        // This is where we take care of the right bound. We compare translateX
+        // times -1 to (scaleFactor - 1) * displayWidth.
+        // If translateX is greater than that value, then we know that we've
+        // gone over the bound. So we set the value of
+        // translateX to (1 - scaleFactor) times the display width. Notice that
+        // the terms are interchanged; it's the same
+        // as doing -1 * (scaleFactor - 1) * displayWidth
+        else if ((translateX * -1) > (zoom - 1) * displayWidth) {
+            translateX = (1 - zoom) * displayWidth;
         }
 
-        a = (float) deltaScale;
-        b = (float) deltaScale;
-        x = focusX;
-        y = focusY;
+        if (translateY * -1 < 0) {
+            translateY = 0;
+        }
 
+        // We do the exact same thing for the bottom bound, except in this case
+        // we use the height of the display
+        else if ((translateY * -1) > (zoom - 1) * displayHeight) {
+            translateY = (1 - zoom) * displayHeight;
+        }
+    }
+
+    public float getZoom() {
+        return zoom;
     }
 
 }
