@@ -15,7 +15,6 @@ import android.support.v4.view.MotionEventCompat;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
-import android.view.ScaleGestureDetector.OnScaleGestureListener;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
@@ -31,22 +30,17 @@ import com.example.tapcopaint.base.BaseFragment;
 import com.example.tapcopaint.base.BaseFragmentActivity.OnBackPressListener;
 import com.example.tapcopaint.popup.TsPopupWindow;
 import com.example.tapcopaint.popup.TsPopupWindow.IColorPickerListener;
-import com.example.tapcopaint.trash.ActionItem;
-import com.example.tapcopaint.trash.QuickAction2;
 import com.example.tapcopaint.utils.FilterLog;
 import com.example.tapcopaint.utils.PaintUtil;
 import com.example.tapcopaint.view.DrawingPath;
 import com.example.tapcopaint.view.TsSurfaceView;
-import com.example.tapcopaint.zoom.TsImageView;
 
-public class TsPaintFragment extends BaseFragment implements OnClickListener, OnBackPressListener, OnTouchListener,
-        OnScaleGestureListener {
+public class TsPaintFragment extends BaseFragment implements OnClickListener, OnBackPressListener, OnTouchListener {
 
     public static int KK = 0;
 
     private int id;
     // private TsImageView img;
-    private ImageView img;
     private ImageView imgErase;
     private static final String TAG = "PaintFragment";
     private Paint mPaint;
@@ -74,6 +68,11 @@ public class TsPaintFragment extends BaseFragment implements OnClickListener, On
 
     // private GestureDetector gestureDetector;
     private ScaleGestureDetector scaleGestureDetector;
+    private TsState tsState = TsState.TS_NONE;
+
+    public enum TsState {
+        TS_NONE, TS_INTOUCH, TS_ZOOM, TS_MOVE;
+    }
 
     @Override
     protected String generateTitle() {
@@ -99,6 +98,12 @@ public class TsPaintFragment extends BaseFragment implements OnClickListener, On
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = (ViewGroup) inflater.inflate(R.layout.paint_fragment, container, false);
+
+        tsSurfaceView = (TsSurfaceView) rootView.findViewById(R.id.paint_tssurface);
+        tsSurfaceView.setOnTouchListener(this);
+
+        scaleGestureDetector = new ScaleGestureDetector(getActivity(), new ScaleListener());
+
         initBtn(rootView);
         initColorView(rootView);
         path = new Path();
@@ -109,14 +114,8 @@ public class TsPaintFragment extends BaseFragment implements OnClickListener, On
     private void initBtn(View rootView) {
 
         // gestureDetector = new GestureDetector(getActivity(), this);
-        scaleGestureDetector = new ScaleGestureDetector(getActivity(), this);
 
         imgErase = (ImageView) rootView.findViewWithTag("erase");
-
-        tsSurfaceView = (TsSurfaceView) rootView.findViewById(R.id.paint_tssurface);
-        tsSurfaceView.setOnTouchListener(this);
-        img = (ImageView) rootView.findViewWithTag("image");
-        img.setImageResource(id);
 
         View viewCancel = rootView.findViewById(R.id.paint_btn_cancel);
         viewCancel.setOnClickListener(this);
@@ -225,7 +224,6 @@ public class TsPaintFragment extends BaseFragment implements OnClickListener, On
 
     @Override
     public void onClick(View v) {
-        QuickAction2 quickAction = new QuickAction2(v);
         switch (v.getId()) {
         case R.id.paint_btn_cancel:
             onBackPress();
@@ -250,17 +248,6 @@ public class TsPaintFragment extends BaseFragment implements OnClickListener, On
             break;
         case R.id.paint_edit:
             isZoom = false;
-            ActionItem item4 = new ActionItem(getResources().getDrawable(R.drawable.ic_navigation_back));
-            ActionItem item5 = new ActionItem(getResources().getDrawable(R.drawable.ic_navigation_forward));
-            ActionItem item6 = new ActionItem(getResources().getDrawable(R.drawable.ic_edit));
-            item4.setTitle("A");
-            item5.setTitle("B");
-            item6.setTitle("C");
-
-            quickAction.addActionItem(item4);
-            quickAction.addActionItem(item5);
-            quickAction.addActionItem(item6);
-            quickAction.show();
             break;
         case R.id.paint_erase:
             isZoom = false;
@@ -291,13 +278,6 @@ public class TsPaintFragment extends BaseFragment implements OnClickListener, On
             tsPopupWindow2.setOnListener(colorPickerListener);
             tsPopupWindow2.show();
 
-            // FragmentManager fm = getChildFragmentManager();
-            // FragmentTransaction ft = fm.beginTransaction();
-            //
-            // ColorPickerDialog f = ColorPickerDialog.newInstance(color);
-            // f.setOnListener(colorPickerListener);
-            // ft.add(f, null);
-            // ft.commitAllowingStateLoss();
             break;
 
         default:
@@ -323,6 +303,7 @@ public class TsPaintFragment extends BaseFragment implements OnClickListener, On
 
     private void touchStart(float x, float y) {
         // tsSurfaceView.setDrawing(true);
+        tsState = TsState.TS_INTOUCH;
         path.reset();
         path.moveTo(x, y);
         mX = x;
@@ -343,15 +324,48 @@ public class TsPaintFragment extends BaseFragment implements OnClickListener, On
     }
 
     private void touchMove(float x, float y) {
-        float dx = Math.abs(x - mX);
-        float dy = Math.abs(y - mY);
-        if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE) {
-            path.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
-            currentDrawingPath.path.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
-            mX = x;
-            mY = y;
+
+        tsState = TsState.TS_MOVE;
+        long SCALE_MOVE_GUARD = 500;
+        if (scaleGestureDetector.isInProgress() || System.currentTimeMillis() - this.lastScaleTime_ < SCALE_MOVE_GUARD) {
+            tsState = TsState.TS_ZOOM;
+            return;
         }
-        tsSurfaceView.drawCurrent(currentDrawingPath);
+        if (tsSurfaceView.getZoom() != 1f) {
+            if (isZoom) {
+                log.d("log>>> " + "DRAG ZOOM");
+                float dx = Math.abs(x - mX);
+                float dy = Math.abs(y - mY);
+                dx = x - mX;
+                dy = y - mY;
+                mX = x;
+                mY = y;
+                tsSurfaceView.setTranslate(dx, dy);
+            } else {
+                log.d("log>>> " + "DRAW AFTER ZOOMING");
+                float dx = Math.abs(x - mX);
+                float dy = Math.abs(y - mY);
+                if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE) {
+                    path.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
+                    currentDrawingPath.path.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
+                    mX = x;
+                    mY = y;
+                }
+                tsSurfaceView.drawCurrent(currentDrawingPath);
+            }
+            return;
+        } else {
+            float dx = Math.abs(x - mX);
+            float dy = Math.abs(y - mY);
+            if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE) {
+                path.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
+                currentDrawingPath.path.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
+                mX = x;
+                mY = y;
+            }
+            tsSurfaceView.drawCurrent(currentDrawingPath);
+        }
+
     }
 
     private void touchUp(float x, float y) {
@@ -362,6 +376,7 @@ public class TsPaintFragment extends BaseFragment implements OnClickListener, On
         tsSurfaceView.drawCurrent(null);
         // tsSurfaceView.setDrawing(false);
         mPaint = resetPaint();
+        tsState = TsState.TS_NONE;
     }
 
     @Override
@@ -376,26 +391,23 @@ public class TsPaintFragment extends BaseFragment implements OnClickListener, On
     @Override
     public boolean onTouch(View v, MotionEvent event) {
 
-        if (isZoom) {
-            scaleGestureDetector.onTouchEvent(event);
-        } else {
-            int action = MotionEventCompat.getActionMasked(event);
-            float x = event.getX();
-            float y = event.getY();
-            switch (action) {
-            case MotionEvent.ACTION_DOWN:
-                touchStart(x, y);
-                break;
-            case MotionEvent.ACTION_MOVE:
+        this.scaleGestureDetector.onTouchEvent(event);
 
-                touchMove(x, y);
-                break;
-            case MotionEvent.ACTION_UP:
-                touchUp(x, y);
-                break;
-            default:
-                break;
-            }
+        int action = MotionEventCompat.getActionMasked(event);
+        float x = event.getX();
+        float y = event.getY();
+        switch (action & MotionEventCompat.ACTION_MASK) {
+        case MotionEvent.ACTION_DOWN:
+            touchStart(x, y);
+            break;
+        case MotionEvent.ACTION_MOVE:
+            touchMove(x, y);
+            break;
+        case MotionEvent.ACTION_UP:
+            touchUp(x, y);
+            break;
+        default:
+            break;
         }
         return true;
 
@@ -433,33 +445,21 @@ public class TsPaintFragment extends BaseFragment implements OnClickListener, On
         }
     }
 
-    @Override
-    public boolean onScale(ScaleGestureDetector detector) {
-        log.i("log>>> " + "onScale");
-        // float scaleFactor = detector.getScaleFactor();
-        // log.i("log>>> " + "scaleFactor: " + scaleFactor);
-        // if (scaleFactor > 1) {
-        // log.i("log>>> " + "Zooming Out");
-        // } else {
-        // log.i("log>>> " + "Zooming In");
-        // }
-        // tsSurfaceView.scale(tsSurfaceView.getX() * scaleFactor,
-        // tsSurfaceView.getY() * scaleFactor);
+    long lastScaleTime_;
 
-        tsSurfaceView.scaleCanvas(detector.getScaleFactor(), detector.getFocusX(), detector.getFocusY(), false);
-        return true;
-    }
+    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+        @Override
+        public boolean onScale(ScaleGestureDetector detector) {
+            float focusX = detector.getFocusX();
+            float focusY = detector.getFocusY();
+            float scaleFactor = detector.getScaleFactor();
 
-    @Override
-    public boolean onScaleBegin(ScaleGestureDetector detector) {
-        log.i("log>>> " + "onScaleBegin");
-        return true;
-    }
+            tsSurfaceView.scaleCanvas(scaleFactor, focusX, focusY, false);
+            tsSurfaceView.invalidate();
 
-    @Override
-    public void onScaleEnd(ScaleGestureDetector detector) {
-        log.i("log>>> " + "onScaleEnd");
-
+            lastScaleTime_ = System.currentTimeMillis();
+            return true;
+        }
     }
 
 }

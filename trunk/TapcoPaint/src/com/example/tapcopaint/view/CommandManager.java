@@ -64,7 +64,7 @@ public class CommandManager {
                 final Iterator<DrawingPath> i = currentStack.iterator();
                 while (i.hasNext()) {
                     final DrawingPath drawingPath = (DrawingPath) i.next();
-                    drawingPath.draw(canvas, tx, ty);
+                    drawingPath.draw(canvas);
                 }
             }
         }
