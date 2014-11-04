@@ -15,10 +15,12 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.os.Environment;
 import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.FrameLayout;
 
 import com.example.tapcopaint.utils.FilterLog;
 
@@ -27,7 +29,7 @@ public class TsSurfaceView extends SurfaceView implements SurfaceHolder.Callback
     private static final String TAG = "TsSurfaceView";
     FilterLog log = new FilterLog(TAG);
     int id = -1;
-    Bitmap bitmapBackGround;
+    Bitmap bgBitmap;
     Bitmap bitmapPaint;
 
     private Canvas mCanvas;
@@ -35,10 +37,16 @@ public class TsSurfaceView extends SurfaceView implements SurfaceHolder.Callback
     float translateX = 1f;
     float translateY = 1f;
 
+    private Paint historyPaint;
+
     // private boolean mDrawing = false;
 
     public void setId(int id) {
         this.id = id;
+        // if (id != -1) {
+        // bgBitmap = BitmapFactory.decodeResource(getResources(), id);
+        // }
+        thread = new DrawThread(getHolder());
     }
 
     CommandManager commandManager;
@@ -71,9 +79,10 @@ public class TsSurfaceView extends SurfaceView implements SurfaceHolder.Callback
         maxScale = 3;
         superMinScale = SUPER_MIN_MULTIPLIER * minScale;
         superMaxScale = SUPER_MAX_MULTIPLIER * maxScale;
-
         commandManager = new CommandManager();
-        thread = new DrawThread(getHolder());
+
+        historyPaint = new Paint();
+        historyPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OVER));
     }
 
     class DrawThread extends Thread {
@@ -94,6 +103,7 @@ public class TsSurfaceView extends SurfaceView implements SurfaceHolder.Callback
             while (_run) {
                 try {
                     mCanvas = mSurfaceHolder.lockCanvas();
+                    fixTrans();
 
                     mCanvas.drawColor(0, PorterDuff.Mode.CLEAR);
                     mCanvas.translate(translateX, translateY);
@@ -154,10 +164,22 @@ public class TsSurfaceView extends SurfaceView implements SurfaceHolder.Callback
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         log.v("log>>> surfaceCreated:" + id);
-        if (id != -1) {
-            bitmapBackGround = BitmapFactory.decodeResource(getResources(), id);
-            bitmapBackGround = Bitmap.createScaledBitmap(bitmapBackGround, getWidth(), getHeight(), true);
-        }
+        // if (bgBitmap != null) {
+        // int bWidth = bgBitmap.getWidth();
+        // int bHeight = bgBitmap.getHeight();
+        // int vWidth = getWidth();
+        // int vHeight = getHeight();
+        // int newWidth = bWidth;
+        // int newHeight = bHeight;
+        //
+        // float scale = Math.min((float) vWidth / bWidth, (float) vHeight / bHeight);
+        // newWidth = (int) (bWidth * scale);
+        // newHeight = (int) (bHeight * scale);
+        //
+        // FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(newWidth, newHeight);
+        // this.setLayoutParams(params);
+        // bgBitmap = Bitmap.createScaledBitmap(bgBitmap, newWidth, newHeight, true);
+        // }
         bitmapPaint = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
         thread.setRunning(true);
         if (!thread.isInterrupted()) {
@@ -265,8 +287,6 @@ public class TsSurfaceView extends SurfaceView implements SurfaceHolder.Callback
 
         translateX = focusX - focusX * zoom;
         translateY = focusY - focusY * zoom;
-
-        fixTrans();
 
     }
 
