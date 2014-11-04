@@ -25,6 +25,7 @@ import android.util.Log;
 
 import com.example.tapcopaint.utils.FilterLog;
 import com.example.tapcopaint.view.DrawingPath;
+import com.example.tapcopaint.view.TsSurfaceRender;
 
 /**
  * SurfaceRenderer is the superclass of the renderer. The game should subclass the renderer and extend the drawing
@@ -311,6 +312,7 @@ public abstract class SurfaceRenderer {
             drawBase();
             drawLayer();
             drawFinal();
+            fixTrans();
             translate(c, translateX, translateY);
             scale(c, zoom);
             synchronized (this) {
@@ -318,6 +320,38 @@ public abstract class SurfaceRenderer {
                     c.drawBitmap(this.bitmap_, 0F, 0F, null);
 
                 }
+            }
+        }
+
+        private void fixTrans() {
+
+            int displayWidth = getPhysicalWidth();
+            int displayHeight = getPhysicalHeight();
+            // If translateX times -1 is lesser than zero, let's set it to zero.
+            // This takes care of the left bound
+            if ((translateX * -1) < 0) {
+                translateX = 0;
+            }
+
+            // This is where we take care of the right bound. We compare translateX
+            // times -1 to (scaleFactor - 1) * displayWidth.
+            // If translateX is greater than that value, then we know that we've
+            // gone over the bound. So we set the value of
+            // translateX to (1 - scaleFactor) times the display width. Notice that
+            // the terms are interchanged; it's the same
+            // as doing -1 * (scaleFactor - 1) * displayWidth
+            else if ((translateX * -1) > (zoom - 1) * displayWidth) {
+                translateX = (1 - zoom) * displayWidth;
+            }
+
+            if (translateY * -1 < 0) {
+                translateY = 0;
+            }
+
+            // We do the exact same thing for the bottom bound, except in this case
+            // we use the height of the display
+            else if ((translateY * -1) > (zoom - 1) * displayHeight) {
+                translateY = (1 - zoom) * displayHeight;
             }
         }
 
@@ -338,13 +372,16 @@ public abstract class SurfaceRenderer {
                 this.zoom *= factor;
             }
 
+            //min = 1, max = 5
+            zoom = Math.max(1, Math.min(zoom, 5));
+
             synchronized (this) {
-//                fixTrans(factor, p);
+                // fixTrans(factor, p);
             }
             // }
 
-             viewPort_.translateX = p.x - p.x * zoom;
-             viewPort_.translateY = p.y - p.y * zoom;
+            viewPort_.translateX = p.x - p.x * zoom;
+            viewPort_.translateY = p.y - p.y * zoom;
 
             // if (zoom == 2) {
 
@@ -359,37 +396,6 @@ public abstract class SurfaceRenderer {
         float zoomOld = 1f;
         float tX, tY;
         int i = 0;
-
-        void fixTrans(float factor, PointF p) {
-
-            // updae translateX, translateY
-            if (zoomOld == 1f) {
-                viewPort_.translateX = p.x - p.x * zoom;
-                viewPort_.translateY = p.y - p.y * zoom;
-                return;
-            }
-
-            if (i < 2) {
-                log.v("log>>> " + "viewPort_.translateX:" + viewPort_.translateX);
-                i++;
-            }
-            if (i == 2) {
-                log.d("log>>> " + "i ==2");
-                viewPort_.translateX = -100;
-                viewPort_.translateY = -100;
-//                zoom /= factor;
-                // viewPort_.translateX = p.x - p.x * factor;
-                // viewPort_.translateY = p.y - p.y * factor;
-                return;
-            }
-
-            tX = (viewPort_.translateX * (zoom / factor)) - p.x;
-            tY = (viewPort_.translateY * (zoom / factor)) - p.y;
-
-            viewPort_.translateX = tX;
-            viewPort_.translateY = tY;
-            log.d("log>>> " + "tX:" + tX + ";tY:" + tY);
-        }
 
         void scale(Canvas c, float scale) {
 
