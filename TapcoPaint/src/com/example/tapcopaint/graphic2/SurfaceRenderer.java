@@ -25,6 +25,7 @@ import android.util.Log;
 
 import com.example.tapcopaint.utils.FilterLog;
 import com.example.tapcopaint.view.DrawingPath;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 /**
  * SurfaceRenderer is the superclass of the renderer. The game should subclass the renderer and extend the drawing
@@ -50,6 +51,8 @@ public abstract class SurfaceRenderer {
 
     protected StackPathManager manager;
 
+    protected ImageLoader imageLoader;
+
     /**
      * Constructor for the surface renderer
      * 
@@ -61,6 +64,7 @@ public abstract class SurfaceRenderer {
     protected SurfaceRenderer(Context c) {
         this.context_ = c;
         manager = new StackPathManager(c);
+        imageLoader = ImageLoader.getInstance();
     }
 
     /**
@@ -120,6 +124,10 @@ public abstract class SurfaceRenderer {
      */
     public void setMapPosition(int x, int y) {
         this.viewPort_.setOrigin(x, y);
+    }
+
+    public ViewPort getViewPort() {
+        return viewPort_;
     }
 
     /**
@@ -311,8 +319,10 @@ public abstract class SurfaceRenderer {
             drawBase();
             drawLayer();
             drawFinal();
-            translate(c, translateX, translateY);
-            scale(c, zoom);
+            // translate(c, translateX, translateY);
+            // scale(c, zoom);
+            scale(c, zoom, translateX, translateY);
+
             synchronized (this) {
                 if (c != null && this.bitmap_ != null) {
                     c.drawBitmap(this.bitmap_, 0F, 0F, null);
@@ -321,11 +331,23 @@ public abstract class SurfaceRenderer {
             }
         }
 
+        private float previousTranslateX = 0f;
+        private float previousTranslateY = 0f;
+
         /**
          * 
          * @param factor
          * @param screenFocus
          */
+
+        public void actionUp() {
+            previousTranslateX = viewPort_.translateX;
+            previousTranslateY = viewPort_.translateY;
+
+            // viewPort_.translateX = 0f;
+            // viewPort_.translateY = 0f;
+        }
+
         public void zoomCanvas(float factor, PointF p) {
 
             if (bitmap_ == null) {
@@ -339,12 +361,23 @@ public abstract class SurfaceRenderer {
             }
 
             synchronized (this) {
-//                fixTrans(factor, p);
+                // fixTrans(factor, p);
             }
             // }
+            // p.x = p.x - previousTranslateX;
+            // p.y = p.y - previousTranslateY;
 
-             viewPort_.translateX = p.x - p.x * zoom;
-             viewPort_.translateY = p.y - p.y * zoom;
+            viewPort_.translateX = p.x - p.x * zoom;
+            viewPort_.translateY = p.y - p.y * zoom;
+
+            viewPort_.translateX -= previousTranslateX;
+            viewPort_.translateY -= previousTranslateY;
+
+            previousTranslateX = viewPort_.translateX;
+            previousTranslateY = viewPort_.translateY;
+
+            // previousTranslateX = viewPort_.translateX;
+            // previousTranslateY = viewPort_.translateY;
 
             // if (zoom == 2) {
 
@@ -377,7 +410,7 @@ public abstract class SurfaceRenderer {
                 log.d("log>>> " + "i ==2");
                 viewPort_.translateX = -100;
                 viewPort_.translateY = -100;
-//                zoom /= factor;
+                // zoom /= factor;
                 // viewPort_.translateX = p.x - p.x * factor;
                 // viewPort_.translateY = p.y - p.y * factor;
                 return;
@@ -394,6 +427,17 @@ public abstract class SurfaceRenderer {
         void scale(Canvas c, float scale) {
 
             c.scale(scale, scale);
+        }
+
+        void scale(Canvas c, float scale, float focusX, float focusY) {
+
+            c.scale(scale, scale, focusX, focusY);
+        }
+
+        public void setScale(float scale, float focusX, float focusY) {
+            this.zoom *= scale;
+            translateX = focusX;
+            translateY = focusY;
         }
 
         void translate(Canvas c, float translateX, float translateY) {
@@ -424,8 +468,8 @@ public abstract class SurfaceRenderer {
     }
 
     public void setTranslate(float x, float y) {
-        viewPort_.translateX += x;
-        viewPort_.translateY += y;
+        viewPort_.translateX -= x;
+        viewPort_.translateY -= y;
     }
 
 }

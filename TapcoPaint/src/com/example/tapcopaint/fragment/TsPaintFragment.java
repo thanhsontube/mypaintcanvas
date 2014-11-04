@@ -44,7 +44,7 @@ public class TsPaintFragment extends BaseFragment implements OnClickListener, On
 
     public static int KK = 0;
 
-    private int id;
+    private String id;
     // private TsImageView img;
     private ImageView img;
     private ImageView imgErase;
@@ -80,10 +80,10 @@ public class TsPaintFragment extends BaseFragment implements OnClickListener, On
         return "Paint";
     }
 
-    public static TsPaintFragment newInstance(int id) {
+    public static TsPaintFragment newInstance(String id) {
         TsPaintFragment f = new TsPaintFragment();
         Bundle bundle = new Bundle();
-        bundle.putInt("id", id);
+        bundle.putString("id", id);
         f.setArguments(bundle);
         return f;
     }
@@ -92,7 +92,7 @@ public class TsPaintFragment extends BaseFragment implements OnClickListener, On
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            id = getArguments().getInt("id");
+            id = getArguments().getString("id");
         }
     }
 
@@ -116,7 +116,7 @@ public class TsPaintFragment extends BaseFragment implements OnClickListener, On
         tsSurfaceView = (TsSurfaceView) rootView.findViewById(R.id.paint_tssurface);
         tsSurfaceView.setOnTouchListener(this);
         img = (ImageView) rootView.findViewWithTag("image");
-        img.setImageResource(id);
+        // img.setImageResource(id);
 
         View viewCancel = rootView.findViewById(R.id.paint_btn_cancel);
         viewCancel.setOnClickListener(this);

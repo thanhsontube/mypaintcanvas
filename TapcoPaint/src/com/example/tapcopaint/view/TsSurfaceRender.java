@@ -32,7 +32,7 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
     public static final Xfermode MODE_OVER = new PorterDuffXfermode(PorterDuff.Mode.DST_OVER);
     private static final float TOUCH_TOLERANCE = 4;
     FilterLog log = new FilterLog(TAG);
-    private int id = -1;
+    private String id = null;
 
     private MyRender renderer_;
     // private TouchHandler touch_;
@@ -48,7 +48,7 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
     private boolean isErase = false;
     private boolean isZooming = false;
 
-    public void setImage(Context context, int id) {
+    public void setImage(Context context, String id) {
         log.d("log>>> " + "setId");
         this.id = id;
         renderer_.setId(id);
@@ -262,6 +262,7 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
             }
         }
         tsState = TsState.TS_NONE;
+        renderer_.getViewPort().actionUp();
     }
 
     // TODO onGesturelistener
@@ -331,7 +332,8 @@ public class TsSurfaceRender extends SurfaceView implements SurfaceHolder.Callba
             float focusX = detector.getFocusX();
             float focusY = detector.getFocusY();
             this.screenFocus.set(focusX, focusY);
-            renderer_.zoomCanvas(scaleFactor, focusX, focusY);
+            // renderer_.zoomCanvas(scaleFactor, focusX, focusY);
+            renderer_.getViewPort().setScale(scaleFactor, focusX, focusY);
             invalidate();
             TsSurfaceRender.this.lastScaleTime_ = System.currentTimeMillis();
             return true;

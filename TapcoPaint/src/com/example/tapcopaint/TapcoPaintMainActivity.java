@@ -11,7 +11,7 @@ import com.example.tapcopaint.fragment.TsPaintFragment;
 import com.example.tapcopaint.fragment.TsRenderFragment;
 
 public class TapcoPaintMainActivity extends BaseFragmentActivity implements IMainFragmentListener {
-    boolean isTest = true;
+    boolean isTest = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,16 +37,16 @@ public class TapcoPaintMainActivity extends BaseFragmentActivity implements IMai
     }
 
     @Override
-    public void onIMainFragmentitemClick(int dto) {
+    public void onIMainFragmentitemClick(String path) {
         // PaintFragment f = PaintFragment.newInstance(dto);
 
         if (isTest) {
 
-            TsRenderFragment f = TsRenderFragment.newInstance(dto);
+            TsRenderFragment f = TsRenderFragment.newInstance(path);
 
             showFragment(f, true);
         } else {
-            TsPaintFragment f = TsPaintFragment.newInstance(dto);
+            TsPaintFragment f = TsPaintFragment.newInstance(path);
             showFragment(f, true);
         }
 

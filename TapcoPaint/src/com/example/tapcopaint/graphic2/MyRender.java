@@ -1,5 +1,7 @@
 package com.example.tapcopaint.graphic2;
 
+import java.io.File;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,22 +16,27 @@ import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.FloatMath;
+import android.widget.FrameLayout;
 import android.widget.ImageView.ScaleType;
 
 import com.androidquery.AQuery;
+import com.androidquery.callback.BitmapAjaxCallback;
 import com.example.tapcopaint.R;
 import com.example.tapcopaint.paint.TsPaint;
 import com.example.tapcopaint.utils.FilterLog;
 import com.example.tapcopaint.view.CommandManager;
 import com.example.tapcopaint.view.TsSurfaceRender;
 import com.example.tapcopaint.zoom.ZoomVariables;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
 
 public class MyRender extends SurfaceRenderer {
     private static final String TAG = "MyRender";
 
     FilterLog log = new FilterLog(TAG);
 
-    int id = -1;
+    String id;
 
     public static enum RenderMode {
         NONE, DRAW, ZOOM, FLING
@@ -41,13 +48,13 @@ public class MyRender extends SurfaceRenderer {
         super(c);
     }
 
-    public MyRender(Context c, int id) {
+    public MyRender(Context c, String id) {
         this(c);
         this.id = id;
         commandManager = new CommandManager();
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         log.d("log>>> " + "setId");
         this.id = id;
     }
@@ -62,8 +69,6 @@ public class MyRender extends SurfaceRenderer {
         superMaxScale = SUPER_MAX_MULTIPLIER * maxScale;
         matrix = new Matrix();
         m = new float[9];
-    
-        
 
     }
 
@@ -79,7 +84,14 @@ public class MyRender extends SurfaceRenderer {
 
     @Override
     protected void drawBase() {
-        if (id == -1) {
+
+        if (viewPort_.bitmap_ != null) {
+
+            // canvasW = viewPort_.getPhysicalWidth();
+            // canvasH = viewPort_.getPhysicalHeight();
+        }
+
+        if (id == null) {
             log.d("log>>> " + "id = -1");
             return;
         }
@@ -135,9 +147,8 @@ public class MyRender extends SurfaceRenderer {
     public void drawOriginalImage(Context context, int id, ViewPort viewPort) {
         aQuery = new AQuery(context);
         i++;
-        canvasW = viewPort.getPhysicalWidth();
-        canvasH = viewPort.getPhysicalHeight();
-
+        canvasW = viewPort_.getPhysicalWidth();
+        canvasH = viewPort_.getPhysicalHeight();
         if (i == VALUE_LOG) {
             log.d("log>>> " + "canvasW :" + canvasW + ";canvasH:" + canvasH);
         }
@@ -740,16 +751,62 @@ public class MyRender extends SurfaceRenderer {
     }
 
     public void drawPath() {
-        // Canvas canvas = new Canvas(viewPort_.bitmap_);
+        final Canvas canvas = new Canvas(viewPort_.bitmap_);
+
         // canvas.drawColor(0, PorterDuff.Mode.CLEAR);
         // manager.restoreAll(canvas);
 
-        drawRect(viewPort_);
+        // drawRect(viewPort_);
+
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(id, bmOptions);
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+//
+//        float scaleX = (float) (viewPort_.getPhysicalWidth() / photoW);
+//        float scaleY = (float) (viewPort_.getPhysicalHeight() / photoH);
+//
+//        float scaleFactor = Math.min(scaleX, scaleY);
+//
+//        bmOptions.inJustDecodeBounds = false;
+//        bmOptions.inSampleSize = (int) scaleFactor;
+//        bmOptions.inPurgeable = true;
+//
+//        Bitmap bitmap = BitmapFactory.decodeFile(id, bmOptions);
+        
+        int bWidth = photoW;
+        int bHeight = photoH;
+        int vWidth = viewPort_.getPhysicalWidth();
+        int vHeight = viewPort_.getPhysicalHeight();
+        int newWidth = bWidth;
+        int newHeight = bHeight;
+
+        float scale = Math.min((float) vWidth / bWidth, (float) vHeight / bHeight);
+        newWidth = (int) (bWidth * scale);
+        newHeight = (int) (bHeight * scale);
+
+//        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(newWidth, newHeight);
+//        setLayoutParams(params);
+//        bgBitmap = Bitmap.createScaledBitmap(bgBitmap, newWidth, newHeight, true);
+
+        // ImageSize targetSize = new ImageSize(300, 400);
+        //
+        // DisplayImageOptions options = DisplayImageOptions.createSimple();
+        // Bitmap bitmap = imageLoader.loadImageSync("file:///" + id, targetSize, options);
+
+        log.d("log>>> " + "W:" + bitmap.getWidth());
+
+        Paint paint = new Paint();
+        canvas.drawBitmap(bitmap, 0, 0, paint);
 
         // Bitmap bitmap = BitmapFactory.decodeResource(context_.getResources(), R.drawable.pic1);
         // Paint paint = new Paint();
         // paint.setXfermode(TsSurfaceRender.MODE_OVER);
         // canvas.drawBitmap(bitmap, 0, 0, paint);
+        
+        
+        
     }
 
 }

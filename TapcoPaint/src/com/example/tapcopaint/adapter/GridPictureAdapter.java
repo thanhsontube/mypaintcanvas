@@ -1,5 +1,6 @@
 package com.example.tapcopaint.adapter;
 
+import java.io.File;
 import java.util.List;
 
 import android.content.Context;
@@ -9,16 +10,30 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
+import com.androidquery.AQuery;
 import com.example.tapcopaint.R;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
-public class GridPictureAdapter extends ArrayAdapter<Integer> {
-    private List<Integer> list;
+public class GridPictureAdapter extends ArrayAdapter<String> {
+    // private List<Integer> list;
+    private List<String> list;
     private Context context;
+    private AQuery aQuery;
+    private ImageLoader imageLoader;
 
-    public GridPictureAdapter(Context context, List<Integer> list) {
+    // public GridPictureAdapter(Context context, List<Integer> list) {
+    // super(context, 0, list);
+    // this.list = list;
+    // this.context = context;
+    //
+    // }
+
+    public GridPictureAdapter(Context context, List<String> list) {
         super(context, 0, list);
         this.list = list;
         this.context = context;
+        aQuery = new AQuery(context);
+        imageLoader = ImageLoader.getInstance();
 
     }
 
@@ -37,9 +52,11 @@ public class GridPictureAdapter extends ArrayAdapter<Integer> {
             holder = (Holder) v.getTag();
         }
 
-        int dto = list.get(position);
-        holder.img.setImageResource(dto);
-
+        String dto = list.get(position);
+        // holder.img.setImageResource(dto);
+        // aQuery.id(holder.img).image(new File(dto), 0);
+        // imageLoader.loadImage("file:///" + dto, null);
+        imageLoader.displayImage("file:///" + dto, holder.img);
         return v;
     }
 

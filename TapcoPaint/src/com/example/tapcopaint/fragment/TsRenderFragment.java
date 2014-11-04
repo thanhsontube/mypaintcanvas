@@ -29,7 +29,7 @@ import com.example.tapcopaint.view.TsSurfaceRender;
 public class TsRenderFragment extends BaseFragment implements OnClickListener {
 
     private TsSurfaceRender tsSurfaceRender;
-    private int id;
+    private String id;
 
     // private TsImageView img;
     private ImageView imgErase, imgZoom;
@@ -52,10 +52,10 @@ public class TsRenderFragment extends BaseFragment implements OnClickListener {
         return "Paint";
     }
 
-    public static TsRenderFragment newInstance(int id) {
+    public static TsRenderFragment newInstance(String id) {
         TsRenderFragment f = new TsRenderFragment();
         Bundle bundle = new Bundle();
-        bundle.putInt("id", id);
+        bundle.putString("id", id);
         f.setArguments(bundle);
         return f;
     }
@@ -64,7 +64,7 @@ public class TsRenderFragment extends BaseFragment implements OnClickListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            id = getArguments().getInt("id");
+            id = getArguments().getString("id");
         }
     }
 
