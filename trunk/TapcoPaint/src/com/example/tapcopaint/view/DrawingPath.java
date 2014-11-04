@@ -30,7 +30,7 @@ public class DrawingPath implements ICanvasCommand {
     }
 
     public void draw(Canvas canvas, float x, float y) {
-        canvas.translate(x, y);
+//        canvas.translate(x, y);
         canvas.drawPath(path, paint);
     }
 

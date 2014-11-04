@@ -51,11 +51,16 @@
 
         <!-- middle -->
 
-        <com.example.tapcopaint.view.TsSurfaceView
-            android:id="@+id/paint_tssurface"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="visible" />
+            android:layout_height="match_parent" >
+
+            <com.example.tapcopaint.view.TsSurfaceView
+                android:id="@+id/paint_tssurface"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="visible" />
+        </FrameLayout>
     </LinearLayout>
 
     <!-- Bottom -->
